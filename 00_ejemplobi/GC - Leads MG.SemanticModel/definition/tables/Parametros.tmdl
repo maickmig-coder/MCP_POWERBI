@@ -1,0 +1,32 @@
+table Parametros
+	lineageTag: 3eed8040-583a-49c8-b5e8-4a4820387176
+
+	column Parametro
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a957dd6f-758f-406a-be60-f7edc67cfbf6
+		summarizeBy: none
+		sourceColumn: Parametro
+
+		variation Variación
+			isDefault
+			relationship: 82534416-130d-457b-bdac-0a538c0d9f28
+			defaultHierarchy: LocalDateTable_8c71bff9-1618-4d4c-8f78-b3f67e1ab247.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Parametros = m
+		mode: import
+		source =
+				let
+				    Origen = DateTimeZone.SwitchZone(DateTimeZone.LocalNow(),-5,0),
+				    #"Convertida en tabla" = #table(1, {{Origen}}),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Convertida en tabla",{{"Column1", type datetimezone}}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Tipo cambiado",{{"Column1", "Parametro"}})
+				in
+				    #"Columnas con nombre cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

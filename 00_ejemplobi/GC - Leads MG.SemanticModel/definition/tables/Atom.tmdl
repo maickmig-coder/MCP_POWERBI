@@ -1,0 +1,445 @@
+table Atom
+	isHidden
+	lineageTag: b755d7f1-c560-4496-87aa-5a2f02db6754
+
+	column lead_id
+		dataType: string
+		isHidden
+		lineageTag: f76d6495-5d31-4e8e-acd3-c627de0c9fb1
+		summarizeBy: none
+		sourceColumn: lead_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column campaing_name
+		dataType: string
+		isHidden
+		lineageTag: f6f07be1-1cd9-4a58-bb74-9bfe612dee0a
+		summarizeBy: none
+		sourceColumn: campaing_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column medium_value
+		dataType: string
+		isHidden
+		lineageTag: 99378a26-374f-4823-be4e-88bbcfbe3db1
+		summarizeBy: none
+		sourceColumn: medium_value
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column category_name
+		dataType: string
+		isHidden
+		lineageTag: 770b9fa8-c9bd-43d5-84ef-08a0f7fb8876
+		summarizeBy: none
+		sourceColumn: category_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column brand_name
+		dataType: string
+		isHidden
+		lineageTag: 6c80798c-3139-462d-88ca-20d6601f5b2b
+		summarizeBy: none
+		sourceColumn: brand_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_name
+		dataType: string
+		isHidden
+		lineageTag: 6add23bd-a39a-4357-942b-befde7544eac
+		summarizeBy: none
+		sourceColumn: adviser_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_email
+		dataType: string
+		isHidden
+		lineageTag: 9b46f0a3-3569-4792-8b53-f846de31142a
+		summarizeBy: none
+		sourceColumn: adviser_email
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column client_name
+		dataType: string
+		isHidden
+		lineageTag: 942e7551-dfda-47d1-826d-c9ce016f5f7c
+		summarizeBy: none
+		sourceColumn: client_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column client_phone
+		dataType: string
+		isHidden
+		lineageTag: c80a9777-f34d-4a32-938a-17e90b0bd6de
+		summarizeBy: none
+		sourceColumn: client_phone
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column client_email
+		dataType: string
+		isHidden
+		lineageTag: 03a90625-721f-4de6-84bd-f931dcc9da12
+		summarizeBy: none
+		sourceColumn: client_email
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column created_at
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 25d90b75-7cda-4768-83f7-71fd2c014d11
+		summarizeBy: none
+		sourceColumn: created_at
+
+		variation Variación
+			isDefault
+			relationship: 93688ee0-ae0d-40cf-8480-744fec5ae924
+			defaultHierarchy: LocalDateTable_8be1e938-b325-4949-a52e-399605e1608d.'Jerarquía de fechas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column updated_at
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 4a68845b-cd09-4631-ac21-a95db9cae5b9
+		summarizeBy: none
+		sourceColumn: updated_at
+
+		variation Variación
+			isDefault
+			relationship: a4e79a57-53a0-47fe-8480-00f2e3f3719d
+			defaultHierarchy: LocalDateTable_52673d88-0ab9-49ce-886d-f5eade869640.'Jerarquía de fechas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column lead_created_at
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: d58ab649-d7a3-4e19-bacb-7daa14c07a9c
+		summarizeBy: none
+		sourceColumn: lead_created_at
+
+		variation Variación
+			isDefault
+			relationship: 574b3ee2-3aba-468b-8ebd-ba5e8336f082
+			defaultHierarchy: LocalDateTable_4069fc95-3b04-44b7-a146-e17eef31c965.'Jerarquía de fechas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column management_time
+		dataType: double
+		isHidden
+		lineageTag: 688d33ed-4064-4e5f-be49-48a759418aa6
+		summarizeBy: sum
+		sourceColumn: management_time
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column nombre_origen
+		dataType: string
+		isHidden
+		lineageTag: 728e488d-8a45-46ca-9ff9-0b6e0cd2a17f
+		summarizeBy: none
+		sourceColumn: nombre_origen
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column grupo
+		dataType: string
+		isHidden
+		lineageTag: f7be5a06-fc00-43f8-9ab0-2310cd5e64f4
+		summarizeBy: none
+		sourceColumn: grupo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column primer_usuario
+		dataType: string
+		isHidden
+		lineageTag: 3a25def0-5a92-4814-8596-6e8972f1c9bc
+		summarizeBy: none
+		sourceColumn: primer_usuario
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column primer_grupo
+		dataType: string
+		isHidden
+		lineageTag: 5f3fdeba-dcb1-4bfb-9df2-98d8a1189dc4
+		summarizeBy: none
+		sourceColumn: primer_grupo
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cruce_Tel = Atom[client_phone]&"|"&MONTH(Atom[lead_created_at])&"|"&YEAR(Atom[lead_created_at])
+		isHidden
+		lineageTag: 08be363e-0dfa-4754-a325-3dc6614d457d
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cruce_Email = Atom[client_email]&"|"&MONTH(Atom[lead_created_at])&"|"&YEAR(Atom[lead_created_at])
+		isHidden
+		lineageTag: ea865bce-4448-4a1f-9758-055dafd541c9
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cruce_Tel_Orbi = LOOKUPVALUE(Tel_Orbi[Orbi leads_client_phone],Tel_Orbi[Cruce_Tel],Atom[Cruce_Tel])
+		isHidden
+		lineageTag: bdc48d02-5360-4c08-9a84-7f1668b339eb
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cruce_Email_Orbi = LOOKUPVALUE(Email_Orbi[Orbi leads_client_email],Email_Orbi[Cruce_Email],Atom[Cruce_Email])
+		isHidden
+		lineageTag: 445ee536-adef-4072-b325-962e1fab582b
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Criterio = IF(Atom[Cruce_Tel_Orbi]=BLANK() && Atom[Cruce_Email_Orbi]=BLANK(),"Si","No")
+		isHidden
+		lineageTag: b30c9fbd-cffd-4612-9e43-9f287af6710d
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column management_time2 = Atom[management_time]/60
+		isHidden
+		lineageTag: b9a6cc0c-e0fd-4c75-b0ea-b5bbe758313a
+		summarizeBy: sum
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column tipificacion
+		dataType: string
+		isHidden
+		lineageTag: a68dc107-4863-4adb-98cd-b31a39840359
+		summarizeBy: none
+		sourceColumn: tipificacion
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column atencion
+		dataType: string
+		isHidden
+		lineageTag: eac2d8ca-6f37-42ea-99af-b4b866612017
+		summarizeBy: none
+		sourceColumn: atencion
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column atendido
+		dataType: string
+		isHidden
+		lineageTag: d777c3b7-3605-41fc-a649-3d2295a411b5
+		summarizeBy: none
+		sourceColumn: atendido
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column status_name =
+			
+			VAR AtendidoBase =
+			IF(Atom[atendido]="1","Atendido",
+			IF(Atom[atendido]="0" && Atom[atencion]="Si","Atendido",
+			IF(Atom[atendido]="0" && [tipificacion]="No tipificado","No Atendido",
+			IF(ISBLANK([atendido]),"Sin Identificar","Atendido"))))
+			RETURN AtendidoBase
+		isHidden
+		lineageTag: ed4c34d7-e339-4432-9515-f2b0c349679b
+		summarizeBy: none
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 9368453f-db3e-44ae-8a95-83dae5f4bbcc
+		summarizeBy: none
+		sourceColumn: Fecha
+
+		variation Variación
+			isDefault
+			relationship: 5e45fb49-daf7-4ea7-8e2f-a074d42d0849
+			defaultHierarchy: LocalDateTable_f0a84349-d002-49a8-8ee5-86e0d9550369.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ultima_actualizacion
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 1fcc7b46-ffea-4fe8-865d-57760434e2b6
+		summarizeBy: none
+		sourceColumn: ultima_actualizacion
+
+		variation Variación
+			isDefault
+			relationship: 9ed683e5-4216-48c4-86aa-a99762e620c7
+			defaultHierarchy: LocalDateTable_306883ba-3073-45e4-959f-c41701d22ad2.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_asignacion
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 5c06d019-122b-419c-89e3-9cb3373cde31
+		summarizeBy: none
+		sourceColumn: fecha_asignacion
+
+		variation Variación
+			isDefault
+			relationship: 69419a61-df3b-48e6-9f7a-f5eb773cd0e3
+			defaultHierarchy: LocalDateTable_66ac448c-938c-4528-8816-11b3e54e1806.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column asignado
+		dataType: string
+		lineageTag: 4758a6c9-d5b5-4f58-97bd-1d675e491cca
+		summarizeBy: none
+		sourceColumn: asignado
+
+		annotation SummarizationSetBy = Automatic
+
+	column canal
+		dataType: string
+		lineageTag: 64b531da-a727-468a-b302-21e467afed2c
+		summarizeBy: none
+		sourceColumn: canal
+
+		annotation SummarizationSetBy = Automatic
+
+	column fh_primer_mensaje_agente
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d1d9f3bc-4d44-4d5b-9b87-f1091f52395b
+		summarizeBy: none
+		sourceColumn: fh_primer_mensaje_agente
+
+		variation Variación
+			isDefault
+			relationship: 31e8ecf8-3a03-48a5-9709-5a22ce6d244e
+			defaultHierarchy: LocalDateTable_6c8c7523-345e-4ed0-a647-84ec42e712b8.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column fh_asignacion_primera
+		dataType: string
+		lineageTag: 88b6527f-6d2d-4a5b-8c9b-f20d6f31e308
+		summarizeBy: none
+		sourceColumn: fh_asignacion_primera
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'atom gestión' =
+			var _1 = DATEDIFF(Atom[fecha_asignacion],Atom[fh_primer_mensaje_agente],MINUTE)
+			RETURN _1
+		formatString: 0
+		lineageTag: 4cda05e5-27f6-4f14-90a5-eecfe8fad228
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Atom = m
+		mode: import
+		source =
+				let
+				    Origen = Value.NativeQuery(AmazonAthena.Databases("Athena_ODBC2", null, []){[Kind="Database"]}[Data], "select distinct#(lf)lead_id#(lf),campaing_name#(lf),medium_value#(lf),category_name#(lf),brand_name#(lf),adviser_name#(lf),adviser_email#(lf),client_name#(lf),client_phone#(lf),client_email#(lf),created_at#(lf),updated_at#(lf),lead_created_at#(lf),management_time#(lf),nombre_origen#(lf),grupo#(lf),atencion#(lf),primer_usuario#(lf),primer_grupo#(lf),tipificacion#(lf),atendido#(lf),ultima_actualizacion#(lf),fecha_asignacion#(lf),asignado#(lf),canal#(lf),fh_primer_mensaje_agente#(lf),fh_asignacion_primera#(lf)from#(lf)(select#(lf) lead_id#(lf),upper(nombre_campania) as campaing_name#(lf),case when trim(split_part(canal, '-', 1))='WA' then 'Whatsapp'  #(lf)      when trim(split_part(canal, '-', 1))='IG' then 'Redes Sociales'#(lf)      when trim(split_part(canal, '-', 1))='FB' then 'Redes Sociales'#(lf)      end as medium_value#(lf),case when lower(customtipodenegocio)='taller' then 'Posventa' when trim(customtipodenegocio) = '' then 'Sin definir' else customtipodenegocio end as category_name#(lf),case when canal2 <> '' then 'MG' else null end as brand_name#(lf),b.agente as adviser_name#(lf),b.email_agente as adviser_email#(lf),nombre_cliente as client_name#(lf),telefono as client_phone#(lf),correo as client_email#(lf),b.fh_asignacion as created_at#(lf),b.ultima_actualizacion2 as updated_at#(lf),fecha_inicio_conversacion as lead_created_at#(lf),b.tiempo_de_atencion as management_time#(lf),nombre_origen#(lf),b.grupo#(lf),b.atencion#(lf),primer_usuario#(lf),primer_grupo#(lf),tipificacion#(lf),atendido#(lf),ultima_actualizacion#(lf),fecha_asignacion#(lf),asignado#(lf),canal#(lf),b.fh_primer_mensaje_agente#(lf),b.fh_asignacion_primera#(lf)from atom_leads.leads#(lf)#(lf)-- Canal MG#(lf)left join#(lf)(select distinct#(lf)canal as canal2#(lf)from atom_leads.leads#(lf)where (upper(nombre_campania) like '%MG%' or upper(grupo) like '%MG%') and (lower(canal) like '%MG%' or lower(canal) like '%+%')#(lf)) m#(lf)on canal2 = canal#(lf)#(lf)--Ultima Gestion#(lf)left join#(lf)(select distinct#(lf)*#(lf)from#(lf)(select distinct#(lf) LAST_VALUE(grupo)                  OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as grupo#(lf),LAST_VALUE(agente)                 OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as agente#(lf),LAST_VALUE(email_agente)           OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as email_agente#(lf),LAST_VALUE(fh_asignacion)          OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_asignacion#(lf),LAST_VALUE(fh_asignacion)          OVER (PARTITION BY lead_id ORDER BY fh_asignacion desc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_asignacion_primera#(lf),LAST_VALUE(channel_name)           OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_name#(lf),LAST_VALUE(tiempo_de_atencion)     OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as tiempo_de_atencion#(lf),LAST_VALUE(ultima_actualizacion)   OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as ultima_actualizacion2#(lf),LAST_VALUE(atencion)               OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as atencion#(lf),LAST_VALUE(categoria_atencion)     OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as categoria_atencion#(lf),LAST_VALUE(fh_primer_mensaje_agente)     OVER (PARTITION BY lead_id ORDER BY fh_primer_mensaje_agente desc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_primer_mensaje_agente#(lf),lead_id as lead_id2#(lf)from atom_leads.nebula_tiempos_de_agentes)a)b#(lf)on lead_id2 = lead_id#(lf))a#(lf)where not brand_name is null", null, [EnableFolding=true]),
+				    #"Texto recortado" = Table.TransformColumns(Origen,{{"client_email", Text.Trim, type text}, {"client_phone", Text.Trim, type text}}),
+				    #"Texto en minúsculas" = Table.TransformColumns(#"Texto recortado",{{"client_email", Text.Lower, type text}}),
+				    #"Poner En Mayúsculas Cada Palabra" = Table.TransformColumns(#"Texto en minúsculas",{{"adviser_name", Text.Proper, type text}, {"category_name", Text.Proper, type text}}),
+				    #"Valor reemplazado" = Table.ReplaceValue(#"Poner En Mayúsculas Cada Palabra",".",",",Replacer.ReplaceText,{"management_time"}),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Valor reemplazado",{{"management_time", type number}}),
+				    #"Columna duplicada" = Table.DuplicateColumn(#"Tipo cambiado", "lead_created_at", "lead_created_at - Copia"),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columna duplicada",{{"lead_created_at - Copia", "Fecha"}}),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Columnas con nombre cambiado",{{"Fecha", type date}}),
+				    #"Poner En Mayúsculas Cada Palabra1" = Table.TransformColumns(#"Tipo cambiado1",{{"campaing_name", Text.Proper, type text}}),
+				    #"Valor reemplazado1" = Table.ReplaceValue(#"Poner En Mayúsculas Cada Palabra1","T"," ",Replacer.ReplaceText,{"created_at"}),
+				    #"Tipo cambiado2" = Table.TransformColumnTypes(#"Valor reemplazado1",{{"created_at", type datetime}}),
+				    #"Valor reemplazado2" = Table.ReplaceValue(#"Tipo cambiado2","T"," ",Replacer.ReplaceText,{"fh_primer_mensaje_agente"}),
+				    #"Tipo cambiado3" = Table.TransformColumnTypes(#"Valor reemplazado2",{{"fh_primer_mensaje_agente", type datetime}})
+				in
+				    #"Tipo cambiado3"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

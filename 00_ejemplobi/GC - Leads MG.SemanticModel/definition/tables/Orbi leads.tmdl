@@ -1,0 +1,617 @@
+table 'Orbi leads'
+	isHidden
+	lineageTag: 0579b9c4-4834-4081-9b64-b8a520a4fd29
+
+	column id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 42391bf1-c16e-4b0a-91e2-3958f95733d2
+		summarizeBy: sum
+		sourceColumn: id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column clasification_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a4c00fe8-0670-42f7-a789-105cf137db9f
+		summarizeBy: sum
+		sourceColumn: clasification_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column clasification_name
+		dataType: string
+		isHidden
+		lineageTag: b5a511c5-1b24-4285-b311-9f004118535c
+		summarizeBy: none
+		sourceColumn: clasification_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column action_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ddbf884b-ed48-4d92-aabd-79291bbd54cb
+		summarizeBy: sum
+		sourceColumn: action_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column action_name
+		dataType: string
+		isHidden
+		lineageTag: f364feaf-c7ea-41ab-bd41-daa2b13d8a71
+		summarizeBy: none
+		sourceColumn: action_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column status_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 06d38462-8dfb-4df7-97f4-18dff2827bf6
+		summarizeBy: sum
+		sourceColumn: status_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column status_name
+		dataType: string
+		isHidden
+		lineageTag: 3dc3e85b-340a-4437-ab9a-8aa449ab51d3
+		summarizeBy: none
+		sourceColumn: status_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column campaing_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 75ba5a3a-19d0-4267-92b0-31e5ef0d5051
+		summarizeBy: sum
+		sourceColumn: campaing_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column campaing_name
+		dataType: string
+		isHidden
+		lineageTag: 545836a5-ff9b-4fa3-a598-30a47ac85706
+		summarizeBy: none
+		sourceColumn: campaing_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column channel_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 93fc81e5-1c39-45bb-94a5-cc43ba9a7907
+		summarizeBy: sum
+		sourceColumn: channel_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column channel_value
+		dataType: string
+		isHidden
+		lineageTag: 48cb3405-ee46-4c22-bdeb-0e90e3846e60
+		summarizeBy: none
+		sourceColumn: channel_value
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column medium_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 184959d9-6c15-4725-b513-0856a2edd85f
+		summarizeBy: sum
+		sourceColumn: medium_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column medium_value
+		dataType: string
+		isHidden
+		lineageTag: df1ba371-e937-48df-819a-975a0a4cb412
+		summarizeBy: none
+		sourceColumn: medium_value
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column category_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: febdf777-9146-425d-aa4f-376d479cc374
+		summarizeBy: sum
+		sourceColumn: category_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column category_name
+		dataType: string
+		isHidden
+		lineageTag: c9269836-6732-46db-bdfd-4abcbfead80b
+		summarizeBy: none
+		sourceColumn: category_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column country_name
+		dataType: string
+		isHidden
+		lineageTag: 9bef26ff-0035-4e38-9352-2c473c744805
+		summarizeBy: none
+		sourceColumn: country_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column company_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d24c993a-7a61-4e1e-a340-37d7a2654e5e
+		summarizeBy: sum
+		sourceColumn: company_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column company_name
+		dataType: string
+		isHidden
+		lineageTag: b7915320-5083-43a7-9188-292306c69f42
+		summarizeBy: none
+		sourceColumn: company_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column brand_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bc8a7b7b-61cc-485d-9fd0-27d0c45c4eb5
+		summarizeBy: sum
+		sourceColumn: brand_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column brand_name
+		dataType: string
+		isHidden
+		lineageTag: 0209aea7-603c-4f79-acc6-b970ff1e7ad6
+		summarizeBy: none
+		sourceColumn: brand_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column wholesaler
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7dab7caa-13ff-46b8-adde-fbeac6408ff1
+		summarizeBy: sum
+		sourceColumn: wholesaler
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7537faec-d96b-4ac3-8b34-823ad6150caa
+		summarizeBy: sum
+		sourceColumn: adviser_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_name
+		dataType: string
+		isHidden
+		lineageTag: 9386ac6b-f81f-4ffe-b57c-0a0e4a65eeb9
+		summarizeBy: none
+		sourceColumn: adviser_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_email
+		dataType: string
+		isHidden
+		lineageTag: c6d3fab7-0804-4b64-b928-5029c2201bc2
+		summarizeBy: none
+		sourceColumn: adviser_email
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_document_type
+		dataType: string
+		isHidden
+		lineageTag: 5b1f2a28-bcb1-4b77-b988-c4b486f99f08
+		summarizeBy: none
+		sourceColumn: adviser_document_type
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_document_number
+		dataType: string
+		isHidden
+		lineageTag: 05737df5-707d-435d-823b-fcd1f67626a0
+		summarizeBy: none
+		sourceColumn: adviser_document_number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column concessionaire_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 99d328fb-39d1-45c9-9f55-b2947597ef12
+		summarizeBy: sum
+		sourceColumn: concessionaire_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column concessionaire_names
+		dataType: string
+		isHidden
+		lineageTag: 9420f8b1-638d-4212-ba86-ac92bd1651f6
+		summarizeBy: none
+		sourceColumn: concessionaire_names
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column client_name
+		dataType: string
+		isHidden
+		lineageTag: 3f9de8fa-2c01-4039-aec6-c90ca4f790da
+		summarizeBy: none
+		sourceColumn: client_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column client_phone
+		dataType: string
+		isHidden
+		lineageTag: 9437bb86-ccbb-40c3-a7ee-4a47783f1330
+		summarizeBy: none
+		sourceColumn: client_phone
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column client_email
+		dataType: string
+		isHidden
+		lineageTag: 309bed67-26d6-4b41-bb4c-4a6b54a38234
+		summarizeBy: none
+		sourceColumn: client_email
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column client_document_type_name
+		dataType: string
+		isHidden
+		lineageTag: 836053dd-6bf6-4dbb-9193-cf456fd2061f
+		summarizeBy: none
+		sourceColumn: client_document_type_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column client_document_number
+		dataType: string
+		isHidden
+		lineageTag: fc09e986-7c4b-4a5f-ac8d-728b70e02242
+		summarizeBy: none
+		sourceColumn: client_document_number
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column model_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a0d2095f-a139-4a64-9d98-5c7588c6aebb
+		summarizeBy: sum
+		sourceColumn: model_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column model_name
+		dataType: string
+		isHidden
+		lineageTag: 1df62411-1d48-4148-b720-179dce9522c5
+		summarizeBy: none
+		sourceColumn: model_name
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column model_year
+		dataType: string
+		isHidden
+		lineageTag: 8f4b7854-ea6f-499f-bfc4-ceae1ca77d51
+		summarizeBy: none
+		sourceColumn: model_year
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column license_plate
+		dataType: string
+		isHidden
+		lineageTag: b8b3e7f7-9d0a-44fb-b4f7-ea0564166131
+		summarizeBy: none
+		sourceColumn: license_plate
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column created_at
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 4acb975e-91b6-43fd-ae2f-88338c71fbaf
+		summarizeBy: none
+		sourceColumn: created_at
+
+		variation Variación
+			isDefault
+			relationship: 50053091-3deb-4b92-b5f4-42e4bf1b1b8c
+			defaultHierarchy: LocalDateTable_530313b0-a966-4706-9493-c8aa7a57a317.'Jerarquía de fechas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column updated_at
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: ca84c679-2b7d-45ac-9e50-5621834437cb
+		summarizeBy: none
+		sourceColumn: updated_at
+
+		variation Variación
+			isDefault
+			relationship: 5ee187fc-bc73-4618-b7e4-1448284373ad
+			defaultHierarchy: LocalDateTable_2a4febd5-474e-4a78-a1c4-4e33331cca51.'Jerarquía de fechas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column lead_created_at
+		dataType: dateTime
+		isHidden
+		formatString: General Date
+		lineageTag: 8d932647-0fd3-4b69-81b5-6db794315ba5
+		summarizeBy: none
+		sourceColumn: lead_created_at
+
+		variation Variación
+			isDefault
+			relationship: ce196ceb-8cde-4f95-82e1-e529f44bbc78
+			defaultHierarchy: LocalDateTable_02a5d6a9-c380-4732-ab95-b5cc6fa07be3.'Jerarquía de fechas'
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column management_time
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5e5d1283-fdd5-4e9e-9ff7-aeb2628cfa96
+		summarizeBy: sum
+		sourceColumn: management_time
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_business_type_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 57fc2890-0d00-4f98-aadc-82db554ee53e
+		summarizeBy: sum
+		sourceColumn: adviser_business_type_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column adviser_business_type
+		dataType: string
+		isHidden
+		lineageTag: 7f93fb36-c144-49d7-bf85-fa737fc8e95b
+		summarizeBy: none
+		sourceColumn: adviser_business_type
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column lead_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 7c43fea6-4c68-4d58-9959-b6cee7ffeb9b
+		summarizeBy: sum
+		sourceColumn: lead_id
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column Fecha
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 3120b618-3702-4162-9083-3ea09d462f47
+		summarizeBy: none
+		sourceColumn: Fecha
+
+		variation Variación
+			isDefault
+			relationship: aed14155-6be1-4236-b97e-6637383b71f4
+			defaultHierarchy: LocalDateTable_e82a7ec6-9aa0-496b-af4f-4da25dcd928c.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column lead_id2
+		dataType: int64
+		formatString: 0
+		lineageTag: a2f748f3-2e0f-4d9a-b93b-78f9cc5f25fd
+		summarizeBy: sum
+		sourceColumn: lead_id2
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_llegada
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 4901f7f3-7456-4d9f-bf16-7f25cf64e854
+		summarizeBy: none
+		sourceColumn: fecha_llegada
+
+		variation Variación
+			isDefault
+			relationship: c70bec6c-a334-4c1a-94c3-55b13de83cb2
+			defaultHierarchy: LocalDateTable_ccea026a-6cac-48f0-9da6-b4a61589cbe0.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column fecha_primera_gestion
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: d064781c-79c2-4aba-8caa-c20fd6a8af43
+		summarizeBy: none
+		sourceColumn: fecha_primera_gestion
+
+		variation Variación
+			isDefault
+			relationship: eadcaead-1561-49e1-ac77-0041f2a761d5
+			defaultHierarchy: LocalDateTable_a107470f-adba-4dc8-9806-9431dde3512b.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column segundos_hasta_gestion
+		dataType: int64
+		formatString: 0
+		lineageTag: 572ffdd3-5135-410e-a7a4-86909140735a
+		summarizeBy: sum
+		sourceColumn: segundos_hasta_gestion
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Orbi gestión' =
+			var _1 = DATEDIFF('Orbi leads'[fecha_llegada],'Orbi leads'[fecha_primera_gestion],MINUTE)
+			RETURN IF(_1>120,"Mayor a 2 horas","Menor a 2 horas")
+		lineageTag: bc29b82a-e949-44d6-bc62-051139598048
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Orbi leads' = m
+		mode: import
+		source =
+				let
+				    Origen = Value.NativeQuery(AmazonAthena.Databases("Athena_ODBC2", null, []){[Kind="Database"]}[Data], "select distinct#(lf)*#(lf)from#(lf)(select distinct#(lf) LAST_VALUE(id)                        OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as id#(lf),LAST_VALUE(clasification_id)          OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as clasification_id#(lf),LAST_VALUE(clasification_name)        OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as clasification_name#(lf),LAST_VALUE(action_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as action_id#(lf),LAST_VALUE(action_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as action_name#(lf),LAST_VALUE(status_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as status_id#(lf),LAST_VALUE(status_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as status_name#(lf),LAST_VALUE(campaing_id)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as campaing_id#(lf),LAST_VALUE(campaing_name)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as campaing_name#(lf),LAST_VALUE(channel_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_id#(lf),LAST_VALUE(channel_value)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_value#(lf),LAST_VALUE(medium_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as medium_id#(lf),LAST_VALUE(medium_value)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as medium_value#(lf),LAST_VALUE(category_id)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as category_id#(lf),LAST_VALUE(category_name)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as category_name#(lf),LAST_VALUE(country_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as country_name#(lf),LAST_VALUE(company_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as company_id#(lf),LAST_VALUE(company_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as company_name#(lf),LAST_VALUE(brand_id)                  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as brand_id#(lf),LAST_VALUE(brand_name)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as brand_name#(lf),LAST_VALUE(wholesaler)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as wholesaler#(lf),LAST_VALUE(adviser_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_id#(lf),LAST_VALUE(adviser_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_name#(lf),LAST_VALUE(adviser_email)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_email#(lf),LAST_VALUE(adviser_document_type)     OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_document_type#(lf),LAST_VALUE(adviser_document_number)   OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_document_number#(lf),LAST_VALUE(concessionaire_id)         OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as concessionaire_id#(lf),LAST_VALUE(concessionaire_names)      OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as concessionaire_names#(lf),LAST_VALUE(client_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_name#(lf),LAST_VALUE(client_phone)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_phone#(lf),LAST_VALUE(client_email)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_email#(lf),LAST_VALUE(client_document_type_name) OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_document_type_name#(lf),LAST_VALUE(client_document_number)    OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_document_number#(lf),LAST_VALUE(model_id)                  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_id#(lf),LAST_VALUE(model_name)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_name#(lf),LAST_VALUE(model_year)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_year#(lf),LAST_VALUE(license_plate)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as license_plate#(lf),LAST_VALUE(created_at)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as created_at#(lf),LAST_VALUE(updated_at)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as updated_at#(lf),LAST_VALUE(lead_created_at)           OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as lead_created_at#(lf),LAST_VALUE(management_time)           OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as management_time#(lf),LAST_VALUE(adviser_business_type_id)  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_business_type_id#(lf),LAST_VALUE(adviser_business_type)     OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_business_type#(lf),lead_id#(lf)from tatooine_prod_core.materialized_leads_tracking)a#(lf)#(lf)left join#(lf)(SELECT#(lf)    lead_id as lead_id2,#(lf)    MIN(lead_created_at) AS fecha_llegada,#(lf)    MIN(CASE WHEN status_id <> 1 THEN created_at END) AS fecha_primera_gestion,#(lf)    date_diff(#(lf)        'second',#(lf)        MIN(lead_created_at),#(lf)        MIN(CASE WHEN status_id <> 1 THEN created_at END)#(lf)    ) AS segundos_hasta_gestion#(lf)FROM tatooine_prod_core.materialized_leads_tracking#(lf)GROUP BY lead_id)k#(lf)on lead_id2 = lead_id#(lf)#(lf)where upper(brand_name) like '%MG%'", null, [EnableFolding=true]),
+				    #"Texto recortado" = Table.TransformColumns(Origen,{{"client_email", Text.Trim, type text}, {"client_phone", Text.Trim, type text}}),
+				    #"Texto en minúsculas" = Table.TransformColumns(#"Texto recortado",{{"client_email", Text.Lower, type text}}),
+				    #"Valor reemplazado" = Table.ReplaceValue(#"Texto en minúsculas","+","",Replacer.ReplaceText,{"client_phone"}),
+				    #"Valor reemplazado1" = Table.ReplaceValue(#"Valor reemplazado","-","",Replacer.ReplaceText,{"client_phone"}),
+				    #"Valor reemplazado2" = Table.ReplaceValue(#"Valor reemplazado1"," ","",Replacer.ReplaceText,{"client_phone"}),
+				    #"Poner En Mayúsculas Cada Palabra" = Table.TransformColumns(#"Valor reemplazado2",{{"adviser_name", Text.Proper, type text}, {"category_name", Text.Proper, type text}}),
+				    #"Columna duplicada" = Table.DuplicateColumn(#"Poner En Mayúsculas Cada Palabra", "lead_created_at", "lead_created_at - Copia"),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Columna duplicada",{{"lead_created_at - Copia", "Fecha"}}),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Columnas con nombre cambiado",{{"Fecha", type date}}),
+				    #"Poner En Mayúsculas Cada Palabra1" = Table.TransformColumns(#"Tipo cambiado",{{"campaing_name", Text.Proper, type text}})
+				in
+				    #"Poner En Mayúsculas Cada Palabra1"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

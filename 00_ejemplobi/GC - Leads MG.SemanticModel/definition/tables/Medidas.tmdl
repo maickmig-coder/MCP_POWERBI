@@ -1,0 +1,34 @@
+table Medidas
+	lineageTag: 331c410a-9c35-4021-80c7-800360304b36
+
+	measure Leads = DISTINCTCOUNT(General[lead_id])
+		formatString: #,0
+		lineageTag: f7cbfe6b-d82c-4707-9fa0-f8585fc973a9
+
+	measure 'Total Leads sin nuevos' =
+			
+			VAR OPE1 = CALCULATE(DISTINCTCOUNTNOBLANK(General[lead_id]),General[status_name]<>"Nuevo" && General[Fuente]="Orbi Leads")
+			VAR OPE2 = CALCULATE(DISTINCTCOUNTNOBLANK(General[lead_id]),General[status_name]="Atendido" && General[Fuente]="Atom")
+			RETURN
+			OPE1+OPE2
+		formatString: #,0
+		lineageTag: 4c3da279-0fc4-4306-b741-b3bcdb56c50d
+
+	measure %Gestionados = DIVIDE([Total Leads sin nuevos],[Leads])
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 11399105-301c-4023-9b14-25bb8385ca8d
+
+	partition Medidas = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("i44FAA==", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [Columna1 = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"Columna1", type text}}),
+				    #"Columnas quitadas" = Table.RemoveColumns(#"Tipo cambiado",{"Columna1"})
+				in
+				    #"Columnas quitadas"
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navegación
+
