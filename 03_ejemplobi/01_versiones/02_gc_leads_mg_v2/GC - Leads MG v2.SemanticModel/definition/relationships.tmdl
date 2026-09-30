@@ -1,0 +1,89 @@
+relationship 82534416-130d-457b-bdac-0a538c0d9f28
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Parametros.Parametro
+	toColumn: LocalDateTable_8c71bff9-1618-4d4c-8f78-b3f67e1ab247.Date
+
+relationship 50053091-3deb-4b92-b5f4-42e4bf1b1b8c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Orbi leads'.created_at
+	toColumn: LocalDateTable_530313b0-a966-4706-9493-c8aa7a57a317.Date
+
+relationship 5ee187fc-bc73-4618-b7e4-1448284373ad
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Orbi leads'.updated_at
+	toColumn: LocalDateTable_2a4febd5-474e-4a78-a1c4-4e33331cca51.Date
+
+relationship ce196ceb-8cde-4f95-82e1-e529f44bbc78
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Orbi leads'.lead_created_at
+	toColumn: LocalDateTable_02a5d6a9-c380-4732-ab95-b5cc6fa07be3.Date
+
+relationship a4e79a57-53a0-47fe-8480-00f2e3f3719d
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Atom.updated_at
+	toColumn: LocalDateTable_52673d88-0ab9-49ce-886d-f5eade869640.Date
+
+relationship 574b3ee2-3aba-468b-8ebd-ba5e8336f082
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Atom.lead_created_at
+	toColumn: LocalDateTable_4069fc95-3b04-44b7-a146-e17eef31c965.Date
+
+relationship aed14155-6be1-4236-b97e-6637383b71f4
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Orbi leads'.Fecha
+	toColumn: LocalDateTable_e82a7ec6-9aa0-496b-af4f-4da25dcd928c.Date
+
+relationship 5e45fb49-daf7-4ea7-8e2f-a074d42d0849
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Atom.Fecha
+	toColumn: LocalDateTable_f0a84349-d002-49a8-8ee5-86e0d9550369.Date
+
+relationship 9ed683e5-4216-48c4-86aa-a99762e620c7
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Atom.ultima_actualizacion
+	toColumn: LocalDateTable_306883ba-3073-45e4-959f-c41701d22ad2.Date
+
+relationship 69419a61-df3b-48e6-9f7a-f5eb773cd0e3
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Atom.fecha_asignacion
+	toColumn: LocalDateTable_66ac448c-938c-4528-8816-11b3e54e1806.Date
+
+relationship 93688ee0-ae0d-40cf-8480-744fec5ae924
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Atom.created_at
+	toColumn: LocalDateTable_8be1e938-b325-4949-a52e-399605e1608d.Date
+
+relationship 31e8ecf8-3a03-48a5-9709-5a22ce6d244e
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Atom.fh_primer_mensaje_agente
+	toColumn: LocalDateTable_6c8c7523-345e-4ed0-a647-84ec42e712b8.Date
+
+relationship c70bec6c-a334-4c1a-94c3-55b13de83cb2
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Orbi leads'.fecha_llegada
+	toColumn: LocalDateTable_ccea026a-6cac-48f0-9da6-b4a61589cbe0.Date
+
+relationship eadcaead-1561-49e1-ac77-0041f2a761d5
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Orbi leads'.fecha_primera_gestion
+	toColumn: LocalDateTable_a107470f-adba-4dc8-9806-9431dde3512b.Date
+
+relationship e1c51a25-a8d0-4b20-9327-27fe9fc3c938
+	joinOnDateBehavior: datePartOnly
+	fromColumn: General.updated_at
+	toColumn: LocalDateTable_9fb14d92-4303-4911-982e-f5fdddc298ba.Date
+
+relationship 33ed605a-42b3-4a3c-8065-b77fbecaef63
+	joinOnDateBehavior: datePartOnly
+	fromColumn: General.lead_created_at
+	toColumn: LocalDateTable_80504aa4-9389-4877-8ef1-49d7106673de.Date
+
+relationship 29990a5a-4cc9-aef1-0f7e-1bd76e3ba465
+	fromColumn: General.Fecha
+	toColumn: Calendario.Fecha
+
+relationship 97a683d8-2747-45de-a7bb-e2f5bbc01c68
+	joinOnDateBehavior: datePartOnly
+	fromColumn: Calendario.Fecha
+	toColumn: LocalDateTable_b86e5576-bfb4-4b10-b5fa-45ffc94d79d7.Date
+

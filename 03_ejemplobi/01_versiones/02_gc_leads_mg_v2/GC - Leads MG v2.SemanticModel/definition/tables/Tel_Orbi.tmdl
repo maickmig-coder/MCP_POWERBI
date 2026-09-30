@@ -1,0 +1,54 @@
+table Tel_Orbi
+	isHidden
+	lineageTag: 8a114745-26d1-4c4d-8352-3b0a7e30888b
+
+	column 'Orbi leads_client_phone'
+		isHidden
+		lineageTag: e4cedf2d-98d3-4606-bdc1-9cc498a49729
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: Orbi leads[client_phone]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes
+		isHidden
+		formatString: 0
+		lineageTag: b65bb59f-517d-4409-91a3-cabcffece884
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Mes]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Año
+		isHidden
+		formatString: 0
+		lineageTag: e1ae07d1-b4ea-4aad-ab3e-14f8646215e9
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Año]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cruce_Tel = Tel_Orbi[Orbi leads_client_phone]&"|"&Tel_Orbi[Mes]&"|"&Tel_Orbi[Año]
+		isHidden
+		lineageTag: 9dbbf7de-ab32-4e98-b2fa-5104e565bd46
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Tel_Orbi = calculated
+		mode: import
+		source =
+				
+				VAR OPE1 = SELECTCOLUMNS('Orbi leads',
+				                         'Orbi leads'[client_phone],
+				                         "Mes",MONTH('Orbi leads'[lead_created_at]),
+				                         "Año",YEAR('Orbi leads'[lead_created_at])
+				                        )
+				RETURN
+				DISTINCT(OPE1)
+
+	annotation PBI_Id = c18dbb823a7448ad9db640fa0189a3dd
+

@@ -1,0 +1,126 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 750.66668701171875,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 564,
+            "y": 76
+          },
+          "nodeIndex": "Parametros",
+          "nodeLineageTag": "3eed8040-583a-49c8-b5e8-4a4820387176",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 1870,
+            "y": 2
+          },
+          "nodeIndex": "Atom",
+          "nodeLineageTag": "b755d7f1-c560-4496-87aa-5a2f02db6754",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 1872,
+            "y": 320
+          },
+          "nodeIndex": "Orbi leads",
+          "nodeLineageTag": "0579b9c4-4834-4081-9b64-b8a520a4fd29",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1620,
+            "y": 352
+          },
+          "nodeIndex": "Tel_Orbi",
+          "nodeLineageTag": "8a114745-26d1-4c4d-8352-3b0a7e30888b",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 1612,
+            "y": 50
+          },
+          "nodeIndex": "Email_Orbi",
+          "nodeLineageTag": "cf6f7b3b-c479-4965-b0ff-22c180c9f4b9",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 5
+        },
+        {
+          "location": {
+            "x": 90,
+            "y": 224
+          },
+          "nodeIndex": "General",
+          "nodeLineageTag": "603c0b13-d64f-4b7e-98a4-52d2e9e9b73d",
+          "size": {
+            "height": 306,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 562,
+            "y": 570
+          },
+          "nodeIndex": "Medidas",
+          "nodeLineageTag": "331c410a-9c35-4021-80c7-800360304b36",
+          "size": {
+            "height": 104,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 564,
+            "y": 278
+          },
+          "nodeIndex": "Calendario",
+          "nodeLineageTag": "1772bd6c-2d45-4545-9514-77579db2a29a",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 7
+        }
+      ],
+      "name": "Todas las tablas",
+      "zoomValue": 50,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "Todas las tablas",
+  "defaultDiagram": "Todas las tablas"
+}

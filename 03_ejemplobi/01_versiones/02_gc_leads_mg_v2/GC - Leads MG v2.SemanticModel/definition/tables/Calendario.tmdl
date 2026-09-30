@@ -1,0 +1,67 @@
+table Calendario
+	lineageTag: 1772bd6c-2d45-4545-9514-77579db2a29a
+
+	column Fecha
+		formatString: Short Date
+		lineageTag: c1c9abe0-a5a0-4444-ba0f-1d7a604cfd71
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: General[Fecha]
+
+		variation Variación
+			isDefault
+			relationship: 97a683d8-2747-45de-a7bb-e2f5bbc01c68
+			defaultHierarchy: LocalDateTable_b86e5576-bfb4-4b10-b5fa-45ffc94d79d7.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Año = YEAR(Calendario[Fecha])
+		formatString: 0
+		lineageTag: d795baed-d4d7-4225-97be-84ad7513ad2d
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mes = MONTH(Calendario[Fecha])
+		formatString: 0
+		lineageTag: 4ab18da6-0ade-47e9-8934-1bd7f2ef68c3
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	column NombreMes =
+			SWITCH(Calendario[Mes],1,"Enero",
+			                                   2,"Febrero",
+			                                   3,"Marzo",
+			                                   4,"Abril",
+			                                   5,"Mayo",
+			                                   6,"Junio",
+			                                   7,"Julio",
+			                                   8,"Agosto",
+			                                   9,"Septiembre",
+			                                   10,"Octubre",
+			                                   11,"Noviembre",
+			                                   12,"Diciembre"
+			
+			                  )
+		lineageTag: d1ea3667-b0b1-4efa-976f-95bca08c47af
+		summarizeBy: none
+		sortByColumn: Mes
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dia = DAY(Calendario[Fecha])
+		formatString: 0
+		lineageTag: a7a2042d-b069-4dda-8f14-1a988937ea59
+		summarizeBy: sum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendario = calculated
+		mode: import
+		source = DISTINCT(General[Fecha])
+
+	annotation PBI_Id = 6aaba9e6240342568f17e1f6f4059c74
+
