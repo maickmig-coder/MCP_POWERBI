@@ -1,0 +1,5 @@
+role Todo
+	modelPermission: read
+
+	annotation PBI_Id = cda83defb12d4fadb3e3e3c7cfeb289f
+

@@ -1,0 +1,30 @@
+relationship 772fc70d-213d-4770-ada6-d83317f52bbe
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Entregas Totales'.FechaDeCorte
+	toColumn: LocalDateTable_8f7b7b5e-ad22-4ad1-8cc1-80b84c190664.Date
+
+relationship 4358b4ce-3356-471e-b092-abd140fccb2c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Entregas Totales'.FechaEntregaCliente
+	toColumn: LocalDateTable_db36dc30-cffa-4632-baeb-6977b4539a2b.Date
+
+relationship 58e448f2-3711-4623-bdbb-986096830730
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Entregas Totales'.FechaFactura
+	toColumn: LocalDateTable_ebcf95e2-ffd9-4b81-ad25-765b67aa04be.Date
+
+relationship 1ce62867-0b58-4dc2-a890-6ed7aad4924c
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Entregas Totales'.FechaMod
+	toColumn: LocalDateTable_1bea27a1-b01a-406b-b09d-312a3807684b.Date
+
+relationship fdbeba49-c009-45c3-8ba8-c6f674c25df5
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Fecha De Actualización'.'Fecha De Actualización'
+	toColumn: LocalDateTable_27076615-e8ea-4cd4-9388-415e2ab86793.Date
+
+relationship 094bc577-7ce9-452b-bd59-7627a499b8c0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: 'Entregas Totales'.fechamatriculacion
+	toColumn: LocalDateTable_da3d9bb4-8ca6-4cba-b3ff-391ced20ca41.Date
+

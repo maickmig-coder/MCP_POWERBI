@@ -1,0 +1,163 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "ac291ea509382034e4ab",
+  "displayName": "Dashboard_Renting",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d41622559cc142bcc680",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Entregas Totales"
+              }
+            },
+            "Property": "Cantidad"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "5967654bebb0c4008a32",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Entregas Totales"
+              }
+            },
+            "Property": "val nombre"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "e",
+              "Entity": "Entregas Totales",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "e"
+                              }
+                            },
+                            "Property": "val nombre"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "'OTROS'"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#F6F6F5'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "f190480c104bb03dd85d",
+      "target": "9c9f9e7740ae80a69e13",
+      "type": "DataFilter"
+    },
+    {
+      "source": "f190480c104bb03dd85d",
+      "target": "c71b214a210160202d5d",
+      "type": "NoFilter"
+    },
+    {
+      "source": "f190480c104bb03dd85d",
+      "target": "1a394380135072c054c8",
+      "type": "DataFilter"
+    },
+    {
+      "source": "f190480c104bb03dd85d",
+      "target": "647df1e1caca5a76abc8",
+      "type": "DataFilter"
+    },
+    {
+      "source": "943ad7553bad0a0283bb",
+      "target": "8106d7c0e70d14e3cc6e",
+      "type": "NoFilter"
+    },
+    {
+      "source": "943ad7553bad0a0283bb",
+      "target": "710b4bdd807785877d66",
+      "type": "NoFilter"
+    },
+    {
+      "source": "943ad7553bad0a0283bb",
+      "target": "4a086741483d06edbbe1",
+      "type": "NoFilter"
+    }
+  ]
+}

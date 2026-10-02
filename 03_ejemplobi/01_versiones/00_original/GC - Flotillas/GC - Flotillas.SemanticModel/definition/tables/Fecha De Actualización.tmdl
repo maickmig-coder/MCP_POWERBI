@@ -1,0 +1,32 @@
+table 'Fecha De Actualización'
+	lineageTag: 6b97fbbd-9f96-46d2-a0c1-268a68ffc23b
+
+	column 'Fecha De Actualización'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 7773f156-ad3a-4929-a157-638ff76eb302
+		summarizeBy: none
+		sourceColumn: Fecha De Actualización
+
+		variation Variación
+			isDefault
+			relationship: fdbeba49-c009-45c3-8ba8-c6f674c25df5
+			defaultHierarchy: LocalDateTable_27076615-e8ea-4cd4-9388-415e2ab86793.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fecha De Actualización' = m
+		mode: import
+		source =
+				let
+				    Origen = DateTimeZone.SwitchZone(DateTimeZone.LocalNow(),-5,0),
+				    #"Convertida en tabla" = #table(1, {{Origen}}),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Convertida en tabla",{{"Column1", type datetimezone}}),
+				    #"Columnas con nombre cambiado" = Table.RenameColumns(#"Tipo cambiado",{{"Column1", "Fecha De Actualización"}})
+				in
+				    #"Columnas con nombre cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+
