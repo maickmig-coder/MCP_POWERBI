@@ -1,0 +1,640 @@
+table 'Entregas Totales'
+	lineageTag: 93060b2a-375c-4d50-968b-1547fed5fa65
+
+	measure 'cantidad de maquinas' = IF(COUNTROWS('Entregas Totales')=0,0,COUNTROWS('Entregas Totales'))
+		formatString: #,0
+		lineageTag: bf1225e0-e20f-4b78-92af-7b1716c7f12e
+
+	measure Medida
+		lineageTag: 8e2854d0-05a5-4afa-b723-e627a276907b
+
+		annotation 43dbc3e8-3a1c-4b6f-9923-b49ff7d6691c = True
+
+	measure S1 = IF(CALCULATE([cantidad de maquinas],'Entregas Totales'[DIVISION S]="S1")=0,0,CALCULATE([cantidad de maquinas],'Entregas Totales'[DIVISION S]="S1"))
+		formatString: #,0
+		lineageTag: b416919b-0793-4867-8b37-933b454de8fb
+
+	measure S2 = IF(CALCULATE([cantidad de maquinas],'Entregas Totales'[DIVISION S]="S2")=0,0,CALCULATE([cantidad de maquinas],'Entregas Totales'[DIVISION S]="S2"))
+		formatString: #,0
+		lineageTag: 49f6cace-cdaa-4343-b937-54f3566072d4
+
+	measure 'Recambio semestral' = IF('Entregas Totales'[cantidad de maquinas]=0,0,IF(([S2]-[S1])/[S2]<=0,0,([S2]-[S1])/[S2]))
+		formatString: 0.0\ %;-0.0\ %;0.0\ %
+		lineageTag: af443139-00f4-4345-b9ee-b847f2babfab
+
+	measure 'Recambio anual (vs año ant.)' = IF(IF([cantidad de maquinas]=0,0,([Año actual]-[Año Anterior])/[Año Anterior])>1,1,IF([cantidad de maquinas]=0,0,([Año actual]-[Año Anterior])/[Año Anterior]))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: fcf33b75-6f4e-46bd-8e6a-189513deadb9
+
+	measure 'Año actual' = CALCULATE([cantidad de maquinas],'Entregas Totales'[año]=MAX('Entregas Totales'[año]))
+		formatString: 0
+		lineageTag: cace1f24-fd56-4655-a098-3b24d13e78b8
+
+	measure 'Año Anterior' = CALCULATE([cantidad de maquinas],'Entregas Totales'[año]=MAX('Entregas Totales'[año])-1)
+		formatString: 0
+		lineageTag: 5e65ec2b-b63c-4038-8140-d68832f20c73
+
+	measure 'Medida 2' = CALCULATE([cantidad de maquinas],'Entregas Totales'[año]=MAX('Entregas Totales'[año])-1)
+		formatString: 0
+		lineageTag: d96eb974-557d-4111-9838-b22f90197c83
+
+	measure Q1 = IF(CALCULATE([cantidad de maquinas],'Entregas Totales'[Q]="Q1")=0,0,CALCULATE([cantidad de maquinas],'Entregas Totales'[Q]="Q1"))
+		formatString: #,0
+		lineageTag: 7e67ca90-bf72-4fe8-b562-2f2a1546a1cf
+
+	measure Q2 = IF(CALCULATE([cantidad de maquinas],'Entregas Totales'[Q]="Q2")=0,0,CALCULATE([cantidad de maquinas],'Entregas Totales'[Q]="Q2"))
+		formatString: #,0
+		lineageTag: 672472d1-723e-4c64-bbf6-2396df0f84b7
+
+	measure Q3 = IF(CALCULATE([cantidad de maquinas],'Entregas Totales'[Q]="Q3")=0,0,CALCULATE([cantidad de maquinas],'Entregas Totales'[Q]="Q3"))
+		formatString: #,0
+		lineageTag: f3616dc2-c871-4bc2-a680-bd14517e80bb
+
+	measure Q4 = IF(CALCULATE([cantidad de maquinas],'Entregas Totales'[Q]="Q4")=0,0,CALCULATE([cantidad de maquinas],'Entregas Totales'[Q]="Q4"))
+		formatString: #,0
+		lineageTag: aba32d58-0bb4-4436-8a38-2f443bcfb31d
+
+	measure 'Crecimiento Q1→Q4' = IF([Q4]=0,0,IF(([Q4]-[Q1])/[Q1]>1,1,([Q4]-[Q1])/[Q1]))
+		formatString: 0.00\ %;-0.00\ %;0.00\ %
+		lineageTag: 48bb01d7-3243-4200-a84a-14ba38ef6138
+
+	measure 'Ticket promedio' = SUM('Entregas Totales'[Valor])/[cantidad de maquinas]
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 8a477545-83ea-4fc9-ab75-e12f341f139e
+
+	column año
+		dataType: int64
+		formatString: 0
+		lineageTag: 4d67ac97-fa32-4205-8b65-977e7a85b52a
+		summarizeBy: sum
+		sourceColumn: año
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipo
+		dataType: string
+		lineageTag: 37221089-abf2-44ce-86ee-a142b152470a
+		summarizeBy: none
+		sourceColumn: tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Linea = ```
+			
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="ciber","Wirtgen",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Hamm","Wirtgen",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Implementos","JD Agricola",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="vibromax","JD Agricola",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="hyundai","JD Agricola",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="tcm","JD Agricola",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="mitsubishi","JD Agricola",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Volkswagen Comerciales","JD Agricola",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="John Deere Agrícola","JD Agricola",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="komatsu","JD Construccion",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="gesmet","JD Construccion",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="mazda","JD Construccion",
+			  IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="John Deere Construccion","JD Construccion",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="John Deere Golf & Turf","JD Agricola",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Kleemann","Wirtgen",                                  IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="New Holland Construction","JD Construccion",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="VOGELE","Wirtgen",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="VÖGELE","Wirtgen",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Volvo","JD Construccion",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Wacker Neuson","JD Construccion",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Wirtgen","Wirtgen",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="bomag","Wirtgen",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Dynapac","Usados",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Caterpillar","Usados",
+			        IF(left('Entregas Totales'[Centro],2)<>"VO" && [Marca]="Yanmar","JD Agricola")))))))))))))))))))))))))
+			```
+		lineageTag: 2708d650-1f2e-4c3c-bd68-5537046823ca
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Región = ```
+			IF('Entregas Totales'[Centro]="JD-B/Quilla-Cl.110", "Barranquilla",
+			         IF('Entregas Totales'[Centro]="JD-Bta-P. Aranda", "Bogotá",
+			         IF('Entregas Totales'[Centro]="JD-Cali-Palmira", "Cali",
+			         IF('Entregas Totales'[Centro]="JD-Chia-Mayorista", "Chia Mayorista",
+			         IF('Entregas Totales'[Centro]="JD-Chia-Yerbabuena", "Bogotá",
+			         IF('Entregas Totales'[Centro]="JD-Ibague-ZI Mirolindo", "Ibagué",
+			         IF('Entregas Totales'[Centro]="JD-Itagui-Cra 92", "Medellín", 
+			         IF('Entregas Totales'[Centro]="JD-Monteria-Via Cereté", "Montería",
+			         IF('Entregas Totales'[Centro]="JD-Neiva-Cra 5", "Neiva",
+			         IF('Entregas Totales'[Centro]="JD-Ruta 40", "Ruta 40",
+			         IF('Entregas Totales'[Centro]="JD-Villavo-Anillo Vial 1", "Villavicencio",
+			         IF('Entregas Totales'[Centro]="JD-Yopal-Yopal", "Yopal",
+			         IF('Entregas Totales'[Centro]="JD B/manga B/manga", "Bucaramanga",
+			         IF('Entregas Totales'[Centro]="JD-Villavo-Ag Del Llano", "Agricola De Los Llanos",
+			         IF('Entregas Totales'[Centro]="JD-Grupo Ortiz", "Grupo Ortiz",
+			         'Entregas Totales'[Centro])))))))))))))))
+			```
+		lineageTag: a51b8392-6e78-4915-a6e5-26529e05e6b4
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column FechaDeCorte
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: 424b3603-4b25-469b-a7c7-cac1d20477d1
+		summarizeBy: none
+		sourceColumn: FechaDeCorte
+
+		variation Variación
+			isDefault
+			relationship: 772fc70d-213d-4770-ada6-d83317f52bbe
+			defaultHierarchy: LocalDateTable_8f7b7b5e-ad22-4ad1-8cc1-80b84c190664.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column IdEmpresas
+		dataType: int64
+		formatString: 0
+		lineageTag: 8e1eec6d-2100-4451-b7be-092f74b77aee
+		summarizeBy: sum
+		sourceColumn: IdEmpresas
+
+		annotation SummarizationSetBy = Automatic
+
+	column CodigoEmpresa
+		dataType: int64
+		formatString: 0
+		lineageTag: 55eb0c15-3bfa-4c07-8d92-210a84bff343
+		summarizeBy: sum
+		sourceColumn: CodigoEmpresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column Empresa
+		dataType: string
+		lineageTag: c6a74202-6da6-40a0-8a20-426ec13b551b
+		summarizeBy: none
+		sourceColumn: Empresa
+
+		annotation SummarizationSetBy = Automatic
+
+	column CodigoCentro
+		dataType: int64
+		formatString: 0
+		lineageTag: e29f126d-d0c9-4d1b-b382-189c0a69873b
+		summarizeBy: sum
+		sourceColumn: CodigoCentro
+
+		annotation SummarizationSetBy = Automatic
+
+	column Centro
+		dataType: string
+		lineageTag: 97662241-a909-406f-bfc8-8b9f95e68a76
+		summarizeBy: none
+		sourceColumn: Centro
+
+		annotation SummarizationSetBy = Automatic
+
+	column CodigoSeccion
+		dataType: int64
+		formatString: 0
+		lineageTag: 1ae04e8e-0ff3-48d7-b9c2-ac89a6dd98d8
+		summarizeBy: sum
+		sourceColumn: CodigoSeccion
+
+		annotation SummarizationSetBy = Automatic
+
+	column Seccion
+		dataType: string
+		lineageTag: 1f382698-d1b3-4e6a-9423-884746ef0966
+		summarizeBy: none
+		sourceColumn: Seccion
+
+		annotation SummarizationSetBy = Automatic
+
+	column CodigoMarca
+		dataType: int64
+		formatString: 0
+		lineageTag: 92faf536-a44f-498b-af27-fbf3a2102f87
+		summarizeBy: sum
+		sourceColumn: CodigoMarca
+
+		annotation SummarizationSetBy = Automatic
+
+	column Marca
+		dataType: string
+		lineageTag: 39f01624-37ff-4b52-a8df-ebf8206b0106
+		summarizeBy: none
+		sourceColumn: Marca
+
+		annotation SummarizationSetBy = Automatic
+
+	column CodigoGama
+		dataType: int64
+		formatString: 0
+		lineageTag: cf67ef9b-4a69-457a-9df7-fc078e087c4a
+		summarizeBy: sum
+		sourceColumn: CodigoGama
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gama
+		dataType: string
+		lineageTag: 08707750-d58c-4b65-ae17-b0720bf5265c
+		summarizeBy: none
+		sourceColumn: Gama
+
+		annotation SummarizationSetBy = Automatic
+
+	column CodigoModelo
+		dataType: string
+		lineageTag: 6b284f60-f9c8-4243-8621-98e747ac1490
+		summarizeBy: none
+		sourceColumn: CodigoModelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column AñoModelo
+		dataType: string
+		lineageTag: 7721f26c-91f1-4e98-ac2c-e81c76cfcf93
+		summarizeBy: none
+		sourceColumn: AñoModelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Modelo
+		dataType: string
+		lineageTag: f262bdaa-ee85-4e87-9fd9-3cad5fab6f33
+		summarizeBy: none
+		sourceColumn: Modelo
+
+		annotation SummarizationSetBy = Automatic
+
+	column CedulaVendedor
+		dataType: string
+		lineageTag: 3207f566-fbc3-4776-9435-3ece08642f00
+		summarizeBy: none
+		sourceColumn: CedulaVendedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column NombreVendedor
+		dataType: string
+		lineageTag: 47633825-94f6-41a8-a4e1-88ec933239dc
+		summarizeBy: none
+		sourceColumn: NombreVendedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Nit
+		dataType: int64
+		formatString: 0
+		lineageTag: 576abc15-8686-4c32-a229-182c113e5324
+		summarizeBy: sum
+		sourceColumn: Nit
+
+		annotation SummarizationSetBy = Automatic
+
+	column NombreTercero
+		dataType: string
+		lineageTag: eb0442ee-18d4-4134-88a9-631d81e1b142
+		summarizeBy: none
+		sourceColumn: NombreTercero
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cantidad
+		dataType: int64
+		formatString: #,0
+		lineageTag: 2711850f-324f-4d29-b96e-63d2b9376e15
+		summarizeBy: sum
+		sourceColumn: Cantidad
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor
+		dataType: double
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: 89f0ac09-9836-4791-9b16-5b7ed99ec8ad
+		summarizeBy: sum
+		sourceColumn: Valor
+
+		annotation SummarizationSetBy = Automatic
+
+	column FechaEntregaCliente
+		dataType: dateTime
+		formatString: Long Date
+		lineageTag: fccd1d98-4406-4b70-9e38-5667b3dc7c29
+		summarizeBy: none
+		sourceColumn: FechaEntregaCliente
+
+		variation Variación
+			isDefault
+			relationship: 4358b4ce-3356-471e-b092-abd140fccb2c
+			defaultHierarchy: LocalDateTable_db36dc30-cffa-4632-baeb-6977b4539a2b.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FechaFactura
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 08b85943-ba76-4d3f-befa-d633db47a666
+		summarizeBy: none
+		sourceColumn: FechaFactura
+
+		variation Variación
+			isDefault
+			relationship: 58e448f2-3711-4623-bdbb-986096830730
+			defaultHierarchy: LocalDateTable_ebcf95e2-ffd9-4b81-ad25-765b67aa04be.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column FechaMod
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: f5786e8b-74ef-4f00-969d-1ebf45c6331e
+		summarizeBy: none
+		sourceColumn: FechaMod
+
+		variation Variación
+			isDefault
+			relationship: 1ce62867-0b58-4dc2-a890-6ed7aad4924c
+			defaultHierarchy: LocalDateTable_1bea27a1-b01a-406b-b09d-312a3807684b.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column VIN
+		dataType: string
+		lineageTag: 99d30921-c2b5-4c63-91f0-899ccfc15ecc
+		summarizeBy: none
+		sourceColumn: VIN
+
+		annotation SummarizationSetBy = Automatic
+
+	column Entrega
+		dataType: string
+		lineageTag: 93162a6a-96c7-4c1d-9779-2d8c5c0ff097
+		summarizeBy: none
+		sourceColumn: Entrega
+
+		annotation SummarizationSetBy = Automatic
+
+	column placa
+		dataType: string
+		lineageTag: 9d44a9c8-fee6-41e2-b462-3e4cc4dec7a6
+		summarizeBy: none
+		sourceColumn: placa
+
+		annotation SummarizationSetBy = Automatic
+
+	column fechamatriculacion
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: a2f598b1-5a0e-4e34-bc37-b1790709e220
+		summarizeBy: none
+		sourceColumn: fechamatriculacion
+
+		variation Variación
+			isDefault
+			relationship: 094bc577-7ce9-452b-bd59-7627a499b8c0
+			defaultHierarchy: LocalDateTable_da3d9bb4-8ca6-4cba-b3ff-391ced20ca41.'Jerarquía de fechas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column combustible
+		dataType: string
+		lineageTag: f3498df1-ea60-4988-ad3f-01264c0cd682
+		summarizeBy: none
+		sourceColumn: combustible
+
+		annotation SummarizationSetBy = Automatic
+
+	column procedencia
+		dataType: string
+		lineageTag: 76028578-37db-4e0e-b94d-33da7e11da14
+		summarizeBy: none
+		sourceColumn: procedencia
+
+		annotation SummarizationSetBy = Automatic
+
+	column procedenciadetalle
+		dataType: string
+		lineageTag: 749ed097-b14e-447c-b459-66589e78d303
+		summarizeBy: none
+		sourceColumn: procedenciadetalle
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipooportunidad
+		dataType: string
+		lineageTag: 7173d367-afb7-4df9-9e5d-4696920a1596
+		summarizeBy: none
+		sourceColumn: tipooportunidad
+
+		annotation SummarizationSetBy = Automatic
+
+	column correo
+		dataType: string
+		lineageTag: fff50d4e-3578-43e2-8c45-d73fa10c2565
+		summarizeBy: none
+		sourceColumn: correo
+
+		annotation SummarizationSetBy = Automatic
+
+	column codunidadnegocio
+		dataType: int64
+		formatString: 0
+		lineageTag: 3892cac9-e567-451f-90b9-94061a948254
+		summarizeBy: sum
+		sourceColumn: codunidadnegocio
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombreunidadnegocio
+		dataType: string
+		lineageTag: 4af06471-46d8-470c-9a3f-d7ae1796198c
+		summarizeBy: none
+		sourceColumn: nombreunidadnegocio
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipocliente
+		dataType: string
+		lineageTag: e2f242e9-bb6d-46ba-a88b-c5452ce0348e
+		summarizeBy: none
+		sourceColumn: tipocliente
+
+		annotation SummarizationSetBy = Automatic
+
+	column nombrevendedorhomologado
+		dataType: string
+		lineageTag: 69af02df-4586-4eab-b02c-09becd2577fc
+		summarizeBy: none
+		sourceColumn: nombrevendedorhomologado
+
+		annotation SummarizationSetBy = Automatic
+
+	column clase
+		dataType: string
+		lineageTag: 1788f9fa-aa12-4927-b3e6-6d6033ff6d11
+		summarizeBy: none
+		sourceColumn: clase
+
+		annotation SummarizationSetBy = Automatic
+
+	column color
+		dataType: string
+		lineageTag: d96d9bb5-2858-4953-8cec-edf95d0c68a9
+		summarizeBy: none
+		sourceColumn: color
+
+		annotation SummarizationSetBy = Automatic
+
+	column esultimamodificacion
+		dataType: int64
+		formatString: 0
+		lineageTag: 26a41a2c-2321-4b16-802b-816bf9384e49
+		summarizeBy: sum
+		sourceColumn: esultimamodificacion
+
+		annotation SummarizationSetBy = Automatic
+
+	column rowhash
+		dataType: string
+		lineageTag: 1612656f-b1d3-4dcf-b173-ab0d08ec21ef
+		summarizeBy: none
+		sourceColumn: rowhash
+
+		annotation SummarizationSetBy = Automatic
+
+	column extractionid
+		dataType: int64
+		formatString: 0
+		lineageTag: 3b82c226-f373-44f0-8fe8-e3b85de25b88
+		summarizeBy: sum
+		sourceColumn: extractionid
+
+		annotation SummarizationSetBy = Automatic
+
+	column Q = "Q"&SWITCH(MONTH('Entregas Totales'[FechaEntregaCliente]),1,1,2,1,3,1,4,2,5,2,6,2,7,3,8,3,9,3,10,4,11,4,12,4)
+		lineageTag: ce7be861-2482-405a-8e8d-d8d72d361e53
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'DIVISION S' = "S"&SWITCH(MONTH('Entregas Totales'[FechaEntregaCliente]),1,1,2,1,3,1,4,1,5,1,6,1,7,2,8,2,9,2,10,2,11,2,12,2)
+		lineageTag: ad5aafbd-3cad-4e7d-a0fa-01c6fba23632
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'val nombre' = IF(LOOKUPVALUE('Val nombres'[Val nombre],'Val nombres'[NombreTercero],'Entregas Totales'[NombreTercero])="","OTROS",LOOKUPVALUE('Val nombres'[Val nombre],'Val nombres'[NombreTercero],'Entregas Totales'[NombreTercero]))
+		lineageTag: 4e3d84d5-402a-4b45-ae57-f7bfe58ac128
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column RENTING = IF(IF(LOOKUPVALUE('Val nombres'[Val nombre],'Val nombres'[NombreTercero],'Entregas Totales'[NombreTercero])="","OTROS",LOOKUPVALUE('Val nombres'[Val nombre],'Val nombres'[NombreTercero],'Entregas Totales'[NombreTercero]))<>"OTROS","RENTING","")
+		lineageTag: 4786567f-9f0e-4063-8aea-5f1801f181dc
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Convenios = IF('Entregas Totales'[procedencia]="Convenios","CONVENIOS","")
+		lineageTag: 1996f16a-30b2-4c1c-a526-9cf4a7810a85
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column emailvendedor
+		dataType: string
+		lineageTag: 5b443a28-0fbb-4cc8-9975-8915f264fbfa
+		summarizeBy: none
+		sourceColumn: emailvendedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column tipoventa_vista
+		dataType: string
+		lineageTag: 3191ec45-db99-40fc-944e-a536a2210df0
+		summarizeBy: none
+		sourceColumn: tipoventa_vista
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Entregas Totales' = m
+		mode: import
+		source =
+				let
+				
+				    Origen = AmazonAthena.Databases("Athena_ODBC2", null, []),
+				    AwsDataCatalog_Database = Origen{[Name="AwsDataCatalog",Kind="Database"]}[Data],
+				    bi_materialized_data_Schema = AwsDataCatalog_Database{[Name="bi_materialized_data",Kind="Schema"]}[Data],
+				    entregas_totales_Table = bi_materialized_data_Schema{[Name="entregas_totales",Kind="Table"]}[Data],
+				    #"Columnas quitadas" = Table.RemoveColumns(entregas_totales_Table,{"telefono"}),
+				
+				    #"Columnas renombradas" = Table.RenameColumns(#"Columnas quitadas", {
+				        {"fechadecorte", "FechaDeCorte"}, {"idempresas", "IdEmpresas"},
+				        {"año", "año"}, {"codigoempresa", "CodigoEmpresa"},
+				        {"empresa", "Empresa"}, {"codigocentro", "CodigoCentro"},
+				        {"centro", "Centro"}, {"codigoseccion", "CodigoSeccion"},
+				        {"seccion", "Seccion"}, {"codigomarca", "CodigoMarca"},
+				        {"marca", "Marca"}, {"codigogama", "CodigoGama"},
+				        {"gama", "Gama"}, {"codigomodelo", "CodigoModelo"},
+				        {"añomodelo", "AñoModelo"}, {"modelo", "Modelo"},
+				        {"cedulavendedor", "CedulaVendedor"}, {"nombrevendedor", "NombreVendedor"},
+				        {"nit", "Nit"}, {"nombretercero", "NombreTercero"},
+				        {"cantidad", "Cantidad"}, {"valor", "Valor"}, {"tipo", "tipo"},
+				        {"fechaentregacliente", "FechaEntregaCliente"},
+				        {"fechafactura", "FechaFactura"}, {"fechamod", "FechaMod"},
+				        {"vin", "VIN"}, {"entrega", "Entrega"}
+				    }),
+				
+				
+				    #"Tipo cambiado inicial" = Table.TransformColumnTypes(#"Columnas renombradas", {
+				        {"FechaDeCorte", type date}, {"IdEmpresas", Int64.Type},
+				        {"año", Int64.Type}, {"CodigoEmpresa", Int64.Type},
+				        {"Empresa", type text}, {"CodigoCentro", Int64.Type},
+				        {"Centro", type text}, {"CodigoSeccion", Int64.Type},
+				        {"Seccion", type text}, {"CodigoMarca", Int64.Type},
+				        {"Marca", type text}, {"CodigoGama", Int64.Type},
+				        {"Gama", type text}, {"CodigoModelo", type text},
+				        {"AñoModelo", type text}, {"Modelo", type text},
+				        {"CedulaVendedor", type text}, {"NombreVendedor", type text},
+				        {"Nit", type text}, {"NombreTercero", type text},
+				        {"Cantidad", Int64.Type}, {"Valor", type number},
+				        {"tipo", type text}, {"FechaEntregaCliente", type datetime},
+				        {"FechaFactura", type datetime}, {"FechaMod", type datetime},
+				        {"VIN", type text}, {"Entrega", type text}
+				    }),
+				
+				    #"Filtro Cantidad" = Table.SelectRows(#"Tipo cambiado inicial", each ([Cantidad] = 1)),
+				
+				    #"Poner En Mayúsculas Cada Palabra" = Table.TransformColumns(#"Filtro Cantidad", {
+				        {"NombreVendedor", Text.Proper, type text}
+				    }),
+				
+				    #"Filas filtradas1" = Table.SelectRows(#"Poner En Mayúsculas Cada Palabra", each ([tipo] = "Nuevos")),
+				
+				
+				    #"Poner En Mayúsculas Cada Palabra1" = Table.TransformColumns(#"Filas filtradas1", {
+				        {"NombreTercero", Text.Proper, type text}
+				    }),
+				    #"Poner En Mayúsculas Cada Palabra2" = Table.TransformColumns(#"Poner En Mayúsculas Cada Palabra1", {
+				        {"Gama", Text.Proper, type text}
+				    }),
+				
+				    #"Tipo cambiado" = Table.TransformColumnTypes(#"Poner En Mayúsculas Cada Palabra2", {{"Nit", Int64.Type}}),
+				
+				
+				    #"Poner En Mayúsculas Cada Palabra3" = Table.TransformColumns(#"Tipo cambiado", {
+				        {"Modelo", Text.Proper, type text}
+				    }),
+				    #"Tipo cambiado1" = Table.TransformColumnTypes(#"Poner En Mayúsculas Cada Palabra3",{{"FechaEntregaCliente", type date}})
+				in
+				    #"Tipo cambiado1"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

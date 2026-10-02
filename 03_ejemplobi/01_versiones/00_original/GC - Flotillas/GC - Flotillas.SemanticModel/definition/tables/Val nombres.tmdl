@@ -1,0 +1,32 @@
+table 'Val nombres'
+	lineageTag: 81048dff-8a9d-470a-84cf-65448a0e4ff3
+
+	column NombreTercero
+		dataType: string
+		lineageTag: 4972aa03-fb59-4b14-b929-b3fcfa9b0c9f
+		summarizeBy: none
+		sourceColumn: NombreTercero
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Val nombre'
+		dataType: string
+		lineageTag: 42402c09-7590-4097-85cb-d7e9f11c7ac6
+		summarizeBy: none
+		sourceColumn: Val nombre
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Val nombres' = m
+		mode: import
+		source =
+				let
+				    Origen = Table.FromRows(Json.Document(Binary.Decompress(Binary.FromText("rZLBjoIwEIZfZcLZ9B3Q3cMe9gLGxBAPIzRxklq0Ley7efXFdorIbpAKRA9c/n7/T+fvZFn0ea7ISO1gIw+UV6q0sIVvZFWjIYRUxCIVsKQ8WozDaKPdYkIoxPy9OZO5N6b5sWHu3EvUeanK475NYOuDNMCFsNjUqGDV6b41Zvty+/MBeYRNpLL4iuNWU9iUcGeoC2k7sKeIIUxM40LUl8Prhe9iTnsu9f98TdNPj5/7YZZ/tqt64dJrg9qeSuOkX81Umppy4jVNits+rXxdE6Ami35QIfhy253oKw2FzkljUalG5+e/v3HopNt8+MCaapK6uM/3JwQpMY71iN0v", BinaryEncoding.Base64), Compression.Deflate)), let _t = ((type nullable text) meta [Serialized.Text = true]) in type table [NombreTercero = _t, #"Val nombre" = _t]),
+				    #"Tipo cambiado" = Table.TransformColumnTypes(Origen,{{"NombreTercero", type text}, {"Val nombre", type text}})
+				in
+				    #"Tipo cambiado"
+
+	annotation PBI_NavigationStepName = Navegación
+
+	annotation PBI_ResultType = Table
+

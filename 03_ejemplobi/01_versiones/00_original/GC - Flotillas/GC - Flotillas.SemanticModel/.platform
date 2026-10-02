@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "GC - Flotillas"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "b8f3a499-7b45-40c3-b480-9da92145c76c"
+  }
+}

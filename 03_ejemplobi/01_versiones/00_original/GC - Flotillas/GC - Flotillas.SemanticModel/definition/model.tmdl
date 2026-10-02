@@ -1,0 +1,29 @@
+model Model
+	culture: es-MX
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-CO
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["Entregas Totales","Fecha De Actualización","Val nombres"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table DateTableTemplate_f19d1d27-b424-47df-bd6f-ec6f68132e7d
+ref table 'Entregas Totales'
+ref table LocalDateTable_8f7b7b5e-ad22-4ad1-8cc1-80b84c190664
+ref table LocalDateTable_db36dc30-cffa-4632-baeb-6977b4539a2b
+ref table LocalDateTable_ebcf95e2-ffd9-4b81-ad25-765b67aa04be
+ref table LocalDateTable_1bea27a1-b01a-406b-b09d-312a3807684b
+ref table 'Fecha De Actualización'
+ref table LocalDateTable_27076615-e8ea-4cd4-9388-415e2ab86793
+ref table LocalDateTable_da3d9bb4-8ca6-4cba-b3ff-391ced20ca41
+ref table 'Val nombres'
+
+ref role Todo
+
+ref cultureInfo es-MX
+

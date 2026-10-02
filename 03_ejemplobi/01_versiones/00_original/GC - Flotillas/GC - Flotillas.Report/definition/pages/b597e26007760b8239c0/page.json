@@ -1,0 +1,217 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "b597e26007760b8239c0",
+  "displayName": "Dashboard_Convenios",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "d41622559cc142bcc680",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Entregas Totales"
+              }
+            },
+            "Property": "Cantidad"
+          }
+        },
+        "type": "Categorical",
+        "howCreated": "User"
+      },
+      {
+        "name": "9735a5b6184a47d3e9cd",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Entregas Totales"
+              }
+            },
+            "Property": "procedencia"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "e",
+              "Entity": "Entregas Totales",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "e"
+                          }
+                        },
+                        "Property": "procedencia"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'Convenios'"
+                        }
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User"
+      },
+      {
+        "name": "fe62f9fc0877e0ca25c0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Entregas Totales"
+              }
+            },
+            "Property": "procedenciadetalle"
+          }
+        },
+        "type": "Categorical",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "e",
+              "Entity": "Entregas Totales",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "Not": {
+                  "Expression": {
+                    "In": {
+                      "Expressions": [
+                        {
+                          "Column": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "e"
+                              }
+                            },
+                            "Property": "procedenciadetalle"
+                          }
+                        }
+                      ],
+                      "Values": [
+                        [
+                          {
+                            "Literal": {
+                              "Value": "null"
+                            }
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "howCreated": "User",
+        "objects": {
+          "general": [
+            {
+              "properties": {
+                "isInvertedSelectionMode": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "true"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#F6F6F5'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "c5aed3df5c828c0e0f50",
+      "target": "b754c1660bd8235ebd7d",
+      "type": "DataFilter"
+    },
+    {
+      "source": "c5aed3df5c828c0e0f50",
+      "target": "98932c329244ca1c0423",
+      "type": "NoFilter"
+    },
+    {
+      "source": "c5aed3df5c828c0e0f50",
+      "target": "6e4fc275427d71c147c7",
+      "type": "DataFilter"
+    },
+    {
+      "source": "c5aed3df5c828c0e0f50",
+      "target": "6dd1451dbdca03ca528e",
+      "type": "DataFilter"
+    },
+    {
+      "source": "bdbd9cf43aebce83d659",
+      "target": "1e6271e61744ac760b0a",
+      "type": "NoFilter"
+    },
+    {
+      "source": "bdbd9cf43aebce83d659",
+      "target": "ed7dcba836dbc5a82b07",
+      "type": "NoFilter"
+    },
+    {
+      "source": "bdbd9cf43aebce83d659",
+      "target": "d63f39364345bc22e6ea",
+      "type": "NoFilter"
+    }
+  ]
+}
