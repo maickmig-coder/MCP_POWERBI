@@ -1,0 +1,19 @@
+AI-DLC V5 — REGISTRO DE CAMBIOS
+
+Se mantiene todo lo consolidado en V4.
+
+Se incorpora:
+- 03_plantillas/06_registro_de_cambio.md
+- Registro individual por modificación/cambio relevante.
+- Estado anterior y posterior.
+- Dependencias y riesgo.
+- Decisión del analista.
+- Validación antes/después.
+- Beneficio e impacto.
+- Alertas y pendientes.
+- Cierre del cambio.
+
+El README continúa siendo el histórico acumulado del tablero.
+
+El Registro de Cambio documenta el detalle de cada intervención y no reemplaza
+el README.

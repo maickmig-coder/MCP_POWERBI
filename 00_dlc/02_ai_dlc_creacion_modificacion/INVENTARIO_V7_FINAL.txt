@@ -1,0 +1,19 @@
+AI-DLC V7 — DEPURACIÓN + CENSO + PBIP
+
+Base: V6.
+
+Nueva regla:
+La depuración/mejora de BI existente requiere CENSO como contexto.
+
+Si no existe:
+1. Bloquear.
+2. Conservar PBIP original.
+3. Ejecutar CENSO.
+4. Guardar en NIGGA\02_censo.
+5. Verificar.
+6. Continuar.
+
+También se corrigió de forma global la ruta vigente del logo:
+NIGGA\00_dlc\02_ai_dlc_creacion_modificacion\00_fuentes\Logo_Nebula.png
+
+No se eliminan reglas anteriores.

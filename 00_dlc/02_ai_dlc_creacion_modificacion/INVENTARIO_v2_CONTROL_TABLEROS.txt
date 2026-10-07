@@ -1,0 +1,20 @@
+AI-DLC FINAL — INVENTARIO v2 CON CONTROL DE TABLEROS
+
+Nuevos documentos:
+- 02_reglas/09_control_trazabilidad_tableros.md
+- 03_plantillas/04_readme_por_tablero.md
+- 03_plantillas/05_registro_central_tableros.md
+
+Reglas incorporadas:
+- Registro obligatorio al inicio de creación, modificación y depuración.
+- Responsable actual siempre visible.
+- Histórico acumulativo por tablero.
+- Un solo README por tablero durante toda su vida útil.
+- Registro central para saber quién trabaja cada tablero.
+- Cierre obligatorio actualizando README y registro central.
+
+Ruta del control central:
+NIGGA\01_bi\01_versiones\00_original\REGISTRO_CONTROL_TABLEROS.md
+
+Ruta del README individual:
+NIGGA\01_bi\01_versiones\00_original\[Nombre exacto BI]\README.md

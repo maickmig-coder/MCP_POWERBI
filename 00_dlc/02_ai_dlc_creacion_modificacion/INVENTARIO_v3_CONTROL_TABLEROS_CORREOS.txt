@@ -1,0 +1,13 @@
+AI-DLC FINAL — CONTROL DE TABLEROS POR CORREO
+
+1. Correo de quien trabaja/modifica.
+2. Correo de quien solicita/es dueño.
+3. README único e histórico por tablero.
+4. Registro central de tableros.
+5. Sin nombres, cargos, teléfonos u otros datos personales para este control.
+
+README:
+NIGGA\01_bi\01_versiones\00_original\[Nombre exacto BI]\README.md
+
+Registro central:
+NIGGA\01_bi\01_versiones\00_original\REGISTRO_CONTROL_TABLEROS.md

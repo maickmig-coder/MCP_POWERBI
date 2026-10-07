@@ -12,12 +12,12 @@
 
 | Campo | Valor | Estado/Evidencia |
 |---|---|---|
+| Correo de quien realiza el censo | | |
+| Correo del dueño/responsable del tablero | | |
 | Nombre BI | | |
 | Proyecto | | |
 | Área | | |
 | Objetivo | | |
-| Responsable funcional | | |
-| Responsable técnico | | |
 | Tecnología | | |
 | Repositorio | | |
 | Ambiente | | |

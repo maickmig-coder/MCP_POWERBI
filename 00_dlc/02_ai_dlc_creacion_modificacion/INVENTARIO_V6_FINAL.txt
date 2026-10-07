@@ -1,0 +1,21 @@
+AI-DLC V6 — CENSO + PBIP + REGISTRO DE CAMBIOS
+
+Base: V5 FINAL.
+
+Se incorpora explícitamente la regla bloqueante para modificación sin CENSO:
+
+1. Buscar CENSO en:
+   NIGGA\02_censo
+
+2. Si no existe:
+   - bloquear modificación;
+   - conservar PBIP original en:
+     NIGGA\01_bi\01_versiones\00_original\[Nombre exacto BI]\
+   - ejecutar ritual:
+     NIGGA\00_dlc\01_ai-dlc-censo
+   - guardar resultado en:
+     NIGGA\02_censo
+   - verificar CENSO;
+   - continuar modificación.
+
+No se eliminan reglas anteriores.

@@ -2,6 +2,8 @@
 
 ## 1. Identificación
 
+- [ ] Correo de quien realiza el censo registrado
+- [ ] Correo del dueño/responsable del tablero registrado
 - [ ] Nombre del BI
 - [ ] Nombre del proyecto
 - [ ] Objetivo

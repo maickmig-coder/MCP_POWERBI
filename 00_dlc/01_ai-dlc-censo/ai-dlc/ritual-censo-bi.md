@@ -32,6 +32,17 @@ No se deben realizar modificaciones al BI como parte de este ritual.
 
 Registrar la información mínima necesaria para iniciar el censo.
 
+### Responsables del censo
+
+Antes de iniciar el censo, la IA debe solicitar obligatoriamente:
+
+- Correo electrónico de la persona que realizará el censo.
+- Correo electrónico del dueño/responsable del tablero.
+
+Los correos deben registrarse como identificadores de referencia para la posterior homologación de nombres.
+
+La IA no debe solicitar el nombre de las personas.
+
 ### Revisar
 
 - Nombre del BI.

@@ -1,0 +1,17 @@
+AI-DLC V8 — REPOSITORIO DE TRABAJO KIRO
+
+Base: V7 FINAL.
+
+Nueva regla transversal:
+Todo BI creado, modificado o depurado por el agente debe tener una copia de
+trabajo en:
+
+NIGGA\01_bi\01_versiones\01_kiro\[Nombre exacto BI]\
+
+El original permanece protegido en:
+
+NIGGA\01_bi\01_versiones\00_original\[Nombre exacto BI]\
+
+El agente trabaja sobre la copia de 01_kiro.
+
+No se eliminan ni reemplazan reglas anteriores.

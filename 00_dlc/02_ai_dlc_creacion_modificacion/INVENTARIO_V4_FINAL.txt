@@ -1,0 +1,23 @@
+AI-DLC V4 — INVENTARIO FINAL
+
+La V4 conserva las reglas funcionales del AI-DLC anterior y consolida el nuevo
+control de trazabilidad por correo.
+
+Control de personas:
+1. Correo de quien trabaja/modifica.
+2. Correo de quien solicita/es dueño.
+
+Histórico:
+NIGGA\01_bi\01_versiones\00_original\[Nombre exacto BI]\README.md
+
+Registro central:
+NIGGA\01_bi\01_versiones\00_original\REGISTRO_CONTROL_TABLEROS.md
+
+Consolidación:
+06_control_versiones/03_consolidacion_v4.md
+
+Se corrigió:
+- Duplicación de la búsqueda del CENSO en el flujo operativo.
+- Terminología de responsable/solicitante en el DLC de Modificación.
+- Integración explícita del control por correo en Creación, Modificación y
+  Depuración/Mejora.
