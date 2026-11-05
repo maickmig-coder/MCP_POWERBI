@@ -1,5 +1,13 @@
 # CHANGELOG — AI-DLC-CENSO
 
+## v2.3.3 — 2026-11-05
+
+Ajuste tras una sesión de Kiro que inició una validación sin pedir el correo: el repositorio tenía el paquete v2.3 y la guía de Kiro estaba en inclusión manual (solo se cargaba con `#censo-bi`).
+
+- **Guía de Kiro con inclusión automática** (`inclusion: auto`): se carga sola cuando el pedido trata de un censo (crear, revisar, validar, vigencia, pendientes).
+- **Aviso al inicio del README y del ritual** para cualquier agente: pedir el correo antes de actuar (R57), aceptación de quien no es el dueño (R58) y validación punto por punto (R59). Kiro lee esos archivos aunque no cargue la guía.
+- La guía indica cómo detectar un paquete desactualizado (el README debe decir v2.3.3).
+
 ## v2.3.2 — 2026-11-05
 
 - **R59 — Validación punto por punto:** Kiro presenta un punto a la vez, en lenguaje de negocio, para personas que no conocen Power BI ni el DLC: qué se encontró, por qué importa (impacto), qué se necesita confirmar y cómo responder. Registra cada respuesta con fecha, correo y las palabras de quien responde, y confirma en una línea antes de seguir.

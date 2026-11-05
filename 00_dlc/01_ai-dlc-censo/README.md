@@ -1,4 +1,6 @@
-# AI-DLC-CENSO (v2.3.2)
+# AI-DLC-CENSO (v2.3.3)
+
+> **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
 Ritual estándar para el **censo técnico y funcional de tableros Power BI guardados en PBIP**. El censo es la **base de conocimiento** sobre la que se planifica cualquier cambio. La modificación, creación y depuración son un **DLC aparte**; este ritual no las ejecuta ni las prescribe.
 

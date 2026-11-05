@@ -1,4 +1,4 @@
-# Criterios para hallazgos y puntos de revisión (v2.3.2)
+# Criterios para hallazgos y puntos de revisión (v2.3.3)
 
 > Reemplaza a `criterios-propuestas.md` (v1). El cambio de nombre refleja la decisión de que el CENSO **describe y señala**, pero no propone cambios: la modificación, creación y depuración son un DLC aparte que usa el CENSO como base.
 

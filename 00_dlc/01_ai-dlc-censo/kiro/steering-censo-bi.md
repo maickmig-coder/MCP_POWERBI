@@ -1,10 +1,14 @@
 ---
-inclusion: manual
+inclusion: auto
+name: censo-bi
+description: Ritual AI-DLC CENSO de tableros Power BI (PBIP). Úsalo siempre que se pida crear, actualizar, revisar, consultar, validar o iniciar la validación de un censo, ver su vigencia o sus pendientes, o registrar respuestas del dueño del tablero.
 ---
 
-# Steering — Ejecutar el CENSO BI (ritual AI-DLC v2.3.2)
+# Steering — Ejecutar el CENSO BI (ritual AI-DLC v2.3.3)
 
-Copiar este archivo a `MCP_POWERBI/.kiro/steering/censo-bi.md` e invocarlo con `#censo-bi` al pedir un censo.
+Copiar este archivo a `MCP_POWERBI/.kiro/steering/censo-bi.md`. Se carga solo cuando el pedido trata de un censo (inclusión automática); también puede invocarse con `#censo-bi`.
+
+**Antes de cualquier acción** (crear, revisar, validar, consultar vigencia o pendientes): pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (paso 0, R57). Si el script responde que falta `--correo-revisor`, el paquete instalado está bien y faltó el correo; si el README del paquete no dice v2.3.3, el paquete está desactualizado: avisa al usuario.
 
 Objetivo: producir `[BI] - censo.md` con el menor consumo posible. El script hace el trabajo mecánico en segundos; tú solo interpretas.
 
