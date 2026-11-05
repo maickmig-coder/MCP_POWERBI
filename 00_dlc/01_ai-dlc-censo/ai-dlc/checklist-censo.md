@@ -1,4 +1,4 @@
-# Checklist del CENSO BI (v2.3.3)
+# Checklist del CENSO BI (v2.3.4)
 
 **[S]** = lo genera `censo.py borrador`. **[V]** = lo comprueba `censo.py validar`. Sin marca = lo revisa la IA o una persona. Un punto con [S] no debe rehacerse a mano.
 

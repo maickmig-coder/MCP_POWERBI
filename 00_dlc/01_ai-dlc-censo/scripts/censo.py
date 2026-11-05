@@ -39,7 +39,7 @@ from censo_analisis import TARJETAS, TIPO_LEGIBLE, analyze  # noqa: E402
 from censo_lectura import elide_long_literals, read_pbip  # noqa: E402
 import censo_versiones as cv  # noqa: E402
 
-RITUAL = "2.3.3"
+RITUAL = "2.3.4"
 for _s in (sys.stdout, sys.stderr):
     try:
         _s.reconfigure(encoding="utf-8")
@@ -1279,7 +1279,9 @@ def main():
         print(f"Puntos por validar con el dueño: {len(p)}")
         for x in p:
             print("  " + x)
-        print(f"Siguiente paso: registrar cada respuesta (R55) y luego python scripts/censo.py comparar --borrador \"{R_['borrador']}\" "
+        print(f"Siguiente paso: python scripts/censo.py guia-validacion --markdown \"{R_['borrador']}\" --correo-revisor \"{correo}\" "
+              "y presentar los puntos uno por uno (R59). Al terminar:")
+        print(f"python scripts/censo.py comparar --borrador \"{R_['borrador']}\" "
               "--origen \"Validación con el dueño\"")
     elif args.cmd == "comparar":
         R_ = _rutas(args.borrador)
@@ -1335,6 +1337,11 @@ def main():
         _log_revision(args.markdown, correo, rol, "validar" + (" --pbip" if args.pbip else ""), cv.cabecera(md, "census_id"),
                       f"{len(err)} errores, {len(warn)} advertencias")
         report(err, warn)
+        pv = cv.pendientes_validacion(md, md_sections, md_tables)
+        if pv and cv.cabecera(md, "Tipo de CENSO") != "Validación":
+            print(f"NOTA: este comando revisa la estructura del documento; no es la validación con el dueño. Quedan {len(pv)} puntos "
+                  "«Pendiente de validación»: si el usuario pidió validar el censo, inicie la validación con el dueño "
+                  "(`iniciar-validacion` y luego `guia-validacion`, R55–R59).")
         sys.exit(1 if err else 0)
     elif args.cmd == "registrar":
         md = args.markdown.read_text(encoding="utf-8")

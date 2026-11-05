@@ -1,4 +1,4 @@
-# AI-DLC-CENSO (v2.3.3)
+# AI-DLC-CENSO (v2.3.4)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
@@ -40,7 +40,8 @@ Cubre fuentes y conexiones, código M y sus pasos, tablas, columnas (uso por cla
 │   ├── checklist-censo.md            Qué genera el script, qué valida y qué revisa la IA
 │   └── criterios-puntos-revision.md  Cómo registrar hallazgos sin prescribir cambios
 ├── kiro/
-│   └── steering-censo-bi.md          Guía de ejecución para Kiro (copiar a .kiro/steering/)
+│   ├── steering-censo-bi-entrada.md  Entrada siempre activa para Kiro: correo, interpretación del pedido (copiar a .kiro/steering/)
+│   └── steering-censo-bi.md          Guía de ejecución completa para Kiro (copiar a .kiro/steering/censo-bi.md)
 ├── scripts/
 │   ├── censo.py                      Comandos: borrador, comparar, iniciar-validacion, guia-validacion, pendientes, validar, registrar, vigencia, inventario
 │   ├── censo_versiones.py            Huella del PBIP, comparación entre censos, traslado de validaciones y vigencia

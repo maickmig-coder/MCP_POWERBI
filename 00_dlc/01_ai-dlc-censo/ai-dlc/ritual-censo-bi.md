@@ -1,4 +1,4 @@
-# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.3)
+# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.4)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 

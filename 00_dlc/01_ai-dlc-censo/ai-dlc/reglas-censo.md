@@ -1,4 +1,4 @@
-# Reglas del CENSO AI-DLC (v2.3.3)
+# Reglas del CENSO AI-DLC (v2.3.4)
 
 Reglas obligatorias en todo CENSO. Están numeradas de corrido y agrupadas por tema; cada número existe una sola vez. Los valores permitidos están en `catalogos.md`; la secuencia de trabajo, en `ritual-censo-bi.md`.
 

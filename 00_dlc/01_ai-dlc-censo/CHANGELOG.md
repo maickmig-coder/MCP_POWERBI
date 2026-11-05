@@ -1,5 +1,13 @@
 # CHANGELOG — AI-DLC-CENSO
 
+## v2.3.4 — 2026-11-05
+
+Ajuste tras una sesión en la que «vamos a validar el censo» ejecutó el control `validar` en lugar de la validación con el dueño, y la guía de Kiro no se cargó.
+
+- **Nuevo `kiro/steering-censo-bi-entrada.md`** (siempre activo, corto): pide el correo, manda leer la guía completa e interpreta el pedido: «validar el censo» = validación con el dueño (`iniciar-validacion` + `guia-validacion`); `censo.py validar` es un control interno.
+- **Si el correo es el del dueño,** Kiro empieza la validación y presenta el punto 1 sin más preguntas.
+- **`validar`** avisa cuando quedan puntos pendientes que no es la validación con el dueño; **`iniciar-validacion`** indica `guia-validacion` como siguiente paso.
+
 ## v2.3.3 — 2026-11-05
 
 Ajuste tras una sesión de Kiro que inició una validación sin pedir el correo: el repositorio tenía el paquete v2.3 y la guía de Kiro estaba en inclusión manual (solo se cargaba con `#censo-bi`).
