@@ -1,0 +1,44 @@
+AI-DLC V9.5 — 03_DEPURACION CORREGIDA Y VALIDADA DOCUMENTALMENTE
+Paquete exclusivo: carpeta 03_Depuracion.
+Base: V9.4 revisada + correcciones preventivas aprobadas tras incidente de eliminación accidental de visual.
+Alcance: solo 03_Depuracion. No se modificó el DLC de CENSO, 01_Modificacion ni 02_Creacion.
+
+Controles añadidos:
+- Inventario de visuales por página e ID técnico.
+- Búsqueda textual/regex solo como localizador de candidatos; análisis semántico obligatorio.
+- Lista positiva de objetos exactos y acciones aprobadas.
+- Aprobación granular; objetos no enumerados quedan protegidos.
+- Análisis separado de bookmarks, botones y estados alternativos.
+- Comparación antes/después por ID y página; desaparición no autorizada bloquea el cierre.
+- Separación de integridad técnica y funcional.
+- Ejecución por etapas, rollback y controles de codificación.
+- Lección aprendida del caso GC - Flotillas documentada sin alterar su CENSO.
+
+Archivos incluidos (27):
+- 00_Base_Compartida/01_rutas_y_censo.md
+- 00_Base_Compartida/02_diseno_corporativo.md
+- 00_Base_Compartida/03_integridad_validacion.md
+- 00_Base_Compartida/04_archivos_y_encoding.md
+- 00_Base_Compartida/05_control_trazabilidad_tableros.md
+- 00_Base_Compartida/06_principios_y_controles.md
+- 00_Base_Compartida/07_alerta_visuales_ocultos.md
+- 00_Base_Compartida/08_plantilla_alertas.md
+- 00_Base_Compartida/09_lecciones_aprendidas.md
+- 00_Base_Compartida/10_plantilla_readme_tablero.md
+- 00_Base_Compartida/11_plantilla_registro_central.md
+- 00_Base_Compartida/12_plantilla_registro_cambio.md
+- 00_Base_Compartida/13_control_evolucion_reglas.md
+- 00_Base_Compartida/14_checklist_integral.md
+- 00_Base_Compartida/15_rendimiento_y_DAX.md
+- 00_Base_Compartida/16_protocolo_integridad_visuales_eliminacion_segura.md
+- 01_Reglas_del_Proceso/05_depuracion_mejora.md
+- 02_Plantillas/03_depuracion_mejora.md
+- 02_Plantillas/04_inventario_visual_y_eliminacion_segura.md
+- 03_Flujo_y_Checklists/checklist_general.md
+- 03_Flujo_y_Checklists/flujo_operativo.md
+- 04_Control_de_Versiones/INVENTARIO_V9.4_historico.txt
+- 04_Control_de_Versiones/v9.4_revision_profunda.md
+- 04_Control_de_Versiones/v9.5_correccion_integridad_visuales.md
+- 04_Control_de_Versiones/v9_segmentacion.md
+- README.md
+- INVENTARIO_V9.5.txt

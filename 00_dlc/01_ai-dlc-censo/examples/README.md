@@ -12,7 +12,7 @@ Datos del ejemplo: 325 IDs nativos, cada uno con su nombre; `censo.py validar` s
 
 - **Modelo de profundidad y redacción:** muestra cómo queda cada sección completa, cómo se redactan los marcadores de la IA (2.1, 5.1, 10, 14, 15 y 16) y cómo se citan los vacíos sin afirmar lo que declaran desconocido.
 - **Comparación:** si un censo nuevo se aparta mucho de este en extensión o en forma, conviene revisarlo contra el ritual.
-- **Pruebas del ritual:** al cambiar `scripts/` o las reglas, `censo.py validar --markdown "examples/GC - Flotillas - censo.md"` debe seguir sin errores ni advertencias de contenido.
+- **Pruebas del ritual:** al cambiar `scripts/` o las reglas, `censo.py validar --markdown "examples/GC - Flotillas - censo.md" --correo-revisor <correo>` (en `examples/` no se registra la revisión) debe seguir sin errores ni advertencias de contenido.
 
 Kiro **no** lee este archivo durante un censo (el steering lo excluye para no gastar tokens); es referencia para personas y para revisar resultados.
 

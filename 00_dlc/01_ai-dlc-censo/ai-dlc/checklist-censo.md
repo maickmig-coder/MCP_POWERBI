@@ -1,4 +1,4 @@
-# Checklist del CENSO BI (v2.3)
+# Checklist del CENSO BI (v2.3.2)
 
 **[S]** = lo genera `censo.py borrador`. **[V]** = lo comprueba `censo.py validar`. Sin marca = lo revisa la IA o una persona. Un punto con [S] no debe rehacerse a mano.
 
@@ -6,6 +6,8 @@
 
 - [ ] **[V]** Correo de quien realiza el CENSO y correo del dueño/responsable del tablero registrados; sin ellos el script no se ejecuta.
 - [ ] Tipo de censo decidido con la tabla de la Fase 0 del ritual (Inicial, Actualización o Validación).
+- [ ] En toda consulta o revisión: correo de quien revisa pedido y pasado con `--correo-revisor`; queda en `revisiones-censo.md` (R57).
+- [ ] **[V]** En una Validación iniciada por alguien que no es el dueño: aceptación explícita y línea «Validación sin ser el dueño: Sí» en la sección 0 (R58).
 - [ ] **[V]** En `Actualización`: el usuario confirmó que guardó el PBIP de la versión nueva en `01_versiones/<versión>/<BI>` (`--pbip-guardado-confirmado`), la carpeta coincide con `--version` y la huella es distinta a la del censo vigente (R54).
 
 ## Borrador (fase 1)
@@ -47,6 +49,7 @@
 
 - [ ] **[V]** En `Actualización` o `Validación`: `comparar` ejecutado con el origen correcto; existe `[BI] - cambios.borrador.md` (R52).
 - [ ] **[V]** Sección 14: «Validación del dueño» = `No requerida` solo en reglas `Encontrado`; las `Inferido` quedan `Pendiente de validación` hasta la respuesta (R55).
+- [ ] Validación conducida punto por punto con `guia-validacion`, en lenguaje de negocio, con impacto explicado y cada respuesta confirmada en una línea (R59).
 - [ ] **[V]** Todo punto `Confirmado por el dueño` o `Descartado por el dueño` (14 y 16) tiene «Respuesta del dueño» con fecha (R55).
 - [ ] **[V]** Si el ejecutor es el dueño: cada punto pendiente tiene respuesta o constancia de que se preguntó (R55).
 

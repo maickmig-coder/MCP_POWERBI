@@ -1,0 +1,27 @@
+AI-DLC V9.4 — 03_DEPURACION REVISADA
+Paquete exclusivo: carpeta 03_Depuracion
+Base: V9 segmentada + reglas de Depuración V8; ajustes aditivos documentados.
+
+Archivos incluidos:
+- 00_Base_Compartida/01_rutas_y_censo.md
+- 00_Base_Compartida/02_diseno_corporativo.md
+- 00_Base_Compartida/03_integridad_validacion.md
+- 00_Base_Compartida/04_archivos_y_encoding.md
+- 00_Base_Compartida/05_control_trazabilidad_tableros.md
+- 00_Base_Compartida/06_principios_y_controles.md
+- 00_Base_Compartida/07_alerta_visuales_ocultos.md
+- 00_Base_Compartida/08_plantilla_alertas.md
+- 00_Base_Compartida/09_lecciones_aprendidas.md
+- 00_Base_Compartida/10_plantilla_readme_tablero.md
+- 00_Base_Compartida/11_plantilla_registro_central.md
+- 00_Base_Compartida/12_plantilla_registro_cambio.md
+- 00_Base_Compartida/13_control_evolucion_reglas.md
+- 00_Base_Compartida/14_checklist_integral.md
+- 00_Base_Compartida/15_rendimiento_y_DAX.md
+- 01_Reglas_del_Proceso/05_depuracion_mejora.md
+- 02_Plantillas/03_depuracion_mejora.md
+- 03_Flujo_y_Checklists/checklist_general.md
+- 03_Flujo_y_Checklists/flujo_operativo.md
+- 04_Control_de_Versiones/v9.4_revision_profunda.md
+- 04_Control_de_Versiones/v9_segmentacion.md
+- README.md

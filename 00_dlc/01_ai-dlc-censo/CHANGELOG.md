@@ -1,5 +1,17 @@
 # CHANGELOG — AI-DLC-CENSO
 
+## v2.3.2 — 2026-11-05
+
+- **R59 — Validación punto por punto:** Kiro presenta un punto a la vez, en lenguaje de negocio, para personas que no conocen Power BI ni el DLC: qué se encontró, por qué importa (impacto), qué se necesita confirmar y cómo responder. Registra cada respuesta con fecha, correo y las palabras de quien responde, y confirma en una línea antes de seguir.
+- **Comando nuevo `guia-validacion`:** entrega la ficha de cada punto pendiente (secciones 14 y 16) en orden de prioridad, con la línea a editar, sin que Kiro lea el censo completo. Permite pausar y retomar (solo muestra lo que falta) y queda en `revisiones-censo.md`.
+- **Guía de Kiro:** mensaje de bienvenida, plantilla por punto, glosario de términos técnicos a lenguaje de negocio, ejemplo real (H-A12 y RN06 de GC - Flotillas), tabla para registrar respuestas y resumen de cierre.
+
+## v2.3.1 — 2026-11-05
+
+- **R57 — Correo de quien revisa:** toda revisión de un censo empieza pidiendo el correo. `vigencia`, `pendientes`, `validar` e `iniciar-validacion` exigen `--correo-revisor` y registran la consulta en `revisiones-censo.md` (fecha, correo, rol, comando, census_id y resultado).
+- **R58 — Validación por alguien que no es el dueño:** si el correo es el del dueño, la validación se inicia directamente; si no, Kiro pregunta si la persona conoce las respuestas y acepta validar sin ser el dueño. `iniciar-validacion` bloquea sin `--acepta-validar-sin-ser-dueno` y, con la aceptación, deja al revisor como ejecutor y la línea «Validación sin ser el dueño: Sí» en la sección 0. El validador exige esa línea en una Validación hecha por otra persona y, en toda Validación, respuesta o constancia en cada punto pendiente.
+- Ritual, reglas, checklist, guía de Kiro y README al día.
+
 ## v2.3 — 2026-11-05
 
 Versiones del tablero y validación con el dueño, acordados tras la revisión del censo de GC - Flotillas.

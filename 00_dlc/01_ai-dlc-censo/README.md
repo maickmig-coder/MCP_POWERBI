@@ -1,4 +1,4 @@
-# AI-DLC-CENSO (v2.3)
+# AI-DLC-CENSO (v2.3.2)
 
 Ritual estándar para el **censo técnico y funcional de tableros Power BI guardados en PBIP**. El censo es la **base de conocimiento** sobre la que se planifica cualquier cambio. La modificación, creación y depuración son un **DLC aparte**; este ritual no las ejecuta ni las prescribe.
 
@@ -12,6 +12,7 @@ En `MCP_POWERBI\02_censo\[Nombre exacto del BI]`:
 | `[Nombre] - cambios.md` | Registro de cambios entre versiones (append-only): qué se agregó, eliminó o modificó, por qué proceso (DLC de modificación o depuración) y qué respondió el dueño. |
 | `versiones/` | Censos anteriores archivados, uno por ejecución. |
 | `historial-censos.md` | Una fila por ejecución validada (append-only). |
+| `revisiones-censo.md` | Quién consultó o revisó cada censo, cuándo y con qué resultado (append-only). |
 
 **¿Este censo es el del tablero final?** Ejecute `censo.py vigencia`: responde VIGENTE o DESACTUALIZADO (comparando con la última versión guardada en `01_versiones` y con la huella del PBIP) y APTO o NO APTO para el DLC de modificación o depuración.
 
@@ -39,7 +40,7 @@ Cubre fuentes y conexiones, código M y sus pasos, tablas, columnas (uso por cla
 ├── kiro/
 │   └── steering-censo-bi.md          Guía de ejecución para Kiro (copiar a .kiro/steering/)
 ├── scripts/
-│   ├── censo.py                      Comandos: borrador, comparar, iniciar-validacion, pendientes, validar, registrar, vigencia, inventario
+│   ├── censo.py                      Comandos: borrador, comparar, iniciar-validacion, guia-validacion, pendientes, validar, registrar, vigencia, inventario
 │   ├── censo_versiones.py            Huella del PBIP, comparación entre censos, traslado de validaciones y vigencia
 │   ├── censo_lectura.py              Lectura de PBIR, TMDL, M y DAX (solo lectura)
 │   └── censo_analisis.py             Dependencias y clasificación de uso
@@ -57,7 +58,7 @@ cd MCP_POWERBI/00_dlc/01_ai-dlc-censo
 V="../../01_bi/01_versiones"; S="../../02_censo/Nombre BI"
 
 # ¿Hay censo y está vigente? (punto de partida de cualquier persona o DLC)
-python scripts/censo.py vigencia --markdown "$S/Nombre BI - censo.md" --versiones "$V"
+python scripts/censo.py vigencia --markdown "$S/Nombre BI - censo.md" --versiones "$V" --correo-revisor "<correo>"
 
 # A. Censo inicial
 python scripts/censo.py borrador --pbip "$V/00_original/Nombre BI" --salida "$S" --version 00_original --tipo Inicial \
@@ -69,16 +70,20 @@ python scripts/censo.py borrador --pbip "$V/01_depuracion/Nombre BI" --salida "$
 python scripts/censo.py comparar --borrador "$S/Nombre BI - censo.borrador.md" --origen "DLC de depuración DEP-001"
 
 # C. Registrar respuestas del dueño sobre el mismo PBIP
-python scripts/censo.py iniciar-validacion --markdown "$S/Nombre BI - censo.md" --pbip "$V/<versión>/Nombre BI"
+python scripts/censo.py iniciar-validacion --markdown "$S/Nombre BI - censo.md" --pbip "$V/<versión>/Nombre BI" --correo-revisor "<correo>"
 python scripts/censo.py comparar --borrador "$S/Nombre BI - censo.borrador.md" --origen "Validación con el dueño"
 
 # En los tres casos: marcadores de la IA, validación y registro
-python scripts/censo.py pendientes --markdown "<censo o borrador>"
-python scripts/censo.py validar   --pbip "<PBIP>" --markdown "<censo o borrador>"
+python scripts/censo.py pendientes --markdown "<censo o borrador>" --correo-revisor "<correo>"
+python scripts/censo.py validar   --pbip "<PBIP>" --markdown "<censo o borrador>" --correo-revisor "<correo>"
 python scripts/censo.py registrar --pbip "<PBIP>" --markdown "<censo o borrador>" --alcance "Censo completo del PBIP"
 ```
 
 `registrar` archiva el censo anterior en `versiones/`, deja el borrador como censo vigente y agrega el bloque de cambios y la fila del historial.
+
+**Quién revisa (R57, R58):** `vigencia`, `pendientes`, `validar` e `iniciar-validacion` exigen `--correo-revisor` y dejan una fila en `revisiones-censo.md`. Si quien inicia una validación no es el dueño del tablero, debe aceptar validar sin serlo; Kiro se lo pregunta y solo entonces se agrega `--acepta-validar-sin-ser-dueno`.
+
+**Cómo se valida (R59):** `guia-validacion` entrega la ficha de cada punto pendiente en orden de prioridad. Kiro los presenta uno por uno a una persona que no necesita saber de Power BI ni del DLC: qué se encontró, por qué importa, qué se le pregunta y cómo responder. Cada respuesta queda registrada con fecha, correo y sus palabras.
 
 ## Qué valida `censo.py validar`
 

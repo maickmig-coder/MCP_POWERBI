@@ -1,4 +1,4 @@
-# Catálogos de vocabulario del CENSO (v2.3)
+# Catálogos de vocabulario del CENSO (v2.3.2)
 
 Este archivo es la **única fuente de valores permitidos**. El ritual, las reglas, el checklist y `scripts/censo.py` usan exactamente estos valores, escritos igual (mayúsculas y tildes incluidas). Si se necesita un valor nuevo, se agrega aquí primero y se registra en `CHANGELOG.md`.
 

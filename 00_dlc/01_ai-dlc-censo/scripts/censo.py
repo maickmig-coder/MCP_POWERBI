@@ -11,6 +11,7 @@ Comandos (todos de solo lectura sobre el PBIP):
   comparar    Compara el borrador con el censo vigente: traslada validaciones y escribe el bloque de cambios.
   iniciar-validacion  Prepara un borrador de tipo Validación (mismo PBIP) para registrar respuestas del dueño.
   registrar   Valida y, si no hay errores, cierra la ejecución: historial, registro de cambios y archivo del censo anterior.
+  guia-validacion  Ficha de cada punto pendiente, en orden, para presentarlo al dueño uno por uno (R59).
   vigencia    Dice si el censo corresponde a la última versión del PBIP y si es apto para el DLC de modificación.
   inventario  (diagnóstico) Vuelca a JSON lo que el script lee del PBIP.
 
@@ -38,7 +39,7 @@ from censo_analisis import TARJETAS, TIPO_LEGIBLE, analyze  # noqa: E402
 from censo_lectura import elide_long_literals, read_pbip  # noqa: E402
 import censo_versiones as cv  # noqa: E402
 
-RITUAL = "2.3"
+RITUAL = "2.3.2"
 for _s in (sys.stdout, sys.stderr):
     try:
         _s.reconfigure(encoding="utf-8")
@@ -1004,11 +1005,16 @@ def validate(md: str, pbip: Path | None):
                 err.append(f"Sección 16, {r[0]}: «{est}» sin respuesta del dueño registrada (R55).")
             if est == cv.PENDIENTE:
                 pend.append((16, r[0], resp))
-    if mismo:
+    tipo_ = head.get("Tipo de CENSO")
+    delegada = "**Validación sin ser el dueño:** Sí" in md
+    if tipo_ == "Validación" and not mismo and not delegada:
+        err.append("Validación hecha por alguien que no es el dueño sin la aceptación registrada en la sección 0; "
+                   "use `iniciar-validacion --acepta-validar-sin-ser-dueno` (R58).")
+    if mismo or tipo_ == "Validación":
         sin = [f"{n}·{i}" for n, i, resp in pend if resp in ("—", "")]
         if sin:
-            err.append(f"Quien realiza el censo es el dueño: cada punto pendiente debe tener su respuesta o la constancia de que se le "
-                       f"preguntó (R55). Sin respuesta: {', '.join(sin[:12])}{' …' if len(sin) > 12 else ''}")
+            err.append(f"{'Quien realiza el censo es el dueño' if mismo else 'En una Validación'}: cada punto pendiente debe tener su respuesta o la constancia de que se "
+                       f"preguntó (R55, R58). Sin respuesta: {', '.join(sin[:12])}{' …' if len(sin) > 12 else ''}")
     if head["Estado"] == "Completado y validado" and pend:
         err.append(f"«Completado y validado» exige que no queden puntos «Pendiente de validación» en 14 y 16 (R56); quedan {len(pend)}.")
     return err, warn, head
@@ -1073,6 +1079,69 @@ def _historial(hist: Path, valores: dict):
         fh.write("| " + " | ".join(cell(valores.get(h, "—")) for h in hdr) + " |\n")
 
 
+def _dueno(md: str):
+    m = re.search(r"\*\*Correo del dueño/responsable del tablero:\*\*\s*(\S+)", md)
+    return m.group(1).strip().lower() if m else None
+
+
+def _revisor(args, md: str):
+    """Correo de quien revisa (R57). Devuelve (correo, rol)."""
+    c = (getattr(args, "correo_revisor", None) or "").strip().lower()
+    if not EMAIL.match(c):
+        print("REVISIÓN BLOQUEADA (R57): indique el correo de quien revisa el censo con --correo-revisor.", file=sys.stderr)
+        sys.exit(2)
+    return c, ("dueño del tablero" if c == _dueno(md) else "no es el dueño")
+
+
+def _log_revision(md_path: Path, correo: str, rol: str, comando: str, cid, resultado: str):
+    """Agrega una fila a revisiones-censo.md de la carpeta del BI (append-only, R57). No registra en examples/."""
+    if md_path.parent.name == "examples":
+        return
+    f = md_path.parent / "revisiones-censo.md"
+    if not f.exists():
+        f.write_text("# Registro de revisiones del CENSO\n\nAppend-only (R57): una fila por consulta o revisión de un censo de esta carpeta.\n\n"
+                     "| Fecha y hora | Correo de quien revisa | Rol | Comando | census_id | Resultado |\n|---|---|---|---|---|---|\n", encoding="utf-8")
+    with f.open("a", encoding="utf-8") as fh:
+        fh.write("| " + " | ".join(cell(x) for x in (datetime.now().astimezone().isoformat(timespec="seconds"), correo, rol, comando,
+                                                       cid or "—", resultado)) + " |\n")
+
+
+def fichas_validacion(md: str):
+    """Datos de cada punto «Pendiente de validación» (14 y 16), ordenados para presentarlos uno por uno (R59)."""
+    secs, lines = md_sections(md), md.split("\n")
+    def linea(rid):
+        for k, l in enumerate(lines, 1):
+            if l.startswith(f"| {rid} |"):
+                return k
+        return 0
+    orden = {"Alta": 0, "Media": 2, "Baja": 3}
+    out = []
+    for hdr, rows in md_tables(secs.get(16, ("", []))[1]):
+        if "Punto de revisión" not in hdr:
+            continue
+        g = lambda r, c: r[hdr.index(c)] if c in hdr else "—"  # noqa: E731
+        for r in rows:
+            if g(r, "Estado") != "Pendiente de validación":
+                continue
+            out.append((orden.get(g(r, "Prioridad"), 2), {
+                "ID": r[0], "Sección": "16", "Línea": linea(r[0]), "Tipo": g(r, "Tipo"), "Categoría": g(r, "Categoría"),
+                "Prioridad": g(r, "Prioridad"), "Qué se encontró": g(r, "Descripción concreta"),
+                "Dónde": g(r, "Página y objeto") + (f" · objetos: {g(r, 'visual_id / object_id (con nombre)')}" if g(r, "visual_id / object_id (con nombre)") != "—" else ""),
+                "Evidencia": g(r, "Evidencia exacta") + f" (certeza: {g(r, 'Certeza')})", "Qué depende de esto": g(r, "Objetos afectados y dependencias"),
+                "Impacto": g(r, "Impacto"), "Qué hay que confirmar": g(r, "Punto de revisión")}))
+    for hdr, rows in md_tables(secs.get(14, ("", []))[1]):
+        if "rule_id" not in hdr or "Validación del dueño" not in hdr:
+            continue
+        for r in rows:
+            if r[hdr.index("Validación del dueño")] != "Pendiente de validación":
+                continue
+            out.append((1, {"ID": r[0], "Sección": "14", "Línea": linea(r[0]), "Tipo": "Regla de negocio inferida", "Categoría": "Regla de negocio",
+                            "Prioridad": "—", "Qué se encontró": r[1], "Dónde": r[2], "Evidencia": f"{r[2]} (certeza: {r[4]})",
+                            "Qué depende de esto": "—", "Impacto": "Si la interpretación no es correcta, los cortes y KPIs que usan esta regla se leerían con otro significado.",
+                            "Qué hay que confirmar": "¿Es correcta esta interpretación? " + r[3]}))
+    return [x for _, x in sorted(out, key=lambda x: x[0])]
+
+
 def main():
     ap = argparse.ArgumentParser(description=f"CENSO BI — ritual AI-DLC v{RITUAL}")
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -1088,6 +1157,7 @@ def main():
     b.add_argument("--correo-dueno-tablero")
     pe = sub.add_parser("pendientes")
     pe.add_argument("--markdown", type=Path, required=True)
+    pe.add_argument("--correo-revisor", required=True, help="Correo de quien revisa (R57)")
     c = sub.add_parser("comparar")
     c.add_argument("--borrador", type=Path, required=True)
     c.add_argument("--origen", required=True,
@@ -1095,9 +1165,16 @@ def main():
     iv = sub.add_parser("iniciar-validacion")
     iv.add_argument("--markdown", type=Path, required=True, help="Censo vigente")
     iv.add_argument("--pbip", type=Path, required=True)
+    iv.add_argument("--correo-revisor", required=True, help="Correo de quien inicia la validación (R57)")
+    iv.add_argument("--acepta-validar-sin-ser-dueno", action="store_true",
+                    help="La persona, sin ser el dueño, confirmó que conoce las respuestas y acepta iniciar la validación (R58)")
+    gv = sub.add_parser("guia-validacion")
+    gv.add_argument("--markdown", type=Path, required=True, help="Censo o borrador de validación")
+    gv.add_argument("--correo-revisor", required=True, help="Correo de quien revisa (R57)")
     v = sub.add_parser("validar")
     v.add_argument("--markdown", type=Path, required=True)
     v.add_argument("--pbip", type=Path)
+    v.add_argument("--correo-revisor", required=True, help="Correo de quien revisa (R57)")
     r = sub.add_parser("registrar")
     r.add_argument("--markdown", type=Path, required=True)
     r.add_argument("--pbip", type=Path, required=True)
@@ -1106,6 +1183,7 @@ def main():
     vg = sub.add_parser("vigencia")
     vg.add_argument("--markdown", type=Path, required=True, help="Censo vigente")
     vg.add_argument("--versiones", type=Path, required=True, help="Carpeta 01_bi/01_versiones")
+    vg.add_argument("--correo-revisor", required=True, help="Correo de quien revisa (R57)")
     i = sub.add_parser("inventario")
     i.add_argument("--pbip", type=Path, required=True)
     i.add_argument("--salida-json", type=Path, required=True)
@@ -1162,6 +1240,13 @@ def main():
         if R_["borrador"].exists():
             sys.exit(f"Ya hay un borrador sin cerrar: {R_['borrador'].name}.")
         md = R_["vigente"].read_text(encoding="utf-8")
+        correo, rol = _revisor(args, md)
+        dueno = _dueno(md)
+        if rol != "dueño del tablero" and not args.acepta_validar_sin_ser_dueno:
+            _log_revision(R_["vigente"], correo, rol, "iniciar-validacion", cv.cabecera(md, "census_id"), "Bloqueada: sin aceptación (R58)")
+            sys.exit(f"VALIDACIÓN BLOQUEADA (R58): {correo} no es el dueño del tablero ({dueno}). Pregunte a la persona si conoce las "
+                     "respuestas de los puntos pendientes y si acepta iniciar la validación sin ser el dueño; solo con su aceptación, "
+                     "repita el comando con --acepta-validar-sin-ser-dueno.")
         hu, n_ = cv.huella(args.pbip)
         prev = cv.leer_huella(md)
         if prev and prev != hu:
@@ -1174,6 +1259,11 @@ def main():
         md = re.sub(r"^> Fecha y hora de ejecución:.*$", f"> Fecha y hora de ejecución: {now.isoformat(timespec='seconds')}", md, count=1, flags=re.M)
         md = re.sub(r"^> Tipo de CENSO:.*$", "> Tipo de CENSO: Validación", md, count=1, flags=re.M)
         md = re.sub(r"^> Versión del ritual:.*$", f"> Versión del ritual: {RITUAL}", md, count=1, flags=re.M)
+        md = re.sub(r"^- \*\*Correo de quien realiza el CENSO:\*\*.*$", f"- **Correo de quien realiza el CENSO:** {correo}", md, count=1, flags=re.M)
+        if rol != "dueño del tablero":
+            md = re.sub(r"^(- \*\*Correo del dueño/responsable del tablero:\*\*.*)$",
+                        rf"\1\n- **Validación sin ser el dueño:** Sí — {correo} declaró conocer las respuestas y aceptó iniciar la validación "
+                        rf"sin ser el dueño ({now.isoformat(timespec='seconds')}) (R58).", md, count=1, flags=re.M)
         if not prev:
             md = re.sub(r"^(> Versión analizada:.*\n>)$", rf"\1\n> Huella del PBIP: {hu} ({n_} archivos)\n>", md, count=1, flags=re.M)
         md = re.sub(r"^\| census_id \| [^|]+ \|$", f"| census_id | {cid} |", md, count=1, flags=re.M)
@@ -1181,6 +1271,10 @@ def main():
         md = re.sub(r"(## 18\.2 Estado final\n\n)[\s\S]*?(?=\n# |\Z)", r"\1[IA: 1–3 frases que justifiquen el estado tras la validación con el dueño.]\n", md, count=1)
         R_["borrador"].write_text(md, encoding="utf-8")
         p = cv.pendientes_validacion(md, md_sections, md_tables)
+        _log_revision(R_["vigente"], correo, rol, "iniciar-validacion", cid,
+                      f"Validación iniciada por el dueño; {len(p)} puntos" if rol == "dueño del tablero"
+                      else f"Validación iniciada sin ser el dueño (aceptada, R58); {len(p)} puntos")
+        print(f"Quien valida: {correo} ({rol}{'; aceptó validar sin ser el dueño' if rol != 'dueño del tablero' else ''})")
         print(f"Borrador de validación: {R_['borrador']}")
         print(f"Puntos por validar con el dueño: {len(p)}")
         for x in p:
@@ -1207,6 +1301,7 @@ def main():
         print(f"Bloque de cambios escrito: {R_['cambios_b'].name} ({nobj} objetos con cambios). Se agrega a «{R_['cambios'].name}» al registrar.")
     elif args.cmd == "pendientes":
         md = args.markdown.read_text(encoding="utf-8")
+        correo, rol = _revisor(args, md)
         sec, n = "?", 0
         for k, line in enumerate(md.splitlines(), 1):
             m = re.match(r"^#{1,3} (.+)$", line)
@@ -1220,8 +1315,25 @@ def main():
         print(f"Puntos «Pendiente de validación» con el dueño: {len(p)}")
         for x in p:
             print("  " + x)
+        _log_revision(args.markdown, correo, rol, "pendientes", cv.cabecera(md, "census_id"), f"{n} marcadores; {len(p)} puntos pendientes con el dueño")
+    elif args.cmd == "guia-validacion":
+        md = args.markdown.read_text(encoding="utf-8")
+        correo, rol = _revisor(args, md)
+        fx = fichas_validacion(md)
+        print(f"Puntos por validar: {len(fx)} · orden: prioridad Alta, reglas inferidas, Media, Baja (R59).")
+        print(f"Quien responde: {correo} ({rol}). Presente un punto a la vez con la plantilla de la guía de Kiro.\n")
+        for n_, f in enumerate(fx, 1):
+            print(f"=== Punto {n_} de {len(fx)} · {f['ID']} (sección {f['Sección']}, línea {f['Línea']}) · {f['Tipo']} · {f['Categoría']} · prioridad {f['Prioridad']}")
+            for k in ("Qué se encontró", "Dónde", "Evidencia", "Qué depende de esto", "Impacto", "Qué hay que confirmar"):
+                print(f"  {k}: {f[k]}")
+            print()
+        _log_revision(args.markdown, correo, rol, "guia-validacion", cv.cabecera(md, "census_id"), f"{len(fx)} puntos por presentar")
     elif args.cmd == "validar":
-        err, warn, _ = validate(args.markdown.read_text(encoding="utf-8"), args.pbip)
+        md = args.markdown.read_text(encoding="utf-8")
+        correo, rol = _revisor(args, md)
+        err, warn, _ = validate(md, args.pbip)
+        _log_revision(args.markdown, correo, rol, "validar" + (" --pbip" if args.pbip else ""), cv.cabecera(md, "census_id"),
+                      f"{len(err)} errores, {len(warn)} advertencias")
         report(err, warn)
         sys.exit(1 if err else 0)
     elif args.cmd == "registrar":
@@ -1271,6 +1383,8 @@ def main():
         print(f"Ejecución registrada en {R_['historial']}; cambios en {R_['cambios'].name}; censo vigente: {R_['vigente'].name}")
     elif args.cmd == "vigencia":
         md = args.markdown.read_text(encoding="utf-8")
+        correo, rol = _revisor(args, md)
+        print(f"Revisa: {correo} ({rol})")
         R_ = _rutas(args.markdown)
         bi, ver, hu = R_["bi"], cv.cabecera(md, "Versión analizada"), cv.leer_huella(md)
         vers = sorted(d.name for d in args.versiones.iterdir() if (d / bi).is_dir()) if args.versiones.is_dir() else []
@@ -1294,6 +1408,8 @@ def main():
         if pend:
             motivos.append(f"{len(pend)} puntos «Pendiente de validación» con el dueño (R56):")
         print("Aptitud para el DLC de modificación o depuración: " + ("APTO" if not motivos else "NO APTO"))
+        vig_ = "VIGENTE" if not any(("versión más reciente" in x or "huella" in x or "borrador" in x) for x in motivos) else "DESACTUALIZADO"
+        _log_revision(args.markdown, correo, rol, "vigencia", cv.cabecera(md, "census_id"), f"{vig_}; {'APTO' if not motivos else 'NO APTO'}")
         for x in motivos:
             print("  - " + x)
         for x in pend:

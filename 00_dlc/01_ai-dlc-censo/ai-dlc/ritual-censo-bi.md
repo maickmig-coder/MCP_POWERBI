@@ -1,4 +1,4 @@
-# AI-DLC — Ritual estándar para el CENSO de BI (v2.3)
+# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.2)
 
 > **Qué es:** un proceso de **solo lectura** que documenta un tablero Power BI guardado en PBIP con el detalle suficiente para que cualquier cambio posterior (modificación, creación o depuración) se planifique a partir de él.
 >
@@ -20,6 +20,7 @@ En la carpeta de salida del tablero (`02_censo/[Nombre exacto del BI]`) quedan:
 | `[BI] - cambios.md` | `censo.py comparar` y `registrar` | Registro de cambios entre versiones, append-only: un bloque por ejecución (R52). |
 | `versiones/[BI] - censo - <census_id>.md` | `censo.py registrar` | Censos anteriores archivados, para consulta. No se editan. |
 | `historial-censos.md` | `censo.py registrar` | Una fila por ejecución validada, append-only. |
+| `revisiones-censo.md` | `vigencia`, `pendientes`, `validar`, `iniciar-validacion` | Quién consultó o revisó cada censo, cuándo, con qué comando y con qué resultado; append-only (R57). |
 
 Mientras una ejecución está abierta existen además `[BI] - censo.borrador.md` y `[BI] - cambios.borrador.md`; `registrar` los integra. `censo.py vigencia` responde si el censo es el de la versión final y si es apto para el DLC (R53, R56).
 
@@ -85,6 +86,8 @@ Todo ID que relaciona un objeto con otro va acompañado de su nombre, para ident
 
 ### Fase 0 — Ingreso y tipo de censo
 
+Toda consulta o revisión de un censo existente empieza pidiendo el correo de quien revisa (R57); los comandos de consulta lo exigen con `--correo-revisor`.
+
 1. Pedir el correo de quien realiza el CENSO y el del dueño/responsable del tablero. Sin ambos, el script no se ejecuta (R02). Anotar si son el mismo (R55).
 2. Decidir el tipo con la carpeta de salida y `01_versiones`:
 
@@ -114,7 +117,7 @@ python scripts/censo.py comparar --borrador "02_censo/<BI>/<BI> - censo.borrador
 ### Fase 2 — Interpretación (IA)
 
 ```bash
-python scripts/censo.py pendientes --markdown "<censo o borrador>"
+python scripts/censo.py pendientes --markdown "<censo o borrador>" --correo-revisor "<correo>"
 ```
 
 La lista indica la línea de cada marcador `[IA: …]` y los puntos pendientes de validación. La IA:
@@ -129,19 +132,21 @@ La lista indica la línea de cada marcador `[IA: …]` y los puntos pendientes d
 
 ### Fase 2b — Validación con el dueño (R55)
 
-- **Si quien realiza el censo es el dueño:** la IA le presenta los puntos de `pendientes` en grupos breves (ID, qué se pregunta y la evidencia) y registra cada respuesta en «Respuesta del dueño» con fecha. Pasa el estado a `Confirmado por el dueño` o `Descartado por el dueño`; si el dueño no sabe, deja `Pendiente de validación` con la constancia de que se preguntó.
-- **Si es otra persona:** no se pregunta en esta ejecución; el censo cierra `Completado pendiente de validación`. Cuando el dueño responda:
+- **Si quien realiza el censo es el dueño:** la IA obtiene las fichas con `censo.py guia-validacion` y presenta **un punto a la vez**, en lenguaje de negocio: qué se encontró, por qué importa, qué se necesita confirmar y cómo responder (R59). Registra cada respuesta en «Respuesta del dueño» con fecha, correo y sus palabras, y pasa el estado a `Confirmado por el dueño` o `Descartado por el dueño`; si no sabe, deja `Pendiente de validación` con la constancia de que se preguntó. Se puede pausar: lo respondido queda en el borrador y `guia-validacion` muestra solo lo que falta.
+- **Si es otra persona:** no se pregunta en esta ejecución; el censo cierra `Completado pendiente de validación`.
+- **Validación posterior:** se pide el correo de quien la inicia (R57). Si es el del dueño, se inicia. Si no, se le pregunta si conoce las respuestas y si acepta validar sin ser el dueño; solo con su aceptación se agrega `--acepta-validar-sin-ser-dueno` (R58):
 
 ```bash
-python scripts/censo.py iniciar-validacion --markdown "02_censo/<BI>/<BI> - censo.md" --pbip "01_bi/01_versiones/<versión>/<BI>"
-# registrar cada respuesta en el borrador de validación
+python scripts/censo.py iniciar-validacion --markdown "02_censo/<BI>/<BI> - censo.md" --pbip "01_bi/01_versiones/<versión>/<BI>" --correo-revisor "<correo>"
+python scripts/censo.py guia-validacion --markdown "02_censo/<BI>/<BI> - censo.borrador.md" --correo-revisor "<correo>"
+# presentar punto por punto y registrar cada respuesta (R59)
 python scripts/censo.py comparar --borrador "02_censo/<BI>/<BI> - censo.borrador.md" --origen "Validación con el dueño"
 ```
 
 ### Fase 3 — Validación
 
 ```bash
-python scripts/censo.py validar --pbip "01_bi/01_versiones/<versión>/<BI>" --markdown "<censo o borrador>"
+python scripts/censo.py validar --pbip "01_bi/01_versiones/<versión>/<BI>" --markdown "<censo o borrador>" --correo-revisor "<correo>"
 ```
 
 Se comprueban las secciones 0–18, los marcadores pendientes, los catálogos, los conteos aproximados, los IDs truncados, los verbos de cambio, la regla R22, la conciliación objeto por objeto contra el PBIP, la huella (R53) y la validación con el dueño (R55, R56). Tarda segundos.
@@ -157,7 +162,7 @@ Vuelve a validar y, solo si no hay errores (R42): archiva el censo anterior en `
 ### Fase 5 — Vigencia y paso al DLC
 
 ```bash
-python scripts/censo.py vigencia --markdown "02_censo/<BI>/<BI> - censo.md" --versiones "01_bi/01_versiones"
+python scripts/censo.py vigencia --markdown "02_censo/<BI>/<BI> - censo.md" --versiones "01_bi/01_versiones" --correo-revisor "<correo>"
 ```
 
 Responde **VIGENTE** o **DESACTUALIZADO** y **APTO** o **NO APTO** para el DLC de modificación o depuración, con la lista de lo que falta (R53, R56).
