@@ -18,7 +18,8 @@ Marcar cada punto como **Cumple / No cumple / No aplica**, con evidencia cuando 
 - [ ] CENSO localizado en `MCP_POWERBI\02_censo`.
 - [ ] CENSO corresponde al nombre exacto del BI y está disponible/legible.
 - [ ] Si falta/no corresponde/no se puede validar, estado `BLOQUEADO — CENSO REQUERIDO` registrado y no se ejecutan cambios.
-- [ ] PBIP original preservado en `MCP_POWERBI\01_bi\01_versiones\00_original\[Nombre exacto BI]\`.
+- [ ] `censo.py vigencia` = VIGENTE y APTO; `census_id` de partida registrado; copia de trabajo hecha desde la última versión guardada.
+- [ ] Al cerrar: versión nueva guardada en `01_versiones\NN_modificacion_<ID>\[Nombre exacto BI]\` y censada (tipo `Actualización`).
 - [ ] El original no fue utilizado como destino de edición.
 - [ ] Solo después de validar el CENSO, copia de trabajo preparada en `MCP_POWERBI\01_bi\01_versiones\01_kiro\[Nombre exacto BI]\`.
 - [ ] Rutas de original y copia Kiro registradas en el README y en el Registro de Cambio cuando corresponda.

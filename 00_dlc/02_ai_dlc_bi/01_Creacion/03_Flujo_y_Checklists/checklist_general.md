@@ -7,7 +7,7 @@ Marcar `No aplica` con motivo cuando un control no corresponda. No declarar el B
 - [ ] Nombre exacto del BI aprobado.
 - [ ] Correo de quien trabaja/modifica registrado.
 - [ ] Correo de quien solicita/es dueño registrado.
-- [ ] README histórico creado en la carpeta de trazabilidad.
+- [ ] README histórico creado en `02_censo\[Nombre exacto BI]\README.md`.
 - [ ] Registro central actualizado.
 - [ ] Objetivo, público, decisiones a soportar y alcance definidos.
 - [ ] Requisitos obligatorios separados de propuestas de IA.
@@ -15,9 +15,16 @@ Marcar `No aplica` con motivo cuando un control no corresponda. No declarar el B
 - [ ] Decisiones y aprobaciones registradas.
 - [ ] Nivel de riesgo inicial definido.
 - [ ] Carpeta de trabajo Kiro creada y ruta verificada.
-- [ ] CENSO marcado `No aplica` por ser creación nueva; si parte de un BI existente, se reclasificó la solicitud.
+- [ ] CENSO del BI marcado `No aplica` por ser creación nueva; si parte de un BI existente, se reclasificó la solicitud.
 
 ## B. Fuentes y acceso
+- [ ] El diccionario de datos se validó como vigente y su `diccionario_id` quedó registrado.
+- [ ] La fuente pedida se ubicó en el diccionario (o se declaró fuente nueva con datos/esquema suministrados).
+- [ ] Se decidieron con el usuario columnas (incluidos datos personales) y filtros de carga de otros BI; nada se heredó en silencio.
+- [ ] Modo simulación aplicado: parámetro `ModoSimulacion`, consultas `Sim_` / `Real_` / `Src_` copiadas del diccionario; tablas del modelo parten solo de `Src_`; carga deshabilitada en `Sim_` / `Real_` / `Src_`.
+- [ ] Versión liberada con `ModoSimulacion = false`; esquema real verificado contra la ficha; diferencias reportadas para actualizar censo/diccionario.
+- [ ] No se crearon tablas ni vistas en la base de datos; faltantes en origen registrados como dependencia externa.
+- [ ] Datos personales de la fuente excluidos o incluidos con justificación aprobada.
 - [ ] Sistemas, servidores, motores, bases, esquemas, tablas/vistas y archivos identificados.
 - [ ] Método de conexión y entorno (desarrollo/pruebas/producción) documentados.
 - [ ] Accesos autorizados verificados sin guardar contraseñas, tokens ni secretos en archivos.
@@ -55,7 +62,12 @@ Marcar `No aplica` con motivo cuando un control no corresponda. No declarar el B
 - [ ] Jerarquía de filtros corporativos aplicada a los filtros que realmente existen.
 - [ ] Títulos, nombres de campos y etiquetas corresponden al contenido real.
 - [ ] Header, logo oficial, última actualización, separador, filtros, botones, KPIs, gráficos, tablas, leyendas y navegación validados.
-- [ ] Contraste, legibilidad, consistencia y accesibilidad básica revisados.
+- [ ] Solo logo Nebula en el header (sin logos de marca salvo excepción aprobada).
+- [ ] Segmentaciones en estilo oscuro (`#474747`, borde `#323131`, texto `#FFFFFF`, 69 × 135).
+- [ ] Botones con radio 6 px; variante menú con fondo `#1A73E8` y texto blanco.
+- [ ] dataColors del tema en el orden corporativo (azul, violeta, rojo, teal, naranja).
+- [ ] Contraste, legibilidad, consistencia y accesibilidad básica revisados; textos con colores que no cumplen 4.5:1 advertidos.
+- [ ] Decisiones pendientes del estándar (4.17) preguntadas o supuesto registrado.
 - [ ] Marcadores, botones, navegación, tooltips, drill-through, drill-down, exportaciones e interacciones probados cuando aplican.
 - [ ] Visuales ocultos y estados alternativos revisados; no hay objetos rotos heredados de plantillas/copias.
 
@@ -87,7 +99,7 @@ Marcar `No aplica` con motivo cuando un control no corresponda. No declarar el B
 - [ ] Archivos de texto comprobados para codificación y BOM conforme a requisitos.
 - [ ] Alertas, riesgos, limitaciones y pendientes comunicados.
 - [ ] Versión/referencia entregada identificada y mecanismo de reversibilidad verificado.
-- [ ] Versión base aprobada protegida en `00_original` según el mecanismo autorizado.
+- [ ] Versión base aprobada guardada en `01_versiones\00_original\[Nombre exacto BI]\` y censada (tipo `Inicial`); el censo actualizó el diccionario.
 - [ ] Registro central refleja estado final y correos obligatorios.
 - [ ] Estado `Listo para entrega` sustentado por pruebas y aceptación.
 

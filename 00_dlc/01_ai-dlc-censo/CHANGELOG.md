@@ -1,5 +1,24 @@
 # CHANGELOG — AI-DLC-CENSO
 
+## v2.3.6 — 2026-11-12
+
+Control de «censo del tablero final» tras la revisión del repositorio.
+
+- **`01_kiro` no es una versión:** `vigencia` ordenaba las carpetas de `01_versiones` por nombre y tomaba la copia de trabajo `01_kiro` como «versión más reciente sin censar», bloqueando el tablero a mitad de un trabajo. Ahora la ignora y solo informa que existe (R53).
+- **Control único** `censo_versiones.vigencia_tablero()`: última versión guardada + huella. Lo usan `censo.py vigencia` y el diccionario de datos, que marca «NO describe el tablero final» en los censos desactualizados.
+- **`borrador` bloquea censar `01_kiro`** (R54): el tablero terminado se guarda antes como versión `NN_<proceso>_<ID>`.
+- Mensaje del validador de la sección 14: citaba CAT-12; el catálogo correcto es CAT-11.
+- R53 y R54 precisadas; documentos en v2.3.6; guías de Kiro reinstaladas.
+
+## v2.3.5 — 2026-11-11
+
+Un solo proceso: el censo alimenta el diccionario de datos al cerrarse, sin pedir «actualiza censos» por separado.
+
+- **R60 (nueva):** `censo.py registrar`, después de archivar y registrar, ejecuta el `actualizar` del DLC del diccionario (`00_dlc/00_diccionario_datos`) con el correo del ejecutor del censo. Si falla, el censo queda registrado y se avisa («AVISO (R60)») para repetirlo con «actualiza censos». Opción `--sin-diccionario` solo para pruebas.
+- **Diccionario:** ahora lee solo el censo vigente de cada tablero (`<BI>/<BI> - censo.md`); antes podía tomar un borrador abierto, un censo archivado en `versiones/` o `revisiones-censo.md`.
+- Reglas, ritual (Fase 4), checklist de cierre, guía de Kiro (pasos 9 y 11) y README al día; guías reinstaladas en `.kiro/steering/`.
+- **Guías de Kiro instaladas** por primera vez en `.kiro/steering/` (antes no existía la carpeta).
+
 ## v2.3.4 — 2026-11-05
 
 Ajuste tras una sesión en la que «vamos a validar el censo» ejecutó el control `validar` en lugar de la validación con el dueño, y la guía de Kiro no se cargó.

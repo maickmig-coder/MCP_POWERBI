@@ -1,4 +1,4 @@
-# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.4)
+# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.6)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
@@ -159,7 +159,7 @@ Se comprueban las secciones 0–18, los marcadores pendientes, los catálogos, l
 python scripts/censo.py registrar --pbip "01_bi/01_versiones/<versión>/<BI>" --markdown "<censo o borrador>" --alcance "..."
 ```
 
-Vuelve a validar y, solo si no hay errores (R42): archiva el censo anterior en `versiones/`, deja el borrador como `[BI] - censo.md`, agrega el bloque a `[BI] - cambios.md` y la fila a `historial-censos.md`.
+Vuelve a validar y, solo si no hay errores (R42): archiva el censo anterior en `versiones/`, deja el borrador como `[BI] - censo.md`, agrega el bloque a `[BI] - cambios.md` y la fila a `historial-censos.md`. Al final **actualiza el diccionario de datos** con las fuentes del censo (R60); si eso falla, el censo queda registrado y se avisa para repetirlo con «actualiza censos».
 
 ### Fase 5 — Vigencia y paso al DLC
 

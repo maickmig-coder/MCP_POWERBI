@@ -10,8 +10,8 @@
 - Estado inicial: [En análisis / BLOQUEADO — CENSO REQUERIDO / Habilitado]
 
 ## Original y copia de trabajo
-- Ruta PBIP original:
-  `MCP_POWERBI\01_bi\01_versiones\00_original\[Nombre exacto BI]`
+- Última versión guardada (según `censo.py vigencia`):
+  `MCP_POWERBI\01_bi\01_versiones\[última versión guardada]\[Nombre exacto BI]` (census_id de partida: [ID])
 - Estado del original PBIP: [Preservado / No disponible — bloqueado]
 - Ruta copia de trabajo Kiro (solo después de validar CENSO):
   `MCP_POWERBI\01_bi\01_versiones\01_kiro\[Nombre exacto BI]`

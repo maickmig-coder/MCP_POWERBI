@@ -184,88 +184,37 @@ Por lo tanto, **no se debe entrar a depurar sin contexto suficiente**.
 
 Para un BI existente, el CENSO es la referencia principal del estado actual.
 
-## Cuando no existe CENSO
+## Puerta del censo: solo un censo del tablero final (R53, R56)
 
-Si se solicita depurar/mejorar un BI existente y no existe su CENSO en:
+Aplicar `../../00_Base_Compartida/01_rutas_y_censo.md`, sección «Entrada del censo según el proceso»:
 
-```text
-MCP_POWERBI\02_censo
-```
+1. Solicitar el **nombre exacto del BI** y los dos correos.
+2. Ejecutar `censo.py vigencia` sobre `MCP_POWERBI\02_censo\[BI]\[BI] - censo.md`.
+3. Según el resultado:
+   - sin censo → `BLOQUEADO — CENSO REQUERIDO` (censo `Inicial` con el DLC del censo);
+   - `DESACTUALIZADO` → `BLOQUEADO — CENSO DESACTUALIZADO` (el censo no describe el tablero final: censar la última
+     versión guardada, tipo `Actualización`);
+   - `VIGENTE` pero `NO APTO` → `BLOQUEADO — CENSO SIN VALIDAR` (validación con el dueño);
+   - `VIGENTE` y `APTO` → continuar y registrar el `census_id` de partida en el README.
+4. Preparar la copia de trabajo en `01_kiro\[BI]\` **desde la última versión guardada** que indica `vigencia`.
 
-la depuración/mejora **DEBE QUEDAR BLOQUEADA**.
+El AI-DLC no puede saltarse esta puerta ni reconstruir el estado del tablero por inferencia. Un bloqueo queda
+registrado en el README (y en el Registro de Cambio cuando corresponda) con su causa y la fecha en que se habilitó.
 
-No se debe comenzar a eliminar, simplificar, optimizar, reorganizar,
-reemplazar o modificar elementos del BI sin haber levantado primero el
-contexto requerido.
+## Cierre: versión nueva y censo
 
-### Procedimiento obligatorio
+1. Con la aprobación de la entrega, guardar el resultado como **versión nueva**
+   `MCP_POWERBI\01_bi\01_versiones\NN_depuracion_<ID>\[BI]\` (NN = siguiente número de ese tablero). Nunca sobrescribir
+   una versión existente ni editar un PBIP dentro de `01_versiones`.
+2. Censar esa versión con el DLC del censo: tipo `Actualización`, `--origen "DLC de depuración <ID>"`. Al registrarse,
+   el censo actualiza el diccionario de datos (R60).
+3. Registrar en el README el `census_id` de cierre y la ruta de la versión entregada.
 
-1. Solicitar el nombre exacto del BI.
-2. Registrar:
-   - correo de quien trabaja/modifica;
-   - correo de quien solicita/es dueño.
-3. Buscar el CENSO correspondiente en:
+El trabajo no se declara cerrado hasta que ese censo esté registrado.
 
-```text
-MCP_POWERBI\02_censo
-```
+## Sin fuentes nuevas
 
-4. Verificar que el CENSO corresponde al nombre exacto del BI y que su contenido permite comprender el estado que se va a depurar. Un CENSO de otro BI o claramente desactualizado no satisface el bloqueo; registrar la limitación y actualizar/repetir el CENSO según corresponda.
-
-5. Si no existe o no es válido, establecer el estado:
-
-```text
-BLOQUEADO — CENSO REQUERIDO
-```
-
-6. Conservar el BI original como PBIP en:
-
-```text
-MCP_POWERBI\01_bi\01_versiones\00_original\[Nombre exacto BI]\
-```
-
-7. Ejecutar el ritual de CENSO definido en:
-
-```text
-MCP_POWERBI\00_dlc\01_ai-dlc-censo
-```
-
-8. Guardar el resultado del CENSO en:
-
-```text
-MCP_POWERBI\02_censo
-```
-
-9. Verificar que el CENSO corresponde al BI exacto y quedó disponible.
-10. Preparar la copia de trabajo en `MCP_POWERBI\01_bi\01_versiones\01_kiro\[Nombre exacto BI]`.
-11. Solo después habilitar la depuración/mejora.
-
-## Cuando el CENSO sí existe
-
-1. Cargar el CENSO como contexto.
-2. Verificar que corresponde al BI exacto.
-3. Conservar el PBIP original sin modificarlo.
-4. Analizar oportunidades de depuración/mejora.
-5. Identificar dependencias e impacto.
-6. Proponer acciones.
-7. Obtener decisión del analista.
-8. Ejecutar únicamente lo aprobado.
-9. Comparar antes/después.
-10. Validar integridad y rendimiento cuando aplique.
-11. Documentar cambios, beneficios, alertas y pendientes.
-
-## Regla de seguridad
-
-El AI-DLC no debe interpretar la ausencia de CENSO como autorización para
-"reconstruir" el estado actual por inferencia.
-
-Si el contexto necesario no existe, primero se debe levantar el CENSO.
-
-## Registro
-
-La situación de bloqueo por ausencia de CENSO debe quedar registrada en el
-README y, cuando corresponda, en el Registro de Cambio.
-
+Depuración solo depura: no agrega fuentes, tablas, columnas de origen, páginas ni visuales. Ver `controles_reforzados_depuracion.md`.
 
 ## 7.13 Evidencia, severidad y cierre
 
@@ -276,7 +225,7 @@ La depuración se considera `Listo para entrega` únicamente cuando las acciones
 
 ## 7.13 Control obligatorio de visuales y eliminación segura (V9.5)
 
-Antes de eliminar o reparar visuales, se debe aplicar el protocolo `00_Base_Compartida/16_protocolo_integridad_visuales_eliminacion_segura.md` y registrar los candidatos en `02_Plantillas/04_inventario_visual_y_eliminacion_segura.md`.
+Antes de eliminar o reparar visuales, se debe aplicar el protocolo `16_protocolo_integridad_visuales_eliminacion_segura.md` (en esta carpeta) y registrar los candidatos en `02_Plantillas/04_inventario_visual_y_eliminacion_segura.md`.
 
 - No usar coincidencias textuales, expresiones regulares ni títulos como criterio único para confirmar que un visual está roto.
 - Identificar el objeto por página, ID técnico, ruta, título y tipo; revisar la referencia dentro de su contexto semántico.

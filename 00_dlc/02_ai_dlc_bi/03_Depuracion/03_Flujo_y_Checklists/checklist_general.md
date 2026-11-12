@@ -15,9 +15,10 @@ Marcar cada control como `Cumple`, `No cumple`, `No aplica` o `Pendiente`, adjun
 - [ ] Se buscó el CENSO en `MCP_POWERBI\02_censo`.
 - [ ] El CENSO corresponde al nombre exacto del BI y refleja un estado útil para el análisis.
 - [ ] Si no existe/no corresponde/no está accesible, el estado es `BLOQUEADO — CENSO REQUERIDO`; no se ejecutaron cambios.
-- [ ] El PBIP original está preservado en `MCP_POWERBI\01_bi\01_versiones\00_original\[Nombre exacto BI]`.
+- [ ] `censo.py vigencia` = VIGENTE y APTO; `census_id` de partida registrado; copia de trabajo hecha desde la última versión guardada.
+- [ ] Al cerrar: versión nueva guardada en `01_versiones\NN_depuracion_<ID>\[Nombre exacto BI]\` y censada (tipo `Actualización`).
 - [ ] Existe copia de trabajo en `MCP_POWERBI\01_bi\01_versiones\01_kiro\[Nombre exacto BI]`.
-- [ ] Se verificó que el trabajo se realiza sobre `01_kiro`, nunca sobre `00_original`.
+- [ ] Se verificó que el trabajo se realiza sobre `01_kiro`, nunca sobre una versión guardada de `01_versiones`.
 - [ ] Se registraron versión/commit/referencia, rutas y mecanismo de reversión.
 
 ## C. Línea base antes de cambios
@@ -91,7 +92,7 @@ Marcar cada control como `Cumple`, `No cumple`, `No aplica` o `Pendiente`, adjun
 ## J. Cierre y reversibilidad
 - [ ] Se actualizó README histórico con hallazgos, decisiones, cambios y rutas.
 - [ ] Se actualizó Registro de Cambio cuando corresponda.
-- [ ] Se actualizó `REGISTRO_CONTROL_TABLEROS.md`.
+- [ ] Se actualizó `MCP_POWERBI\02_censo\REGISTRO_CONTROL_TABLEROS.md`.
 - [ ] Se registraron beneficios esperados y observados, sin atribuir beneficios no medidos.
 - [ ] Alertas, riesgos residuales y pendientes fueron comunicados.
 - [ ] Se confirmó rollback disponible o se documentó por qué no aplica.

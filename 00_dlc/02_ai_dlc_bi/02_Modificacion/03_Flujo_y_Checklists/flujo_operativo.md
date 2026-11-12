@@ -4,7 +4,7 @@
 2. Confirmar nombre exacto del BI existente.
 3. Registrar correo de quien trabaja/modifica y correo de quien solicita/es dueño.
 4. Abrir el README histórico y actualizar el registro central.
-5. Identificar y conservar el PBIP original en `MCP_POWERBI\01_bi\01_versiones\00_original\[Nombre exacto BI]`. No sobrescribirlo.
+5. Verificar la puerta del censo (`censo.py vigencia` = VIGENTE y APTO) y tomar como base la última versión guardada en `01_versiones`. No editar ninguna versión guardada.
 6. Buscar el CENSO correspondiente en `MCP_POWERBI\02_censo`.
 7. ¿Existe y corresponde al BI exacto?
    - **No:** estado `BLOQUEADO — CENSO REQUERIDO`; ejecutar `MCP_POWERBI\00_dlc\01_ai-dlc-censo`, guardar el resultado en `MCP_POWERBI\02_censo` y verificarlo. No avanzar con la modificación hasta completar esta validación.
@@ -23,4 +23,4 @@
 19. Confirmar estado `Listo para entrega` solo si las validaciones requeridas se completaron; de lo contrario, dejar el estado y pendientes explícitos.
 
 ## Regla de copia de trabajo Kiro
-La copia de `01_kiro` es el único destino de trabajo del agente. El original de `00_original` queda protegido. Documentar ambas rutas en el README y en el Registro de Cambio cuando corresponda.
+La copia de `01_kiro` es el único destino de trabajo del agente. Las versiones guardadas en `01_versiones` no se editan; al cerrar se guarda la versión nueva `NN_modificacion_<ID>` y se censa. Documentar ambas rutas en el README y en el Registro de Cambio cuando corresponda.

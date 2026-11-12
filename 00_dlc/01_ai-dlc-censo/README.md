@@ -1,4 +1,4 @@
-# AI-DLC-CENSO (v2.3.4)
+# AI-DLC-CENSO (v2.3.6)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
@@ -35,13 +35,13 @@ Cubre fuentes y conexiones, código M y sus pasos, tablas, columnas (uso por cla
 ├── CHANGELOG.md
 ├── ai-dlc/
 │   ├── ritual-censo-bi.md            Fases, estructura del resultado y criterios de clasificación
-│   ├── reglas-censo.md               Reglas R01–R51 (R03 retirada)
+│   ├── reglas-censo.md               Reglas R01–R60 (R03 retirada)
 │   ├── catalogos.md                  Valores permitidos (CAT-01 a CAT-15) e IDs nativos
 │   ├── checklist-censo.md            Qué genera el script, qué valida y qué revisa la IA
 │   └── criterios-puntos-revision.md  Cómo registrar hallazgos sin prescribir cambios
 ├── kiro/
-│   ├── steering-censo-bi-entrada.md  Entrada siempre activa para Kiro: correo, interpretación del pedido (copiar a .kiro/steering/)
-│   └── steering-censo-bi.md          Guía de ejecución completa para Kiro (copiar a .kiro/steering/censo-bi.md)
+│   ├── steering-censo-bi-entrada.md  Entrada siempre activa para Kiro: correo, interpretación del pedido (instalada como .kiro/steering/censo-bi-entrada.md)
+│   └── steering-censo-bi.md          Guía de ejecución completa para Kiro (instalada como .kiro/steering/censo-bi.md)
 ├── scripts/
 │   ├── censo.py                      Comandos: borrador, comparar, iniciar-validacion, guia-validacion, pendientes, validar, registrar, vigencia, inventario
 │   ├── censo_versiones.py            Huella del PBIP, comparación entre censos, traslado de validaciones y vigencia
@@ -53,6 +53,19 @@ Cubre fuentes y conexiones, código M y sus pasos, tablas, columnas (uso por cla
 ```
 
 Requisitos: Python 3.9 o superior. No necesita paquetes externos.
+
+## Instalación de las guías de Kiro
+
+Las guías viven en `kiro/` (fuente) y Kiro las lee desde `MCP_POWERBI\.kiro\steering\` (copia instalada):
+
+| Fuente | Copia instalada | Cuándo se carga |
+|---|---|---|
+| `kiro/steering-censo-bi-entrada.md` | `.kiro/steering/censo-bi-entrada.md` | Siempre (`inclusion: always`) |
+| `kiro/steering-censo-bi.md` | `.kiro/steering/censo-bi.md` | Cuando el pedido trata de un censo (`inclusion: auto`) |
+
+**Si se modifica una guía en `kiro/`, se vuelve a copiar a `.kiro/steering/`**; si no, Kiro sigue usando la versión
+anterior. Para comprobar que la copia está al día: el encabezado de ambas debe decir la misma versión del ritual que
+este README. Claude Code no usa estas copias: lee las reglas desde `CLAUDE.md` en la raíz.
 
 ## Uso
 
@@ -82,7 +95,9 @@ python scripts/censo.py validar   --pbip "<PBIP>" --markdown "<censo o borrador>
 python scripts/censo.py registrar --pbip "<PBIP>" --markdown "<censo o borrador>" --alcance "Censo completo del PBIP"
 ```
 
-`registrar` archiva el censo anterior en `versiones/`, deja el borrador como censo vigente y agrega el bloque de cambios y la fila del historial.
+`registrar` archiva el censo anterior en `versiones/`, deja el borrador como censo vigente, agrega el bloque de cambios y la fila del historial y, al final, **actualiza el diccionario de datos** (R60).
+
+**Diccionario de datos (R60):** al registrar, el censo lleva sus fuentes al diccionario (`00_dlc/00_diccionario_datos`) con el correo del ejecutor; no hace falta pedir «actualiza censos» aparte. El diccionario toma solo el censo vigente de cada tablero, nunca borradores ni archivados. Si falla, el censo queda registrado igual y se avisa para repetirlo desde el DLC del diccionario. `--sin-diccionario` lo omite (solo para pruebas).
 
 **Quién revisa (R57, R58):** `vigencia`, `pendientes`, `validar` e `iniciar-validacion` exigen `--correo-revisor` y dejan una fila en `revisiones-censo.md`. Si quien inicia una validación no es el dueño del tablero, debe aceptar validar sin serlo; Kiro se lo pregunta y solo entonces se agrega `--acepta-validar-sin-ser-dueno`.
 

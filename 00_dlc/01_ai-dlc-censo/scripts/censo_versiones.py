@@ -36,6 +36,42 @@ def huella(pbip: Path) -> tuple[str, int]:
     return "sha256:" + h.hexdigest(), n
 
 
+# Carpetas de 01_versiones que son trabajo en curso, no versiones guardadas del tablero (no cuentan para la vigencia)
+CARPETAS_TRABAJO = {"01_kiro"}
+
+
+def versiones_guardadas(versiones: Path, bi: str) -> list[str]:
+    """Versiones guardadas del tablero, de la más antigua a la más reciente (orden por nombre: 00_, 01_, 02_…).
+    Excluye las copias de trabajo (01_kiro)."""
+    if not versiones.is_dir():
+        return []
+    return sorted(d.name for d in versiones.iterdir()
+                  if d.name not in CARPETAS_TRABAJO and (d / bi).is_dir())
+
+
+def vigencia_tablero(md: str, versiones: Path, bi: str) -> dict:
+    """Control único de «¿el censo describe el tablero final?» (R53). Lo usan `censo.py vigencia` y el diccionario.
+
+    Devuelve {"vigente": bool, "motivos": [...], "versiones": [...], "trabajo": str|None}: el censo es vigente si
+    corresponde a la última versión guardada y la huella de esa versión coincide con la del censo."""
+    ver, hu = cabecera(md, "Versión analizada"), leer_huella(md)
+    vers = versiones_guardadas(versiones, bi)
+    motivos = []
+    if not vers:
+        motivos.append(f"No se encontró {bi} en {versiones}.")
+    elif vers[-1] != ver:
+        motivos.append(f"Hay una versión más reciente sin censar: {vers[-1]} (R53).")
+    if not hu:
+        motivos.append("El censo no tiene huella del PBIP (anterior a v2.3); no se puede confirmar que corresponde al tablero guardado.")
+    elif ver in vers and huella(versiones / ver / bi)[0] != hu:
+        motivos.append(f"El PBIP de {ver} cambió después del censo (huella distinta) (R53).")
+    trabajo = None
+    for t in sorted(CARPETAS_TRABAJO):
+        if (versiones / t / bi).is_dir():
+            trabajo = f"Hay una copia de trabajo en {t}: si se modificó, debe guardarse como versión nueva y censarse (R54)."
+    return {"vigente": not motivos, "motivos": motivos, "versiones": vers, "trabajo": trabajo}
+
+
 def leer_huella(md: str):
     m = re.search(r"^> Huella del PBIP:\s*(sha256:[0-9a-f]{64})", md, re.M)
     return m.group(1) if m else None

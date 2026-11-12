@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CENSO BI — ritual AI-DLC v2.1. Genera, valida y registra el censo de un tablero Power BI en PBIP.
+"""CENSO BI — ritual AI-DLC v2.3.6. Genera, valida y registra el censo de un tablero Power BI en PBIP.
 
 La única salida es un Markdown. El script hace todo el trabajo mecánico (inventarios, IDs, posiciones, bindings,
 dependencias, clasificación de uso, conciliación); la IA solo completa los marcadores [IA: ...].
@@ -10,7 +10,8 @@ Comandos (todos de solo lectura sobre el PBIP):
   validar     Revisa el Markdown y lo concilia contra el PBIP.
   comparar    Compara el borrador con el censo vigente: traslada validaciones y escribe el bloque de cambios.
   iniciar-validacion  Prepara un borrador de tipo Validación (mismo PBIP) para registrar respuestas del dueño.
-  registrar   Valida y, si no hay errores, cierra la ejecución: historial, registro de cambios y archivo del censo anterior.
+  registrar   Valida y, si no hay errores, cierra la ejecución: historial, registro de cambios y archivo del censo anterior;
+              después actualiza el diccionario de datos (00_dlc/00_diccionario_datos) con las fuentes del censo (R60).
   guia-validacion  Ficha de cada punto pendiente, en orden, para presentarlo al dueño uno por uno (R59).
   vigencia    Dice si el censo corresponde a la última versión del PBIP y si es apto para el DLC de modificación.
   inventario  (diagnóstico) Vuelca a JSON lo que el script lee del PBIP.
@@ -29,6 +30,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from collections import Counter, defaultdict
 from datetime import datetime
@@ -39,7 +41,32 @@ from censo_analisis import TARJETAS, TIPO_LEGIBLE, analyze  # noqa: E402
 from censo_lectura import elide_long_literals, read_pbip  # noqa: E402
 import censo_versiones as cv  # noqa: E402
 
-RITUAL = "2.3.4"
+RITUAL = "2.3.6"
+# DLC del diccionario de datos (hermano de este DLC en 00_dlc): se actualiza al registrar un censo (R60)
+DICCIONARIO_DIR = Path(__file__).resolve().parents[2] / "00_diccionario_datos"
+
+
+def actualizar_diccionario(censo_vigente: Path, correo: str) -> None:
+    """R60: al registrar un censo, el diccionario de datos incorpora sus fuentes. Si falla, el censo ya quedó
+    registrado: solo se avisa (se puede repetir con «actualiza censos» en el DLC del diccionario)."""
+    script = DICCIONARIO_DIR / "scripts" / "diccionario.py"
+    if not script.exists():
+        print(f"AVISO (R60): no se encontró el DLC del diccionario en {DICCIONARIO_DIR}; el diccionario no se actualizó.")
+        return
+    censos = censo_vigente.resolve().parent.parent  # 02_censo
+    print("\nActualizando el diccionario de datos (R60)…")
+    try:
+        r = subprocess.run([sys.executable, str(script), "actualizar", "--censos", str(censos), "--salida",
+                            str(DICCIONARIO_DIR), "--correo-ejecutor", correo],
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
+        print(r.stdout.rstrip())
+        if r.returncode != 0:
+            print((r.stderr or "").rstrip())
+            print("AVISO (R60): el censo quedó registrado, pero el diccionario no se actualizó. "
+                  "Repetir con «actualiza censos» en el DLC del diccionario.")
+    except Exception as e:  # noqa: BLE001 - el registro del censo ya terminó; no se revierte
+        print(f"AVISO (R60): el censo quedó registrado, pero el diccionario no se actualizó ({e}). "
+              "Repetir con «actualiza censos».")
 for _s in (sys.stdout, sys.stderr):
     try:
         _s.reconfigure(encoding="utf-8")
@@ -987,7 +1014,7 @@ def validate(md: str, pbip: Path | None):
             val, cer = r[ix["Validación del dueño"]], r[ix["Certeza"]]
             resp = r[ix["Respuesta del dueño"]] if "Respuesta del dueño" in ix else "—"
             if val not in CAT["estado_punto"] | {"No requerida"}:
-                err.append(f"Sección 14, {r[0]}: «Validación del dueño» = «{val}» (use «No requerida» o un valor de CAT-12).")
+                err.append(f"Sección 14, {r[0]}: «Validación del dueño» = «{val}» (use «No requerida» o un valor de CAT-11).")
             elif val == "No requerida" and "Inferido" in cer:
                 err.append(f"Sección 14, {r[0]}: es Inferida y no puede ser «No requerida»; queda «Pendiente de validación» hasta que el dueño responda (R55).")
             if val in cv.RESUELTOS and resp in ("—", ""):
@@ -1180,6 +1207,8 @@ def main():
     r.add_argument("--pbip", type=Path, required=True)
     r.add_argument("--alcance", default="Censo completo del PBIP con censo.py")
     r.add_argument("--observaciones", default="")
+    r.add_argument("--sin-diccionario", action="store_true",
+                   help="No actualizar el diccionario de datos al registrar (solo para pruebas; R60)")
     vg = sub.add_parser("vigencia")
     vg.add_argument("--markdown", type=Path, required=True, help="Censo vigente")
     vg.add_argument("--versiones", type=Path, required=True, help="Carpeta 01_bi/01_versiones")
@@ -1197,6 +1226,9 @@ def main():
         R_ = _rutas(args.salida / f"{bi} - censo.md")
         if args.tipo == "Validación":
             sys.exit("Una Validación no genera borrador: use `censo.py iniciar-validacion --markdown <censo vigente> --pbip <PBIP>` (R55).")
+        if args.version in cv.CARPETAS_TRABAJO or args.pbip.parent.name in cv.CARPETAS_TRABAJO:
+            sys.exit(f"CENSO BLOQUEADO (R54): «{args.pbip.parent.name}» es una copia de trabajo, no una versión del tablero. "
+                     "Guarde el tablero terminado como versión nueva en 01_versiones/<versión>/<BI> y cense esa versión.")
         args.huella, args.huella_n = cv.huella(args.pbip)
         if args.tipo == "Inicial" and R_["vigente"].exists():
             sys.exit("Ya existe un censo de este BI: use --tipo Actualización (versión nueva del PBIP) o `iniciar-validacion` (mismo PBIP).")
@@ -1388,23 +1420,19 @@ def main():
             "Validador": f"0 errores, {len(warn)} advertencias ({datetime.now().astimezone().isoformat(timespec='seconds')})",
             "Observaciones": args.observaciones})
         print(f"Ejecución registrada en {R_['historial']}; cambios en {R_['cambios'].name}; censo vigente: {R_['vigente'].name}")
+        if not args.sin_diccionario:
+            actualizar_diccionario(R_["vigente"], mails[0] if mails else "")
     elif args.cmd == "vigencia":
         md = args.markdown.read_text(encoding="utf-8")
         correo, rol = _revisor(args, md)
         print(f"Revisa: {correo} ({rol})")
         R_ = _rutas(args.markdown)
-        bi, ver, hu = R_["bi"], cv.cabecera(md, "Versión analizada"), cv.leer_huella(md)
-        vers = sorted(d.name for d in args.versiones.iterdir() if (d / bi).is_dir()) if args.versiones.is_dir() else []
-        motivos = []
-        print(f"BI: {bi} · versión censada: {ver} · versiones guardadas: {', '.join(vers) or 'ninguna'}")
-        if not vers:
-            motivos.append(f"No se encontró {bi} en {args.versiones}.")
-        elif vers[-1] != ver:
-            motivos.append(f"Hay una versión más reciente sin censar: {vers[-1]} (R53).")
-        if not hu:
-            motivos.append("El censo no tiene huella del PBIP (anterior a v2.3); no se puede confirmar que corresponde al tablero guardado.")
-        elif ver in vers and cv.huella(args.versiones / ver / bi)[0] != hu:
-            motivos.append(f"El PBIP de {ver} cambió después del censo (huella distinta) (R53).")
+        bi, ver = R_["bi"], cv.cabecera(md, "Versión analizada")
+        vt = cv.vigencia_tablero(md, args.versiones, bi)
+        motivos = list(vt["motivos"])
+        print(f"BI: {bi} · versión censada: {ver} · versiones guardadas: {', '.join(vt['versiones']) or 'ninguna'}")
+        if vt["trabajo"]:
+            print("Nota: " + vt["trabajo"])
         if R_["borrador"].exists():
             motivos.append(f"Hay un borrador sin cerrar: {R_['borrador'].name}.")
         print("Vigencia: " + ("VIGENTE" if not motivos else "DESACTUALIZADO"))

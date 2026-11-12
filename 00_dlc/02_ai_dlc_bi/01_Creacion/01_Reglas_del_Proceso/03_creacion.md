@@ -49,6 +49,20 @@ Si solicita opciones, presentar para cada una tipo de visual, pregunta que respo
 
 ## 6. Fuentes y seguridad de conexión
 
+### 6.1 Diccionario de datos y simulación de conexión (obligatorio)
+
+Antes de definir cualquier conexión, aplicar `../../00_Base_Compartida/16_diccionario_datos_y_simulacion.md`:
+1. validar que el diccionario de datos (`MCP_POWERBI\00_dlc\00_diccionario_datos`) está vigente; si no, detener la parte de fuentes;
+2. ubicar en el diccionario la fuente que nombra el usuario (ej.: "Athena, Entregas Totales");
+3. presentar la ficha del objeto y decidir con el usuario columnas (incluidos datos personales) y filtros de carga;
+4. construir en modo simulación (`ModoSimulacion`, `Sim_` / `Real_` / `Src_`) con el esquema del diccionario;
+5. antes de liberar, cambiar a la conexión real y verificar el esquema contra la ficha;
+6. si la fuente no está en el diccionario, solicitar los datos de conexión no secretos (o el esquema) y declararla fuente nueva.
+
+La IA no crea tablas ni vistas en la base de datos. Una tabla inexistente en origen es una dependencia externa.
+
+### 6.2 Registro y seguridad
+
 Registrar servidor, motor, base, esquema, tablas/vistas/archivos, método de conexión, entorno, frecuencia de actualización y dependencias técnicas cuando se conozcan. No solicitar ni escribir contraseñas, tokens, secretos ni cadenas con credenciales en los archivos del DLC. Usar mecanismos autorizados de acceso y documentar únicamente referencias no secretas.
 
 Validar permisos, gateway, actualización y propietario de fuente cuando apliquen. No afirmar que una conexión o actualización funciona sin prueba o evidencia.
@@ -57,14 +71,14 @@ Validar permisos, gateway, actualización y propietario de fuente cuando aplique
 
 Definir con el analista la granularidad, tablas de hechos/dimensiones, claves, relaciones, cardinalidad, dirección de filtro, calendario, medidas, columnas/tablas calculadas, transformaciones y DAX. Evaluar el diseño apropiado (por ejemplo, estrella cuando aplique), sin imponer un patrón si el caso requiere otra estructura justificada.
 
-Antes de crear lógica nueva, revisar si existe medida, columna, tabla o transformación reutilizable. Seleccionar columnas y filtrar datos por necesidad funcional y rendimiento, pero no eliminar información ni cambiar lógica sin autorización explícita. Validar tipos de datos, claves, nulos, duplicados y relaciones.
+Antes de crear lógica nueva, revisar si existe medida, columna, tabla o transformación reutilizable, incluidas las documentadas en los censos de otros BI (medidas, tabla "Fecha De Actualización", tema); no reutilizar objetos con referencia rota o con hallazgos abiertos sin resolverlos. Seleccionar columnas y filtrar datos por necesidad funcional y rendimiento, pero no eliminar información ni cambiar lógica sin autorización explícita. Validar tipos de datos, claves, nulos, duplicados y relaciones.
 
 ## 8. Diseño corporativo
 
-Aplicar `00_Base_Compartida/02_diseno_corporativo.md` y usar la fuente oficial del logo:
-`MCP_POWERBI\00_dlc\02_ai_dlc_creacion_modificacion\00_fuentes\Logo_Nebula.png`
+Aplicar `../../00_Base_Compartida/02_diseno_corporativo.md` y usar la fuente oficial del logo:
+`MCP_POWERBI\00_dlc\02_ai_dlc_bi\00_fuentes\Logo_Nebula.png`
 
-Si el logo no está disponible, informar y solicitar la fuente o autorización; no sustituirlo automáticamente. Mantener jerarquía de filtros, header, tipografía, paleta, cards, botones, gráficos, tablas, leyendas, navegación y consistencia entre páginas según la regla corporativa vigente. No confundir Theme JSON con un reemplazo de las reglas de layout.
+Se usa únicamente el logo Nebula. Si no está disponible, informar y solicitar la fuente o autorización; no sustituirlo automáticamente. Segmentaciones en estilo oscuro y botones con radio 6 px. Las decisiones listadas como pendientes en la sección 4.17 del diseño se preguntan en el levantamiento; no se resuelven por cuenta de la IA. Mantener jerarquía de filtros, header, tipografía, paleta, cards, botones, gráficos, tablas, leyendas, navegación y consistencia entre páginas según la regla corporativa vigente. No confundir Theme JSON con un reemplazo de las reglas de layout.
 
 ## 9. Seguridad y operación
 
@@ -74,14 +88,14 @@ Evaluar RLS, permisos de acceso, actualización, gateway, parámetros por entorn
 
 Desde el inicio:
 1. confirmar nombre exacto;
-2. crear/localizar `MCP_POWERBI\01_bi\01_versiones\00_original\[Nombre exacto BI]\` para el README histórico y la trazabilidad;
-3. crear el README y actualizar `MCP_POWERBI\01_bi\01_versiones\00_original\REGISTRO_CONTROL_TABLEROS.md`;
+2. crear/localizar `MCP_POWERBI\02_censo\[Nombre exacto BI]\` para el README histórico y la trazabilidad;
+3. crear el README y actualizar `MCP_POWERBI\02_censo\REGISTRO_CONTROL_TABLEROS.md`;
 4. crear y usar la carpeta de trabajo `MCP_POWERBI\01_bi\01_versiones\01_kiro\[Nombre exacto BI]\`;
 5. construir exclusivamente en Kiro;
-6. al aprobarse la entrega, identificar la versión base liberada y conservarla protegida en `00_original` según el mecanismo autorizado;
+6. al aprobarse la entrega, guardar la versión base en `01_versiones\00_original\[Nombre exacto BI]\` y censarla (tipo `Inicial`; el censo actualiza el diccionario);
 7. actualizar documentación, decisiones, evidencias, versión y estado final.
 
-Para una creación nueva, CENSO se marca `No aplica`. Si se determina que el trabajo parte de un BI existente, reclasificarlo antes de continuar.
+Para una creación nueva, el CENSO del BI que se crea se marca `No aplica`; la consulta del diccionario de datos (6.1), que consolida todos los censos, sí es obligatoria. Si se determina que el trabajo parte de un BI existente, reclasificarlo antes de continuar.
 
 ## 11. Pruebas y criterios de aceptación
 

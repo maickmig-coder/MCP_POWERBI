@@ -1,0 +1,954 @@
+{
+  "diccionario_id": "20261112T172206-diccionario",
+  "generado": "2026-11-12T17:22:06-05:00",
+  "version": "2.3",
+  "ejecutor": "miguel.b@nebula.com.co",
+  "censos": [
+    {
+      "bi": "GC - Flotillas",
+      "census_id": "20261105T124212-gc-flotillas",
+      "fecha": "2026-11-05T12:42:12-05:00",
+      "estado": "Completado pendiente de validación",
+      "consumible": true,
+      "motivo": "",
+      "archivo": "GC - Flotillas/GC - Flotillas - censo.md",
+      "hash": "04cab1bfe0d0e3a5",
+      "vigente": true,
+      "motivos_vigencia": []
+    }
+  ],
+  "conexiones": [
+    {
+      "conexion_id": "amazon_athena:Athena_ODBC2",
+      "motor": "Amazon Athena",
+      "conector": "AmazonAthena.Databases",
+      "argumentos": [
+        "Athena_ODBC2"
+      ],
+      "destino": "Athena_ODBC2",
+      "bi": [
+        "GC - Flotillas"
+      ],
+      "objetos": [
+        "amazon_athena:Athena_ODBC2/AwsDataCatalog/bi_materialized_data/entregas_totales"
+      ]
+    }
+  ],
+  "objetos": [
+    {
+      "objeto_id": "amazon_athena:Athena_ODBC2/AwsDataCatalog/bi_materialized_data/entregas_totales",
+      "conexion_id": "amazon_athena:Athena_ODBC2",
+      "motor": "Amazon Athena",
+      "conector": "AmazonAthena.Databases",
+      "argumentos": [
+        "Athena_ODBC2"
+      ],
+      "acceso": "Navegación",
+      "navegacion": [
+        {
+          "Kind": "Database",
+          "Name": "AwsDataCatalog"
+        },
+        {
+          "Kind": "Schema",
+          "Name": "bi_materialized_data"
+        },
+        {
+          "Kind": "Table",
+          "Name": "entregas_totales"
+        }
+      ],
+      "pasos_nav": [
+        {
+          "registro": "Name=\"AwsDataCatalog\",Kind=\"Database\"",
+          "campo": "Data",
+          "nombre": "AwsDataCatalog"
+        },
+        {
+          "registro": "Name=\"bi_materialized_data\",Kind=\"Schema\"",
+          "campo": "Data",
+          "nombre": "bi_materialized_data"
+        },
+        {
+          "registro": "Name=\"entregas_totales\",Kind=\"Table\"",
+          "campo": "Data",
+          "nombre": "entregas_totales"
+        }
+      ],
+      "sql": null,
+      "nombre": "entregas_totales",
+      "columnas": {
+        "fechadecorte": {
+          "nombre_origen": "fechadecorte",
+          "tipos": {
+            "datetime": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "FechaDeCorte"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "idempresas": {
+          "nombre_origen": "idempresas",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "IdEmpresas"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "año": {
+          "nombre_origen": "año",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "año"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "codigoempresa": {
+          "nombre_origen": "codigoempresa",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "CodigoEmpresa"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "empresa": {
+          "nombre_origen": "empresa",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Empresa"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "codigocentro": {
+          "nombre_origen": "codigocentro",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "CodigoCentro"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "centro": {
+          "nombre_origen": "centro",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Centro"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "codigoseccion": {
+          "nombre_origen": "codigoseccion",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "CodigoSeccion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "seccion": {
+          "nombre_origen": "seccion",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Seccion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "codigomarca": {
+          "nombre_origen": "codigomarca",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "CodigoMarca"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "marca": {
+          "nombre_origen": "marca",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Marca"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "codigogama": {
+          "nombre_origen": "codigogama",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "CodigoGama"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "gama": {
+          "nombre_origen": "gama",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Gama"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "codigomodelo": {
+          "nombre_origen": "codigomodelo",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "CodigoModelo"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "añomodelo": {
+          "nombre_origen": "añomodelo",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "AñoModelo"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "modelo": {
+          "nombre_origen": "modelo",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Modelo"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "cedulavendedor": {
+          "nombre_origen": "cedulavendedor",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "CedulaVendedor"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "nombrevendedor": {
+          "nombre_origen": "nombrevendedor",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "NombreVendedor"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "nit": {
+          "nombre_origen": "nit",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Nit"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "type text",
+          "cambiado_en": [
+            [
+              "GC - Flotillas",
+              "int64"
+            ]
+          ]
+        },
+        "nombretercero": {
+          "nombre_origen": "nombretercero",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "NombreTercero"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "cantidad": {
+          "nombre_origen": "cantidad",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Cantidad"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "valor": {
+          "nombre_origen": "valor",
+          "tipos": {
+            "double": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Valor"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "double",
+          "en_catalogo": true,
+          "tipo": "double",
+          "tipo_m": "type number",
+          "cambiado_en": []
+        },
+        "tipo": {
+          "nombre_origen": "tipo",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "tipo"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "fechaentregacliente": {
+          "nombre_origen": "fechaentregacliente",
+          "tipos": {
+            "datetime": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "FechaEntregaCliente"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "fechafactura": {
+          "nombre_origen": "fechafactura",
+          "tipos": {
+            "datetime": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "FechaFactura"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "fechamod": {
+          "nombre_origen": "fechamod",
+          "tipos": {
+            "datetime": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "FechaMod"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "vin": {
+          "nombre_origen": "vin",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "VIN"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "entrega": {
+          "nombre_origen": "entrega",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "Entrega"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "placa": {
+          "nombre_origen": "placa",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "placa"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "fechamatriculacion": {
+          "nombre_origen": "fechamatriculacion",
+          "tipos": {
+            "datetime": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "fechamatriculacion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "combustible": {
+          "nombre_origen": "combustible",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "combustible"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "procedencia": {
+          "nombre_origen": "procedencia",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "procedencia"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "procedenciadetalle": {
+          "nombre_origen": "procedenciadetalle",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "procedenciadetalle"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "tipooportunidad": {
+          "nombre_origen": "tipooportunidad",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "tipooportunidad"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "correo": {
+          "nombre_origen": "correo",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "correo"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "telefono": {
+          "nombre_origen": "telefono",
+          "tipos": {},
+          "nombres_modelo": {},
+          "quitada_en": [
+            "GC - Flotillas"
+          ],
+          "pii": true,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "codunidadnegocio": {
+          "nombre_origen": "codunidadnegocio",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "codunidadnegocio"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "nombreunidadnegocio": {
+          "nombre_origen": "nombreunidadnegocio",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "nombreunidadnegocio"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "tipocliente": {
+          "nombre_origen": "tipocliente",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "tipocliente"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "nombrevendedorhomologado": {
+          "nombre_origen": "nombrevendedorhomologado",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "nombrevendedorhomologado"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "clase": {
+          "nombre_origen": "clase",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "clase"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "color": {
+          "nombre_origen": "color",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "color"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "esultimamodificacion": {
+          "nombre_origen": "esultimamodificacion",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "esultimamodificacion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "emailvendedor": {
+          "nombre_origen": "emailvendedor",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "emailvendedor"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "tipoventa_vista": {
+          "nombre_origen": "tipoventa_vista",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "tipoventa_vista"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "rowhash": {
+          "nombre_origen": "rowhash",
+          "tipos": {
+            "string": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "rowhash"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "extractionid": {
+          "nombre_origen": "extractionid",
+          "tipos": {
+            "int64": [
+              "GC - Flotillas"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Flotillas": "extractionid"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        }
+      },
+      "usos": [
+        {
+          "bi": "GC - Flotillas",
+          "census_id": "20261105T124212-gc-flotillas",
+          "tabla_modelo": "Entregas Totales",
+          "filtros_carga": [
+            "([Cantidad] = 1)",
+            "([tipo] = \"Nuevos\")"
+          ],
+          "columnas_quitadas": [
+            "telefono"
+          ]
+        }
+      ],
+      "estructura": "Catálogo Athena (diccionario-datos.md)",
+      "consulta_sim": "Sim_entregas_totales",
+      "consulta_real": "Real_entregas_totales",
+      "consulta_src": "Src_entregas_totales",
+      "m_real": "let\n    Origen = AmazonAthena.Databases(\"Athena_ODBC2\", null, []),\n    Nav1_AwsDataCatalog = Origen{[Name=\"AwsDataCatalog\",Kind=\"Database\"]}[Data],\n    Nav2_bi_materialized_data = Nav1_AwsDataCatalog{[Name=\"bi_materialized_data\",Kind=\"Schema\"]}[Data],\n    Nav3_entregas_totales = Nav2_bi_materialized_data{[Name=\"entregas_totales\",Kind=\"Table\"]}[Data]\nin\n    Nav3_entregas_totales",
+      "m_simulacion": "// Versión de práctica: estructura real del origen (catálogo de Athena o, si no está, censos); 0 filas. No contiene datos.\nlet\n    Fuente = #table(\n        type table [\n            #\"fechadecorte\" = type datetime,\n            #\"idempresas\" = Int64.Type,\n            #\"año\" = Int64.Type,\n            #\"codigoempresa\" = Int64.Type,\n            #\"empresa\" = type text,\n            #\"codigocentro\" = Int64.Type,\n            #\"centro\" = type text,\n            #\"codigoseccion\" = Int64.Type,\n            #\"seccion\" = type text,\n            #\"codigomarca\" = Int64.Type,\n            #\"marca\" = type text,\n            #\"codigogama\" = Int64.Type,\n            #\"gama\" = type text,\n            #\"codigomodelo\" = type text,\n            #\"añomodelo\" = type text,\n            #\"modelo\" = type text,\n            #\"cedulavendedor\" = type text,\n            #\"nombrevendedor\" = type text,\n            #\"nit\" = type text,\n            #\"nombretercero\" = type text,\n            #\"cantidad\" = Int64.Type,\n            #\"valor\" = type number,\n            #\"tipo\" = type text,\n            #\"fechaentregacliente\" = type datetime,\n            #\"fechafactura\" = type datetime,\n            #\"fechamod\" = type datetime,\n            #\"vin\" = type text,\n            #\"entrega\" = type text,\n            #\"placa\" = type text,\n            #\"fechamatriculacion\" = type datetime,\n            #\"combustible\" = type text,\n            #\"procedencia\" = type text,\n            #\"procedenciadetalle\" = type text,\n            #\"tipooportunidad\" = type text,\n            #\"correo\" = type text,\n            #\"telefono\" = type text,\n            #\"codunidadnegocio\" = Int64.Type,\n            #\"nombreunidadnegocio\" = type text,\n            #\"tipocliente\" = type text,\n            #\"nombrevendedorhomologado\" = type text,\n            #\"clase\" = type text,\n            #\"color\" = type text,\n            #\"esultimamodificacion\" = Int64.Type,\n            #\"emailvendedor\" = type text,\n            #\"tipoventa_vista\" = type text,\n            #\"rowhash\" = type text,\n            #\"extractionid\" = Int64.Type\n        ],\n        {}\n    )\nin\n    Fuente"
+    }
+  ],
+  "avisos": [],
+  "hash_catalogo": "9672c0a894956c0c",
+  "tablas_en_catalogo": 654
+}

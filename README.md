@@ -1,116 +1,62 @@
 # Nebula BI — Repositorio de Business Intelligence y AI-DLC
 
-Repositorio central del ecosistema de Business Intelligence de **Nebula Data Lake**.
-Reúne la metodología de trabajo asistido por IA (**AI-DLC**), los tableros de
-Power BI, los censos técnico-funcionales y el diccionario de datos del data lake.
-
-## ¿Qué contiene este repositorio?
-
-- **Metodología AI-DLC** para censar, crear, modificar y depurar tableros de BI
-  de forma trazable y repetible.
-- **Tableros Power BI** versionados (originales y versiones de trabajo).
-- **Censos** técnico-funcionales de los tableros existentes.
-- **Diccionario de datos** del data lake generado desde AWS Glue Data Catalog.
+Repositorio central de los tableros de Power BI de **Nebula** y de la metodología de trabajo asistido por IA
+(**AI-DLC**) con la que se documentan, crean, modifican y depuran. Los tableros se guardan en formato **PBIP**.
+Los mismos procesos los ejecutan el agente **Kiro** (`.kiro/steering/`) y Claude Code (`CLAUDE.md`).
 
 ## Estructura
 
 ```text
-NIGGA/
-│
-├── README.md                     ← este archivo
-├── diccionario-datos.md          ← diccionario de datos del Nebula Data Lake
-│
-├── 00_dlc/                       ← metodología AI-DLC
-│   ├── 00_originales/            ← paquetes .zip históricos de la metodología
-│   ├── 01_ai-dlc-censo/          ← ritual de CENSO (análisis sin modificar BI)
-│   └── 02_ai_dlc_creacion_modificacion/
-│                                 ← reglas de creación, modificación y depuración
-│
-├── 01_bi/                        ← tableros Power BI
-│   └── 01_versiones/
-│       ├── 00_original/          ← tableros originales + trazabilidad
-│       └── 01_kiro/              ← versiones de trabajo
-│
-└── 02_censo/                     ← censos de tableros
-    ├── GC - Flotillas.md
-    └── GC - Leads MG.md
+MCP_POWERBI/
+├── README.md                       ← este archivo
+├── CLAUDE.md                       ← reglas del proyecto para Claude Code
+├── diccionario-datos.md            ← catálogo de Athena (copia del repositorio nbp033-ingenieria-inversa-tableros)
+├── .kiro/
+│   ├── settings/mcp.json           ← servidores MCP de Kiro (Power BI, documentación de AWS y Microsoft)
+│   └── steering/                   ← guías instaladas para Kiro (censo y diccionario)
+├── 00_dlc/                         ← metodología AI-DLC
+│   ├── 00_diccionario_datos/       ← DLC del diccionario de datos + diccionario generado
+│   ├── 01_ai-dlc-censo/            ← DLC del censo (radiografía de un tablero, sin modificarlo)
+│   └── 02_ai_dlc_bi/               ← DLC de tableros
+│       ├── 00_Base_Compartida/     ← reglas comunes a Creación, Modificación y Depuración
+│       ├── 00_fuentes/             ← Logo_Nebula.png
+│       ├── 01_Creacion/
+│       ├── 02_Modificacion/
+│       └── 03_Depuracion/
+├── 01_bi/01_versiones/             ← versiones guardadas de cada tablero (no se editan)
+│   ├── 00_original/<BI>/           ← primera versión aprobada
+│   ├── NN_<proceso>_<ID>/<BI>/     ← versiones siguientes (01_modificacion_MOD-001…)
+│   └── 01_kiro/<BI>/               ← copia de trabajo del agente (no es una versión)
+└── 02_censo/
+    ├── REGISTRO_CONTROL_TABLEROS.md  ← quién trabaja cada tablero y en qué estado está
+    └── <BI>/                         ← censo vigente, cambios, historial y README del tablero
 ```
 
-## Metodología AI-DLC
-
-El proyecto trabaja con un ciclo de desarrollo asistido por IA (AI-DLC) dividido
-en dos grandes rituales complementarios:
-
-| Ritual | Pregunta que responde | Carpeta |
-|--------|-----------------------|---------|
-| **CENSO** | ¿Cómo está construido actualmente el BI? | `00_dlc/01_ai-dlc-censo` |
-| **Creación / Modificación / Depuración** | ¿Qué debemos construir o cambiar y cómo? | `00_dlc/02_ai_dlc_creacion_modificacion` |
-
-### CENSO
-Define un ritual repetible para analizar cualquier BI **sin modificarlo** y
-producir un censo estructurado: estructura técnica, finalidad funcional,
-elementos utilizados y no utilizados, reglas de negocio, dependencias, vacíos de
-información y propuestas de revisión basadas en evidencia.
-
-Toda afirmación se clasifica como **Encontrado** (evidencia directa),
-**Inferido** (inferencia razonable) o **Desconocido** (sin información suficiente).
-
-### Creación, Modificación y Depuración
-Consolida las reglas para los tres tipos de trabajo sobre tableros:
-
-- **Creación:** BI que no existía previamente.
-- **Modificación:** cambio funcional o técnico sobre un BI existente.
-- **Depuración y Mejora:** revisión de integridad, datos, modelo, fuentes,
-  consultas, DAX, rendimiento y elementos innecesarios.
-
-Principios clave:
-
-- No asumir información que pueda cambiar el resultado; preguntar cuando falte.
-- Diferenciar solicitud del usuario, obligación técnica y propuesta de IA; la
-  decisión final es del analista.
-- Conservar la estética actual salvo solicitud, regla corporativa o necesidad
-  técnica justificada.
-- No modificar elementos fuera del alcance aprobado.
-- Mantener trazabilidad de original, cambios y validaciones en todo momento.
-
-## Trazabilidad de tableros
-
-Cada tablero mantiene un único `README.md` histórico dentro de su carpeta, que
-acumula responsable, solicitante, fechas, tipo de trabajo, versiones, cambios,
-decisiones, validaciones, alertas y pendientes. Si un tablero se modifica varias
-veces no se crea un README nuevo: se continúa la misma historia.
-
-Existe además un registro central en:
+## Cómo se trabaja
 
 ```text
-01_bi/01_versiones/00_original/REGISTRO_CONTROL_TABLEROS.md
+Censo  ──►  Diccionario de datos  ──►  Creación / Modificación / Depuración  ──►  versión nueva  ──►  Censo
 ```
 
-El control de personas se simplifica a dos correos: quien trabaja el tablero y
-quien lo solicita.
+| Proceso | Qué hace | Dónde |
+|---|---|---|
+| **Censo** | Documenta un tablero tal como está: fuentes, modelo, cálculos, gráficas, filtros, reglas de negocio y hallazgos. Solo lectura. Al cerrarse, actualiza el diccionario de datos. | `00_dlc/01_ai-dlc-censo` |
+| **Diccionario de datos** | Inventario de conexiones, tablas y columnas de todos los tableros, con la estructura real del catálogo de Athena y una «versión de práctica» de cada tabla para construir sin datos ni contraseñas. | `00_dlc/00_diccionario_datos` |
+| **Creación** | Construye un tablero nuevo con fuentes del diccionario y el diseño corporativo V10. | `00_dlc/02_ai_dlc_bi/01_Creacion` |
+| **Modificación** | Cambia un tablero existente. Solo parte de un censo **vigente** (describe el tablero final) y **validado** por el dueño. | `00_dlc/02_ai_dlc_bi/02_Modificacion` |
+| **Depuración** | Corrige integridad y rendimiento de un tablero existente; no agrega ni rediseña. Misma puerta del censo. | `00_dlc/02_ai_dlc_bi/03_Depuracion` |
 
-## Diccionario de datos
+## Principios
 
-`diccionario-datos.md` documenta el **Nebula Data Lake** organizado por capas:
+- Toda afirmación lleva certeza: **Encontrado**, **Inferido** o **Desconocido**; no se inventan fuentes, tipos ni reglas.
+- Se trabaja en la copia `01_kiro`; las versiones guardadas no se editan. Cada trabajo termina en una versión nueva censada.
+- Nada se elimina de un tablero sin la aprobación registrada del dueño; el censo solo lista candidatos.
+- Las propuestas de la IA no se aplican sin aprobación del analista.
+- Control de personas: solo dos correos (quien trabaja y quien solicita/es dueño).
+- Nunca se guardan contraseñas, tokens ni cadenas de conexión con secretos, ni se crean tablas o vistas en las bases.
 
-- **🥉 Bronce (raw / ingesta):** datos extraídos de sistemas operacionales
-  (MySQL, SQL Server, Redshift) sin transformación de negocio, más la sub-capa de
-  referencia/maestras.
-- **🥈 Plata / Materialized:** datos con lógica de negocio aplicada
-  (normalización, joins, agregaciones), consumidos desde Athena y Power BI.
+## Para empezar
 
-Se genera automáticamente desde el AWS Glue Data Catalog e incluye el detalle de
-schemas, tablas y columnas por capa.
-
-## Flujo de trabajo recomendado
-
-1. **Censar** el tablero con el ritual de `00_dlc/01_ai-dlc-censo` para entender
-   cómo está construido.
-2. **Planear** la creación o el cambio siguiendo las reglas de
-   `00_dlc/02_ai_dlc_creacion_modificacion`.
-3. **Trabajar** sobre una versión de trabajo en `01_bi/01_versiones/01_kiro`,
-   nunca sobre el original.
-4. **Validar** el BI completo (modelo, fuentes, DAX, visuales, integridad,
-   rendimiento) antes de declararlo listo.
-5. **Registrar** responsable, cambios y decisiones en el README del tablero y en
-   el registro central.
+- Leer `CLAUDE.md` (resumen de reglas) y el `README.md` del proceso que se va a ejecutar.
+- Diccionario de datos: escribir «menú del diccionario».
+- Censo: pedir «censar <tablero>» con los dos correos (quien censa y dueño del tablero).

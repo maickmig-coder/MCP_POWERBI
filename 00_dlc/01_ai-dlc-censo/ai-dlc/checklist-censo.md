@@ -1,4 +1,4 @@
-# Checklist del CENSO BI (v2.3.4)
+# Checklist del CENSO BI (v2.3.6)
 
 **[S]** = lo genera `censo.py borrador`. **[V]** = lo comprueba `censo.py validar`. Sin marca = lo revisa la IA o una persona. Un punto con [S] no debe rehacerse a mano.
 
@@ -62,4 +62,5 @@
 - [ ] **[V]** La huella del PBIP coincide con la del encabezado (R53).
 - [ ] **[V]** `Completado y validado` sin puntos `Pendiente de validación` en 14 y 16 (R56).
 - [ ] `censo.py registrar` archivó el censo anterior en `versiones/`, agregó el bloque a `[BI] - cambios.md` y la fila a `historial-censos.md`; lo anterior sigue intacto.
+- [ ] `censo.py registrar` actualizó el diccionario de datos («ACTUALIZADO» o «SIN CAMBIOS»); si mostró un aviso R60, se informa al usuario para repetir «actualiza censos».
 - [ ] `censo.py vigencia` ejecutado: su resultado (APTO / NO APTO) se informa al usuario (R56).

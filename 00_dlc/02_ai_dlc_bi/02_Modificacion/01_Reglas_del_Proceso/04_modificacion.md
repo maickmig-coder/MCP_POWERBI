@@ -1,16 +1,16 @@
 # 6. REGLAS DE MODIFICACIÓN
 
-1. Solicitar nombre exacto.
-2. Buscar CENSO.
-3. Si no existe, bloquear y realizar CENSO.
-4. Preservar PBIP original.
-5. Analizar solicitud y alcance.
-6. Identificar dependencias.
-7. Clasificar riesgo.
-8. Registrar propuesta/decisión.
-9. Modificar.
-10. Validar.
-11. Revisar integridad completa.
+1. Solicitar nombre exacto y los dos correos.
+2. Verificar la puerta del censo (`vigencia` = VIGENTE y APTO).
+3. Preparar la copia de trabajo desde la última versión guardada.
+4. Analizar solicitud y alcance.
+5. Identificar dependencias (y, si hay fuentes nuevas, el diccionario de datos).
+6. Clasificar riesgo.
+7. Registrar propuesta/decisión.
+8. Modificar en `01_kiro`.
+9. Validar.
+10. Revisar integridad completa.
+11. Guardar la versión nueva y censarla.
 
 ## Estética
 
@@ -99,13 +99,13 @@ Registrar correo de quien trabaja/modifica
 ↓
 Registrar correo de quien solicita/es dueño
 ↓
-Buscar CENSO
+censo.py vigencia
 ↓
-¿Existe CENSO?
-├── No → Bloquear modificación y solicitar CENSO
-└── Sí → Continuar
+¿VIGENTE y APTO?
+├── No → Bloquear (censo requerido, desactualizado o sin validar)
+└── Sí → Registrar census_id de partida
 ↓
-Identificar versión/original
+Copia de trabajo desde la última versión guardada
 ↓
 Analizar alcance y dependencias
 ↓
@@ -125,6 +125,8 @@ Actualizar README e histórico
 ↓
 Actualizar registro central
 ↓
+Guardar versión nueva NN_modificacion_<ID> y censarla (Actualización)
+↓
 Listo para entrega
 ```
 
@@ -132,7 +134,7 @@ Listo para entrega
 ## Registro individual de cada cambio
 
 Además del README histórico, cada modificación relevante debe documentarse
-mediante `00_Base_Compartida/12_plantilla_registro_cambio.md`.
+mediante `../../00_Base_Compartida/12_plantilla_registro_cambio.md`.
 
 El registro debe permitir responder:
 
@@ -150,117 +152,47 @@ El registro debe permitir responder:
 El registro individual no reemplaza el README; ambos se complementan.
 
 
-# REGLA BLOQUEANTE — CENSO OBLIGATORIO Y CONSERVACIÓN DEL PBIP ORIGINAL
+## Puerta del censo: solo un censo del tablero final (R53, R56)
 
-## Cuando no existe CENSO
+Aplicar `../../00_Base_Compartida/01_rutas_y_censo.md`, sección «Entrada del censo según el proceso»:
 
-Si se solicita modificar un BI existente y **no existe un CENSO del tablero en**:
+1. Solicitar el **nombre exacto del BI** y los dos correos.
+2. Ejecutar `censo.py vigencia` sobre `MCP_POWERBI\02_censo\[BI]\[BI] - censo.md`.
+3. Según el resultado:
+   - sin censo → `BLOQUEADO — CENSO REQUERIDO` (censo `Inicial` con el DLC del censo);
+   - `DESACTUALIZADO` → `BLOQUEADO — CENSO DESACTUALIZADO` (el censo no describe el tablero final: censar la última
+     versión guardada, tipo `Actualización`);
+   - `VIGENTE` pero `NO APTO` → `BLOQUEADO — CENSO SIN VALIDAR` (validación con el dueño);
+   - `VIGENTE` y `APTO` → continuar y registrar el `census_id` de partida en el README.
+4. Preparar la copia de trabajo en `01_kiro\[BI]\` **desde la última versión guardada** que indica `vigencia`.
 
-```text
-MCP_POWERBI\02_censo
-```
+El AI-DLC no puede saltarse esta puerta ni reconstruir el estado del tablero por inferencia. Un bloqueo queda
+registrado en el README (y en el Registro de Cambio cuando corresponda) con su causa y la fecha en que se habilitó.
 
-la modificación **DEBE QUEDAR BLOQUEADA**.
+## Cierre: versión nueva y censo
 
-No se debe modificar el BI basándose únicamente en el archivo actual.
+1. Con la aprobación de la entrega, guardar el resultado como **versión nueva**
+   `MCP_POWERBI\01_bi\01_versiones\NN_modificacion_<ID>\[BI]\` (NN = siguiente número de ese tablero). Nunca sobrescribir
+   una versión existente ni editar un PBIP dentro de `01_versiones`.
+2. Censar esa versión con el DLC del censo: tipo `Actualización`, `--origen "DLC de modificación <ID>"`. Al registrarse,
+   el censo actualiza el diccionario de datos (R60).
+3. Registrar en el README el `census_id` de cierre y la ruta de la versión entregada.
 
-### Procedimiento obligatorio
+El trabajo no se declara cerrado hasta que ese censo esté registrado.
 
-1. Solicitar el **nombre exacto del BI**.
-2. Verificar la existencia del CENSO correspondiente en:
+## Fuentes nuevas: diccionario de datos
 
-```text
-MCP_POWERBI\02_censo
-```
-
-3. Si el CENSO no existe, informar que la modificación queda bloqueada.
-4. Conservar el BI original como **PBIP** en:
-
-```text
-MCP_POWERBI\01_bi\01_versiones\00_original\[Nombre exacto BI]\
-```
-
-5. Ejecutar el ritual de CENSO definido en:
-
-```text
-MCP_POWERBI\00_dlc\01_ai-dlc-censo
-```
-
-6. Guardar el resultado del CENSO en:
-
-```text
-MCP_POWERBI\02_censo
-```
-
-7. Verificar que el CENSO quedó disponible y corresponde al BI exacto.
-8. Solo después de esta verificación se puede continuar con la modificación.
-
-### Ejemplo
-
-Para:
-
-```text
-GC - Leads MG
-```
-
-el original debe conservarse en:
-
-```text
-MCP_POWERBI\01_bi\01_versiones\00_original\GC - Leads MG\
-```
-
-y el CENSO debe quedar registrado en:
-
-```text
-MCP_POWERBI\02_censo
-```
-
-### Prohibición
-
-El AI-DLC **no puede saltarse el CENSO** para avanzar más rápido con una
-modificación.
-
-Si el CENSO no existe, el estado de la solicitud debe ser:
-
-```text
-BLOQUEADO — CENSO REQUERIDO
-```
-
-La modificación solo cambia a estado de ejecución cuando el CENSO ha sido
-realizado, guardado, está disponible/legible y se ha verificado que corresponde
-al BI exacto.
-
-## Cuando el CENSO sí existe
-
-Si el CENSO existe:
-
-1. cargarlo como contexto del estado actual del BI;
-2. verificar que corresponde al nombre exacto del tablero;
-3. conservar el PBIP original sin modificarlo;
-4. continuar con el análisis de alcance, dependencias, riesgo y propuesta;
-5. ejecutar únicamente los cambios aprobados;
-6. realizar las validaciones correspondientes;
-7. actualizar el README y el Registro de Cambio.
-
-## Relación con el Registro de Cambio
-
-Cuando la modificación estuvo inicialmente bloqueada por ausencia de CENSO,
-esta situación debe quedar documentada en el Registro de Cambio o en el
-histórico del README, indicando:
-
-- CENSO no encontrado;
-- modificación bloqueada;
-- PBIP original conservado;
-- CENSO solicitado/realizado;
-- ruta donde quedó el CENSO;
-- fecha en que se habilitó nuevamente la modificación.
-
+Si la modificación agrega una fuente, tabla o columna de origen, aplicar
+`../../00_Base_Compartida/16_diccionario_datos_y_simulacion.md` igual que Creación: ubicarla en el diccionario
+(tablas de los tableros y catálogo de Athena), decidir columnas y filtros con el dueño, construir con la versión de
+práctica y verificar la conexión real antes de entregar. Si un cambio quita o renombra columnas que otros tableros
+usan, consultar antes «¿qué tableros usan X?».
 
 ## Condiciones de parada adicionales
 
 Además de la ausencia de CENSO, detener la ejecución (sin modificar archivos) si:
 - no se puede identificar de forma inequívoca el BI;
-- el PBIP original no está disponible y no se puede preservar;
+- la última versión guardada del tablero no está disponible en `01_versiones`;
 - no se puede preparar una copia de trabajo separada en `01_kiro`;
 - faltan permisos o herramientas para validar un cambio que puede afectar resultados;
 - hay una decisión obligatoria del analista pendiente.

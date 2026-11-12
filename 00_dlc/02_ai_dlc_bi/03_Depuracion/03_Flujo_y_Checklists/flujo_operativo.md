@@ -11,7 +11,7 @@ Buscar CENSO en MCP_POWERBI\02_censo
   ├─ Ausente / incorrecto / inaccesible → BLOQUEAR y ejecutar ritual CENSO
   └─ Válido → continuar
   ↓
-Proteger PBIP original en 00_original
+Verificar censo con vigencia (VIGENTE y APTO) y tomar la última versión guardada
   ↓
 Preparar copia de trabajo en 01_kiro
   ↓
@@ -49,7 +49,7 @@ Listo para entrega si no quedan bloqueantes
 ```
 
 ## Reglas de ejecución
-1. El original de `00_original` es de solo referencia; no editarlo.
+1. Las versiones guardadas en `01_versiones` son de solo referencia; no editarlas. Al cerrar, guardar la versión nueva `NN_depuracion_<ID>` y censarla.
 2. La copia de trabajo se ubica en `MCP_POWERBI\01_bi\01_versiones\01_kiro\[Nombre exacto BI]`.
 3. El CENSO es requisito bloqueante para cualquier depuración de BI existente.
 4. El CENSO describe estado actual; no constituye aprobación de cambios.
@@ -60,7 +60,7 @@ Listo para entrega si no quedan bloqueantes
 
 ## Bloqueo adicional V9.5
 
-- Aplicar `00_Base_Compartida/16_protocolo_integridad_visuales_eliminacion_segura.md` y la matriz `02_Plantillas/04_inventario_visual_y_eliminacion_segura.md` antes de cambios destructivos en visuales, bookmarks, botones o estados.
+- Aplicar `../01_Reglas_del_Proceso/16_protocolo_integridad_visuales_eliminacion_segura.md` y la matriz `02_Plantillas/04_inventario_visual_y_eliminacion_segura.md` antes de cambios destructivos en visuales, bookmarks, botones o estados.
 - Una coincidencia textual no confirma un visual roto. No ejecutar borrados recursivos desde resultados de búsqueda sin verificación semántica y lista positiva aprobada.
 - Si desaparece un visual/objeto sin aprobación exacta, detener la ejecución y restaurar/revertir antes de seguir.
 - Si no se pudo probar el comportamiento en Power BI Desktop o no se ejecutó el refresh, registrar la prueba como `No validado`; no declarar integridad funcional completa.

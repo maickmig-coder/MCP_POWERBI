@@ -10,7 +10,7 @@
 - Fuera de alcance:
 - Criterios de aceptación:
 - Versión/referencia analizada:
-- Ruta del original PBIP (`00_original`):
+- Última versión guardada (ruta en `01_versiones`) y census_id de partida:
 - Ruta de la copia de trabajo (`01_kiro`):
 - README histórico actualizado: Sí / No
 - Registro central actualizado: Sí / No
@@ -21,7 +21,7 @@
 - Estado/fecha/versión del CENSO:
 - CENSO utilizable: Sí / No
 - Si falta o no coincide, estado: `BLOQUEADO — CENSO REQUERIDO`
-- PBIP original protegido: Sí / No
+- Versión nueva entregada (`NN_depuracion_<ID>`) y census_id de cierre:
 - Copia Kiro preparada: Sí / No
 - Referencia/commit de reversión:
 

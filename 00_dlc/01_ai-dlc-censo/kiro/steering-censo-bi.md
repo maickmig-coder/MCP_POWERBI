@@ -4,11 +4,11 @@ name: censo-bi
 description: Ritual AI-DLC CENSO de tableros Power BI (PBIP). Úsalo siempre que se pida crear, actualizar, revisar, consultar, validar o iniciar la validación de un censo, ver su vigencia o sus pendientes, o registrar respuestas del dueño del tablero.
 ---
 
-# Steering — Ejecutar el CENSO BI (ritual AI-DLC v2.3.4)
+# Steering — Ejecutar el CENSO BI (ritual AI-DLC v2.3.6)
 
 Copiar este archivo a `MCP_POWERBI/.kiro/steering/censo-bi.md`. Se carga solo cuando el pedido trata de un censo (inclusión automática); también puede invocarse con `#censo-bi`.
 
-**Antes de cualquier acción** (crear, revisar, validar, consultar vigencia o pendientes): pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (paso 0, R57). Si el script responde que falta `--correo-revisor`, el paquete instalado está bien y faltó el correo; si el README del paquete no dice v2.3.4, el paquete está desactualizado: avisa al usuario.
+**Antes de cualquier acción** (crear, revisar, validar, consultar vigencia o pendientes): pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (paso 0, R57). Si el script responde que falta `--correo-revisor`, el paquete instalado está bien y faltó el correo; si el README del paquete no dice v2.3.6, el paquete está desactualizado: avisa al usuario.
 
 Objetivo: producir `[BI] - censo.md` con el menor consumo posible. El script hace el trabajo mecánico en segundos; tú solo interpretas.
 
@@ -46,9 +46,9 @@ Objetivo: producir `[BI] - censo.md` con el menor consumo posible. El script hac
    - Si la persona necesita pausar: lo respondido ya quedó escrito en el borrador; para retomar, vuelve a ejecutar `guia-validacion` sobre el mismo borrador (solo muestra lo que falta).
    - En una `Validación`, al terminar: `python scripts/censo.py comparar --borrador "..." --origen "Validación con el dueño"`.
 8. **Validar:** `python scripts/censo.py validar --pbip "..." --markdown "..." --correo-revisor "<correo>"`. Corrige **solo** las líneas que indique cada error.
-9. **Registrar:** `python scripts/censo.py registrar --pbip "..." --markdown "..." --alcance "..."`.
+9. **Registrar:** `python scripts/censo.py registrar --pbip "..." --markdown "..." --alcance "..."`. Al terminar, el mismo comando actualiza el diccionario de datos (R60); no ejecutes «actualiza censos» aparte. Si muestra «AVISO (R60)», díselo al usuario.
 10. **Vigencia:** `python scripts/censo.py vigencia --markdown "...\[BI] - censo.md" --versiones "..\..\01_bi\01_versiones" --correo-revisor "<correo>"`.
-11. **Cierre:** responde en 3–5 líneas: ruta del censo, estado, cambios respecto a la versión anterior (de `[BI] - cambios.md`), puntos pendientes con el dueño y el resultado de `vigencia` (APTO / NO APTO para el DLC). No pegues el documento.
+11. **Cierre:** responde en 3–5 líneas: ruta del censo, estado, cambios respecto a la versión anterior (de `[BI] - cambios.md`), puntos pendientes con el dueño, si el diccionario de datos quedó actualizado (y sus avisos) y el resultado de `vigencia` (APTO / NO APTO para el DLC). No pegues el documento.
 
 ## Cómo presentar la validación (R59)
 
