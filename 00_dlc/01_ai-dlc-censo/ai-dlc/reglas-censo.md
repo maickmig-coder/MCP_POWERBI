@@ -1,8 +1,8 @@
-# Reglas del CENSO AI-DLC (v2.3.7)
+# Reglas del CENSO AI-DLC (v2.3.8)
 
 Reglas obligatorias en todo CENSO. Están numeradas de corrido y agrupadas por tema; cada número existe una sola vez. Los valores permitidos están en `catalogos.md`; la secuencia de trabajo, en `ritual-censo-bi.md`.
 
-La equivalencia con la numeración de v1 está en `CHANGELOG.md`. En v2.1 cambiaron R16, R18, R19, R26 y R32–R38; en v2.2, R25, R29, R33, R45 y se agregó R48; en v2.2.1 se agregaron R49 y R50; en v2.2.2 se precisaron R49 y R50; en v2.2.3 se retiró R03; en v2.2.4 se agregó R51; en v2.3 cambiaron R35, R39 y R41 y se agregaron R52–R56; en v2.3.1 se agregaron R57 y R58; en v2.3.2, R59; en v2.3.5, R60; en v2.3.6 se precisaron R53 y R54 (copia de trabajo `01_kiro`); en v2.3.7 se precisó R19 y se agregaron R61–R64 (fuentes completas).
+La equivalencia con la numeración de v1 está en `CHANGELOG.md`. En v2.1 cambiaron R16, R18, R19, R26 y R32–R38; en v2.2, R25, R29, R33, R45 y se agregó R48; en v2.2.1 se agregaron R49 y R50; en v2.2.2 se precisaron R49 y R50; en v2.2.3 se retiró R03; en v2.2.4 se agregó R51; en v2.3 cambiaron R35, R39 y R41 y se agregaron R52–R56; en v2.3.1 se agregaron R57 y R58; en v2.3.2, R59; en v2.3.5, R60; en v2.3.6 se precisaron R53 y R54 (copia de trabajo `01_kiro`); en v2.3.7 se precisó R19 y se agregaron R61–R64 (fuentes completas); en v2.3.8, R65 (títulos de tarjeta que prometen otra cosa).
 
 ---
 
@@ -161,3 +161,5 @@ La equivalencia con la numeración de v1 está en `CHANGELOG.md`. En v2.1 cambia
 **R63 — Todas las tablas del modelo son fuentes inventariadas.** La sección 3.1 lista toda tabla del modelo con su origen: base de datos, tabla embebida, tabla calculada DAX y tabla de fecha automática. Las tablas de fecha automáticas llevan la columna de fecha que las origina; la sección 3.4 detalla esa columna, el rango (expresión DAX) y el estado de uso de sus columnas. El inventario por columna sigue en 6.2. El diccionario de datos ignora las tablas calculadas y automáticas: no son conexiones.
 
 **R64 — Reglas de conjunto.** En la sección 14 la IA revisa si varias reglas juntas forman una regla de negocio que ninguna dice sola: en especial, si los filtros de página reparten el universo del tablero (una página por segmento) o si una tabla embebida (3.3) decide qué filas cuentan en cada segmento. Si es así, agrega una fila que cite los `rule_id` que la forman, con certeza `Inferido` y `Pendiente de validación`.
+
+**R65 — Títulos que prometen otra cosa, primero.** `borrador` compara el título de cada tarjeta con su cálculo implícito: si el título promete un promedio (`promedio`, `media`), valores distintos (`distintas`, `únicos`) o una vigencia (`vigente`, `activas`, `hoy`) y el cálculo no lo hace, registra una fila `H-A` por tarjeta, con su nombre, prioridad `Alta`, **al inicio de la sección 16**, para que sea lo primero que se valida con el dueño (R59). Esas tarjetas no se repiten en el hallazgo general de conteos implícitos (R45). En «Calcula», `Count` es el recuento de valores distintos («Recuento (distintivo)» de Power BI) y `CountNonNull` el de valores no vacíos («Recuento»: cuenta filas, con repetidos). Las medidas no se juzgan por su título: su DAX lo interpreta la IA en la sección 10.

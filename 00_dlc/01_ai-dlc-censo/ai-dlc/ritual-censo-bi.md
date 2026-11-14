@@ -1,4 +1,4 @@
-# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.7)
+# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.8)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
@@ -51,7 +51,7 @@ Numeración fija y continua. El script crea todas las secciones; se pueden agreg
 | 13 | Recursos, tema y presentación | Estética: archivos de recursos, ubicación de banners, logos, formas y textos por página (con escala de cada imagen), tema y metadatos | — |
 | 14 | Reglas de negocio | Reglas detectadas, con puntero a su implementación | Interpretación, certeza y «Validación del dueño»; reglas de conjunto (R64); respuestas del dueño |
 | 15 | Dependencias | Elementos centrales y aislados | Mapa de arquitectura |
-| 16 | Hallazgos, vacíos y puntos de revisión | Hallazgos detectables (H-A*) y vacíos estándar (V-A*) en una sola tabla | Revisión, hallazgos o vacíos de negocio y respuestas del dueño |
+| 16 | Hallazgos, vacíos y puntos de revisión | Hallazgos detectables (H-A*), empezando por las tarjetas cuyo título promete otra cosa (R65), y vacíos estándar (V-A*) en una sola tabla | Revisión, hallazgos o vacíos de negocio y respuestas del dueño |
 | 17 | Limitaciones y control para DLC posteriores | Limitaciones estándar del proceso y candidatas | Limitaciones del proceso propias de la ejecución (nunca problemas del tablero) |
 | 18 | Validación final | Conciliación contra el PBIP | Justificación del estado |
 

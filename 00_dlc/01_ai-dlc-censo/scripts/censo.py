@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CENSO BI — ritual AI-DLC v2.3.7. Genera, valida y registra el censo de un tablero Power BI en PBIP.
+"""CENSO BI — ritual AI-DLC v2.3.8. Genera, valida y registra el censo de un tablero Power BI en PBIP.
 
 La única salida es un Markdown. El script hace todo el trabajo mecánico (inventarios, IDs, posiciones, bindings,
 dependencias, clasificación de uso, conciliación); la IA solo completa los marcadores [IA: ...].
@@ -42,7 +42,7 @@ from censo_analisis import TARJETAS, TIPO_LEGIBLE, analyze  # noqa: E402
 from censo_lectura import elide_long_literals, read_pbip  # noqa: E402
 import censo_versiones as cv  # noqa: E402
 
-RITUAL = "2.3.7"
+RITUAL = "2.3.8"
 # DLC del diccionario de datos (hermano de este DLC en 00_dlc): se actualiza al registrar un censo (R60)
 DICCIONARIO_DIR = Path(__file__).resolve().parents[2] / "00_diccionario_datos"
 
@@ -584,9 +584,12 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
 
     # ---------------------------------------------------------------- 10
     w("# 10. KPIs\n")
-    w("Se listan los visuales de tipo tarjeta o indicador con lo que calculan realmente.\n")
-    w("[IA: completar la columna «Interpretación funcional». Si el título no coincide con lo calculado, registrarlo en la sección 16 "
-      "(o ajustar la fila H-A que ya lo cubre).]\n")
+    w("Se listan los visuales de tipo tarjeta o indicador con lo que calculan realmente. En «Calcula», `Count` es el recuento de "
+      "valores distintos (opción «Recuento (distintivo)» de Power BI) y `CountNonNull`, el recuento de valores no vacíos (opción "
+      "«Recuento»: cuenta filas, con repetidos). Las tarjetas cuyo título promete un promedio, valores distintos o una vigencia que "
+      "el cálculo no hace tienen su fila al inicio de la sección 16 (R65).\n")
+    w("[IA: completar la columna «Interpretación funcional» según lo que calcula cada tarjeta (ver la equivalencia de `Count` y "
+      "`CountNonNull` arriba). Si el título no coincide con lo calculado y no lo cubre ya una fila H-A, registrarlo en la sección 16.]\n")
     rows = []
     for v in vis:
         if v["tipo"] in TARJETAS:
@@ -851,6 +854,53 @@ def vacios(args):
              "Confirmar con el dueño.", f"Sí ({d})", "Pendiente de validación"] for i, (x, imp, ev) in enumerate(base, 1)]
 
 
+# Cálculos implícitos de Power BI (Aggregation.Function del PBIR) en palabras sencillas.
+# `Count` (2) es «Recuento (distintivo)»; `CountNonNull` (5) es «Recuento» (valores no vacíos, con repetidos).
+AGG_TXT = {"Sum": "suma de los valores", "Avg": "promedio de los valores", "Count": "recuento de valores distintos",
+           "CountNonNull": "recuento de valores no vacíos (cuenta filas, con repetidos)", "Min": "valor mínimo (o el primero, si es texto)",
+           "Max": "valor máximo (o el último, si es texto)", "Median": "mediana", "StandardDeviation": "desviación estándar",
+           "Variance": "varianza"}
+# R65: qué promete el título de una tarjeta (sin tildes, en minúsculas) y qué cálculo implícito lo cumple.
+# Un cálculo implícito nunca aplica una condición de vigencia: esa promesa solo se cumple con una medida o un filtro.
+PROMESAS_TITULO = [
+    ("un promedio", r"promedio|\bmedia\b|average|\bavg\b", lambda agg: agg in ("Avg", "Median")),
+    ("valores distintos", r"distint|unic[oa]s?\b", lambda agg: agg == "Count"),
+    ("una vigencia (vigente, activo u hoy)", r"vigente|\bactiv[oa]s?\b|\bhoy\b", lambda agg: False),
+]
+
+
+def _sin_tildes(t: str) -> str:
+    import unicodedata  # noqa: PLC0415
+    return unicodedata.normalize("NFKD", t or "").encode("ascii", "ignore").decode().lower()
+
+
+def titulos_que_no_coinciden(inv, a):
+    """R65: tarjetas cuyo título promete un promedio, valores distintos o una vigencia que su cálculo implícito no hace.
+    Devuelve [(visual, binding, promesa, nota)]. Las medidas no se juzgan aquí: su DAX lo interpreta la IA (sección 10)."""
+    filtros_visual = defaultdict(list)
+    for f in inv.get("filtros", []):
+        if f["ambito"] == "Visual" and f["condicion"] != "Sin condición guardada":
+            filtros_visual[f["visual_id"]].append(f"{ref_txt(f['tabla'], f['campo'])} {f['condicion']}")
+    out = []
+    for v in inv.get("visuales", []):
+        if v["tipo"] not in TARJETAS:
+            continue
+        titulo = _sin_tildes(a["visual_info"][(v["page_id"], v["visual_id"])]["nombre"])
+        for b in v["bindings"]:
+            agg = b["agregacion"]
+            if agg not in AGG_TXT or b.get("estado_ref") != "Válida":
+                continue
+            for promesa, patron, cumple in PROMESAS_TITULO:
+                if re.search(patron, titulo) and not cumple(agg):
+                    nota = ""
+                    if promesa.startswith("una vigencia") and filtros_visual.get(v["visual_id"]):
+                        nota = (" La tarjeta tiene filtros propios (" + "; ".join(filtros_visual[v["visual_id"]]) +
+                                "): confirmar si son los que definen la vigencia.")
+                    out.append((v, b, promesa, nota))
+                    break
+    return out
+
+
 def hallazgos(inv, a, pname, vn, bn):
     rows, n = [], 0
 
@@ -858,6 +908,18 @@ def hallazgos(inv, a, pname, vn, bn):
         nonlocal n
         n += 1
         rows.append([f"H-A{n:02d}", tipo, cat, desc, pag, pid, oid, bk, ev, "Encontrado", afect, imp, prio, punto, "Sí", "Pendiente de validación"])
+
+    # R65: primero, las tarjetas cuyo título promete algo que su cálculo no hace (lo que más confunde a quien lee el tablero)
+    titulos = titulos_que_no_coinciden(inv, a)
+    con_fila_propia = {(v["page_id"], v["visual_id"]) for v, _, _, _ in titulos}  # no se repiten en el hallazgo de conteos (R45)
+    for v, b, promesa, nota in titulos:
+        titulo = a["visual_info"][(v["page_id"], v["visual_id"])]["nombre"]
+        ref = ref_txt(b["tabla"], b["campo"])
+        add("Hallazgo", "Métrica", f"La tarjeta «{titulo}» ({pname.get(v['page_id'])}) promete {promesa}, pero calcula "
+            f"{b['agregacion']}({ref}): {AGG_TXT[b['agregacion']]}.{nota}", pname.get(v["page_id"]), v["page_id"], vn(v["visual_id"]), "—",
+            "Binding en visual.json (secciones 9 y 10)", f"Columna {ref}",
+            "Quien lee la tarjeta entiende un número distinto al que se muestra", "Alta",
+            f"Confirmar con el dueño qué debe mostrar la tarjeta «{titulo}» y si su título corresponde al cálculo.")
 
     by_ent = defaultdict(dict)
     for v, b in a["broken_bindings"]:
@@ -932,12 +994,13 @@ def hallazgos(inv, a, pname, vn, bn):
                 "Revisar con el dueño el propósito de cada segmentación.")
     conteos = defaultdict(list)
     for v in inv.get("visuales", []):
-        if v["tipo"] in TARJETAS:
+        if v["tipo"] in TARJETAS and (v["page_id"], v["visual_id"]) not in con_fila_propia:
             for b in v["bindings"]:
                 if b["agregacion"] in ("Count", "CountNonNull") and b.get("estado_ref") == "Válida":
                     conteos[(b["agregacion"], b["tabla"], b["campo"])].append(v)
     for (agg, t, c), vs in conteos.items():
-        add("Hallazgo", "Métrica", f"{len(vs)} tarjeta(s) calculan {agg}({ref_txt(t, c)}), un conteo implícito de filas y no una medida.",
+        add("Hallazgo", "Métrica", f"{len(vs)} tarjeta(s) calculan {agg}({ref_txt(t, c)}): {AGG_TXT[agg]}; es un cálculo implícito "
+            "de Power BI, no una medida del modelo.",
             ", ".join(sorted({pname.get(v['page_id']) for v in vs})), ", ".join(sorted({v["page_id"] for v in vs})),
             "; ".join(vn(v["visual_id"]) for v in vs), "—", "Bindings en visual.json (secciones 9 y 10)", f"Columna {ref_txt(t, c)}",
             "El valor puede no corresponder al título de la tarjeta", "Media",

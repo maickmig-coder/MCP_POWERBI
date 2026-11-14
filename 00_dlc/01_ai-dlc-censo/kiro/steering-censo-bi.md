@@ -4,11 +4,11 @@ name: censo-bi
 description: Ritual AI-DLC CENSO de tableros Power BI (PBIP). Úsalo siempre que se pida crear, actualizar, revisar, consultar, validar o iniciar la validación de un censo, ver su vigencia o sus pendientes, o registrar respuestas del dueño del tablero.
 ---
 
-# Steering — Ejecutar el CENSO BI (ritual AI-DLC v2.3.7)
+# Steering — Ejecutar el CENSO BI (ritual AI-DLC v2.3.8)
 
 Copiar este archivo a `MCP_POWERBI/.kiro/steering/censo-bi.md`. Se carga solo cuando el pedido trata de un censo (inclusión automática); también puede invocarse con `#censo-bi`.
 
-**Antes de cualquier acción** (crear, revisar, validar, consultar vigencia o pendientes): pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (paso 0, R57). Si el script responde que falta `--correo-revisor`, el paquete instalado está bien y faltó el correo; si el README del paquete no dice v2.3.7, el paquete está desactualizado: avisa al usuario.
+**Antes de cualquier acción** (crear, revisar, validar, consultar vigencia o pendientes): pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (paso 0, R57). Si el script responde que falta `--correo-revisor`, el paquete instalado está bien y faltó el correo; si el README del paquete no dice v2.3.8, el paquete está desactualizado: avisa al usuario.
 
 Objetivo: producir `[BI] - censo.md` con el menor consumo posible. El script hace el trabajo mecánico en segundos; tú solo interpretas.
 
@@ -35,7 +35,7 @@ Objetivo: producir `[BI] - censo.md` con el menor consumo posible. El script hac
    |---|---|
    | Área, objetivo, pregunta central | Secciones 5.1, 8 y 10 |
    | Rol y granularidad de tablas | 5.1, 5.2 y la Matriz A de la tabla |
-   | KPIs | 10 y, si hace falta, la fórmula de la medida en 7 |
+   | KPIs | 10 y, si hace falta, la fórmula de la medida en 7. Ojo: `Count` es recuento de valores **distintos**; `CountNonNull`, recuento de filas no vacías. Las tarjetas con título engañoso ya tienen fila al inicio de la 16 (R65): cítala, no la repitas |
    | Reglas de negocio | 14, la expresión citada en 6.1, la fila de esa columna en la Matriz A (estado de uso) y 3.3 (tablas embebidas). Revisa las reglas de conjunto (R64): si los filtros de página reparten el tablero en segmentos, agrega esa regla citando sus rule_id |
    | Dependencias | 3.1, 5.2, 7 (tabla) y 9.x (conciliación) |
    | Hallazgos y vacíos | 16, la sección que cite cada fila y 3.2 para las filas de categoría «Fuentes» |

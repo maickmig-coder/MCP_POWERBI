@@ -1,10 +1,10 @@
-# Criterios para hallazgos y puntos de revisión (v2.3.7)
+# Criterios para hallazgos y puntos de revisión (v2.3.8)
 
 > Reemplaza a `criterios-propuestas.md` (v1). El cambio de nombre refleja la decisión de que el CENSO **describe y señala**, pero no propone cambios: la modificación, creación y depuración son un DLC aparte que usa el CENSO como base.
 
 ## 0. Quién los registra
 
-`censo.py borrador` registra los hallazgos detectables en los archivos (filas `H-A*`): referencias rotas agrupadas por entidad, bookmarks y botones con destino inexistente, medidas vacías o duplicadas, segmentaciones repetidas, tarjetas con conteos implícitos, inteligencia de tiempo automática, roles sin RLS, recursos sin uso, DAX con referencias inexistentes y, frente al catálogo de Athena (R61), columnas que cambian de tipo respecto a la base, fuentes que no están en el catálogo y columnas que el catálogo no tiene. La IA revisa esas filas (certeza, prioridad, impacto) y agrega los hallazgos que requieren lectura funcional, como una tarjeta cuyo título no coincide con lo que calcula.
+`censo.py borrador` registra los hallazgos detectables en los archivos (filas `H-A*`). **Primero**, con prioridad Alta y una fila por tarjeta, las tarjetas cuyo título promete un promedio, valores distintos o una vigencia que su cálculo no hace (R65). Después: referencias rotas agrupadas por entidad, bookmarks y botones con destino inexistente, medidas vacías o duplicadas, segmentaciones repetidas, tarjetas con conteos implícitos, inteligencia de tiempo automática, roles sin RLS, recursos sin uso, DAX con referencias inexistentes y, frente al catálogo de Athena (R61), columnas que cambian de tipo respecto a la base, fuentes que no están en el catálogo y columnas que el catálogo no tiene. La IA revisa esas filas (certeza, prioridad, impacto) y agrega los hallazgos que requieren lectura funcional, como una tarjeta cuyo título no coincide con lo que calcula.
 
 ## 1. Cuándo se registra un punto
 

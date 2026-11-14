@@ -1,5 +1,15 @@
 # CHANGELOG — AI-DLC-CENSO
 
+## v2.3.8 — 2026-11-13
+
+Títulos de tarjeta que prometen otra cosa, sin depender de la IA. En el censo de GC - Flotillas la tarjeta «Ticket promedio» de Empresas mostraba un conteo, pero el hallazgo automático solo decía «3 tarjetas con conteo implícito» con prioridad Media, y podía pasar desapercibida en la validación.
+
+- **R65 (nueva):** `borrador` compara el título de cada tarjeta con su cálculo implícito. Si promete un promedio, valores distintos o una vigencia (vigente, activas, hoy) que el cálculo no hace, registra una fila `H-A` **por tarjeta**, con su nombre y prioridad **Alta**, **al inicio de la sección 16**: es lo primero que se valida con el dueño. Esas tarjetas no se repiten en el hallazgo general de conteos (R45). Las medidas no se juzgan por el título.
+- **`Count` es recuento de valores distintos:** en el PBIR, `Count` (Function 2) corresponde a «Recuento (distintivo)» de Power BI y `CountNonNull` (Function 5), a «Recuento» (valores no vacíos). El hallazgo de conteos decía «conteo implícito de filas» para ambos; ahora describe cada uno, y la sección 10 explica la equivalencia.
+- Reglas, ritual, criterios, checklist, guía de Kiro y README al día; guías reinstaladas en `.kiro/steering/`.
+
+Efecto en censos existentes: al repetir un censo, las filas `H-A` cambian de número (las nuevas van primero) y el texto del hallazgo de conteos cambia; `comparar` traslada las validaciones por tipo, categoría y descripción, así que las respuestas del dueño sobre esas filas de conteos se vuelven a preguntar.
+
 ## v2.3.7 — 2026-11-13
 
 Fuentes completas. En la auditoría del censo de GC - Flotillas faltaban la comparación con la estructura real de la base, el contenido de la tabla de homologación «Val nombres» y las tablas de fecha automáticas como fuentes; además se perdió una regla de conjunto (la división del tablero en tres vistas).

@@ -1,4 +1,4 @@
-# Checklist del CENSO BI (v2.3.7)
+# Checklist del CENSO BI (v2.3.8)
 
 **[S]** = lo genera `censo.py borrador`. **[V]** = lo comprueba `censo.py validar`. Sin marca = lo revisa la IA o una persona. Un punto con [S] no debe rehacerse a mano.
 
@@ -26,6 +26,7 @@
 - [ ] **[S]** Visuales con «Formato huérfano» separados de los que tienen referencia rota de datos.
 - [ ] **[S]** Bookmarks con targets (existen / funcionan), efecto real (12.2) y matriz de estados guardados sin efecto (12.3).
 - [ ] **[S]** Hallazgos detectables (H-A*), vacíos estándar (V-A*) y candidatas (17.2).
+- [ ] **[S]** Las tarjetas cuyo título promete un promedio, valores distintos o una vigencia que no calculan son las primeras filas H-A, con su nombre y prioridad Alta (R65).
 - [ ] Si ya existía un censo, el script escribió `… - censo.borrador.md` y se integraron los hallazgos previos (R35).
 
 ## Interpretación (fase 2)
