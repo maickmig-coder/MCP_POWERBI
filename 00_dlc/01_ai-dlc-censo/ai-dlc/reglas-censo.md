@@ -1,8 +1,8 @@
-# Reglas del CENSO AI-DLC (v2.3.6)
+# Reglas del CENSO AI-DLC (v2.3.7)
 
 Reglas obligatorias en todo CENSO. Están numeradas de corrido y agrupadas por tema; cada número existe una sola vez. Los valores permitidos están en `catalogos.md`; la secuencia de trabajo, en `ritual-censo-bi.md`.
 
-La equivalencia con la numeración de v1 está en `CHANGELOG.md`. En v2.1 cambiaron R16, R18, R19, R26 y R32–R38; en v2.2, R25, R29, R33, R45 y se agregó R48; en v2.2.1 se agregaron R49 y R50; en v2.2.2 se precisaron R49 y R50; en v2.2.3 se retiró R03; en v2.2.4 se agregó R51; en v2.3 cambiaron R35, R39 y R41 y se agregaron R52–R56; en v2.3.1 se agregaron R57 y R58; en v2.3.2, R59; en v2.3.5, R60; en v2.3.6 se precisaron R53 y R54 (copia de trabajo `01_kiro`).
+La equivalencia con la numeración de v1 está en `CHANGELOG.md`. En v2.1 cambiaron R16, R18, R19, R26 y R32–R38; en v2.2, R25, R29, R33, R45 y se agregó R48; en v2.2.1 se agregaron R49 y R50; en v2.2.2 se precisaron R49 y R50; en v2.2.3 se retiró R03; en v2.2.4 se agregó R51; en v2.3 cambiaron R35, R39 y R41 y se agregaron R52–R56; en v2.3.1 se agregaron R57 y R58; en v2.3.2, R59; en v2.3.5, R60; en v2.3.6 se precisaron R53 y R54 (copia de trabajo `01_kiro`); en v2.3.7 se precisó R19 y se agregaron R61–R64 (fuentes completas).
 
 ---
 
@@ -50,7 +50,7 @@ La equivalencia con la numeración de v1 está en `CHANGELOG.md`. En v2.1 cambia
 
 **R18 — Conciliación contra el PBIP.** `censo.py validar --pbip` compara objeto por objeto (por ID) visuales, páginas, tablas, columnas, medidas, relaciones, bookmarks y recursos, y cuenta filtros e interacciones. Toda diferencia es un error que se corrige antes de cerrar.
 
-**R19 — Expresiones completas, una sola vez.** El código M va completo en la sección 4; las expresiones DAX, en 6.1 y 7. Los literales de más de 300 caracteres (por ejemplo, tablas embebidas en base64) se reemplazan por un aviso con la ruta del archivo.
+**R19 — Expresiones completas, una sola vez.** El código M va completo en la sección 4; las expresiones DAX, en 6.1 y 7. Los literales de más de 300 caracteres (por ejemplo, tablas embebidas en base64) se reemplazan por un aviso con la ruta del archivo; el contenido de las tablas embebidas se muestra decodificado en 3.3 (R62).
 
 **R20 — Tipos por etapa.** Si una columna cambia de tipo en M, se registran el tipo anterior y el posterior en el paso que lo cambia.
 
@@ -151,3 +151,13 @@ La equivalencia con la numeración de v1 está en `CHANGELOG.md`. En v2.1 cambia
 ## L. Diccionario de datos
 
 **R60 — El censo alimenta el diccionario al cerrarse.** Después de registrar una ejecución (Inicial, Actualización o Validación), `censo.py registrar` actualiza el diccionario de datos (`00_dlc/00_diccionario_datos`) con el correo del ejecutor del censo; no hace falta pedir «actualiza censos» por separado. El diccionario toma solo el censo vigente de cada tablero (`<BI> - censo.md`), nunca borradores ni censos archivados. Si la actualización falla, el censo queda registrado igual y se avisa para repetirla desde el DLC del diccionario. El censo no edita el diccionario: solo lo regenera con su propio script.
+
+## M. Fuentes completas
+
+**R61 — Estructura real de cada fuente.** La sección 3.2 compara cada tabla que se carga desde una base con su estructura real en el catálogo de Athena (el mismo que usa el diccionario, configurado en `00_dlc/00_diccionario_datos/config.json`): una fila por columna de la base con su tipo real, la columna y el tipo en el tablero y el resultado (`Igual`, `Cambia de tipo`, `Quitada en el paso …`, `No se carga`, `No está en el catálogo`), más la marca de posible dato personal por el nombre. Lo hace `borrador`; la IA no lo redacta. Genera filas `H-A` de la categoría «Fuentes»: un riesgo si una columna cambia de familia de tipo (por ejemplo texto → número) o pierde decimales; un vacío si la tabla no está en el catálogo (fuente aún no migrada); una observación si el tablero carga columnas que el catálogo no tiene. Si el catálogo no se encuentra, la sección lo dice y la comparación no se hace. El censo nunca consulta la base.
+
+**R62 — Contenido de las tablas embebidas.** Una tabla escrita a mano en Power Query (literal en base64) es lógica del tablero: la sección 3.3 muestra su contenido decodificado (hasta 200 filas; si hay más, las primeras y el total), con su evidencia y la marca de posible dato personal por el nombre de la columna. El dueño valida que la lista esté completa y vigente. El literal sigue omitido en el código de la sección 4 (R19).
+
+**R63 — Todas las tablas del modelo son fuentes inventariadas.** La sección 3.1 lista toda tabla del modelo con su origen: base de datos, tabla embebida, tabla calculada DAX y tabla de fecha automática. Las tablas de fecha automáticas llevan la columna de fecha que las origina; la sección 3.4 detalla esa columna, el rango (expresión DAX) y el estado de uso de sus columnas. El inventario por columna sigue en 6.2. El diccionario de datos ignora las tablas calculadas y automáticas: no son conexiones.
+
+**R64 — Reglas de conjunto.** En la sección 14 la IA revisa si varias reglas juntas forman una regla de negocio que ninguna dice sola: en especial, si los filtros de página reparten el universo del tablero (una página por segmento) o si una tabla embebida (3.3) decide qué filas cuentan en cada segmento. Si es así, agrega una fila que cite los `rule_id` que la forman, con certeza `Inferido` y `Pendiente de validación`.

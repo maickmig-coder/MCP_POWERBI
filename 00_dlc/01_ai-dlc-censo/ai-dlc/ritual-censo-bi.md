@@ -1,4 +1,4 @@
-# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.6)
+# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.7)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
@@ -38,7 +38,7 @@ Numeración fija y continua. El script crea todas las secciones; se pueden agreg
 | — | Encabezado | census_id, fecha y hora, versión, huella del PBIP, tipo | Estado (CAT-07) |
 | 1 | Identificación | Datos técnicos del BI y de la ejecución | Área |
 | 2 | Objetivo y alcance | Alcance y fuentes inspeccionadas | Objetivo y pregunta central |
-| 3 | Fuentes de datos y conexiones | Conector, navegación, modo y parámetros por partición | — |
+| 3 | Fuentes de datos y conexiones | 3.1 todas las tablas con su origen (base, embebida, calculada, fecha automática), conector, navegación, modo y parámetros; 3.2 estructura real de cada base frente al catálogo de Athena (R61); 3.3 contenido de las tablas embebidas (R62); 3.4 tablas de fecha automáticas con su columna de origen y rango (R63) | — |
 | 4 | Transformaciones (Power Query/M) | Código M completo (una vez) y tabla de pasos | — |
 | 5 | Modelo de datos | Tablas, relaciones, jerarquías, propiedades y roles | Rol y granularidad de las tablas |
 | 6 | Columnas | Matriz A con resultado por clase y estado de uso; expresiones de columnas calculadas; tablas de fecha automáticas | — |
@@ -49,7 +49,7 @@ Numeración fija y continua. El script crea todas las secciones; se pueden agreg
 | 11 | Filtros, segmentaciones e interacciones | Todos los filtros, segmentaciones e interacciones | — |
 | 12 | Bookmarks, botones y navegación | 12.1 ficha de cada bookmark (targets que existen y que funcionan); 12.2 efecto real al activarlo; 12.3 matriz de estados guardados sin efecto por página; 12.4 botones; 12.5 tooltips y drillthrough | — |
 | 13 | Recursos, tema y presentación | Estética: archivos de recursos, ubicación de banners, logos, formas y textos por página (con escala de cada imagen), tema y metadatos | — |
-| 14 | Reglas de negocio | Reglas detectadas, con puntero a su implementación | Interpretación, certeza y «Validación del dueño»; reglas adicionales; respuestas del dueño |
+| 14 | Reglas de negocio | Reglas detectadas, con puntero a su implementación | Interpretación, certeza y «Validación del dueño»; reglas de conjunto (R64); respuestas del dueño |
 | 15 | Dependencias | Elementos centrales y aislados | Mapa de arquitectura |
 | 16 | Hallazgos, vacíos y puntos de revisión | Hallazgos detectables (H-A*) y vacíos estándar (V-A*) en una sola tabla | Revisión, hallazgos o vacíos de negocio y respuestas del dueño |
 | 17 | Limitaciones y control para DLC posteriores | Limitaciones estándar del proceso y candidatas | Limitaciones del proceso propias de la ejecución (nunca problemas del tablero) |

@@ -1,10 +1,10 @@
-# Criterios para hallazgos y puntos de revisión (v2.3.6)
+# Criterios para hallazgos y puntos de revisión (v2.3.7)
 
 > Reemplaza a `criterios-propuestas.md` (v1). El cambio de nombre refleja la decisión de que el CENSO **describe y señala**, pero no propone cambios: la modificación, creación y depuración son un DLC aparte que usa el CENSO como base.
 
 ## 0. Quién los registra
 
-`censo.py borrador` registra los hallazgos detectables en los archivos (filas `H-A*`): referencias rotas agrupadas por entidad, bookmarks y botones con destino inexistente, medidas vacías o duplicadas, segmentaciones repetidas, tarjetas con conteos implícitos, inteligencia de tiempo automática, roles sin RLS, recursos sin uso y DAX con referencias inexistentes. La IA revisa esas filas (certeza, prioridad, impacto) y agrega los hallazgos que requieren lectura funcional, como una tarjeta cuyo título no coincide con lo que calcula.
+`censo.py borrador` registra los hallazgos detectables en los archivos (filas `H-A*`): referencias rotas agrupadas por entidad, bookmarks y botones con destino inexistente, medidas vacías o duplicadas, segmentaciones repetidas, tarjetas con conteos implícitos, inteligencia de tiempo automática, roles sin RLS, recursos sin uso, DAX con referencias inexistentes y, frente al catálogo de Athena (R61), columnas que cambian de tipo respecto a la base, fuentes que no están en el catálogo y columnas que el catálogo no tiene. La IA revisa esas filas (certeza, prioridad, impacto) y agrega los hallazgos que requieren lectura funcional, como una tarjeta cuyo título no coincide con lo que calcula.
 
 ## 1. Cuándo se registra un punto
 
@@ -29,6 +29,7 @@ Si no se puede responder “¿qué encontraste que te llevó a registrar esto?�
 |---|---|
 | Gobierno | Frecuencia de actualización, ambiente de publicación o propietario de una fuente no identificados. El dueño del tablero (R02) es el único responsable registrado. |
 | Datos | Fuente sin descripción, granularidad no identificada, transformación compleja sin documentar. |
+| Fuentes | Comparación con la estructura real (sección 3.2, R61): columna que cambia de tipo respecto a la base (por ejemplo texto → número), fuente que no está en el catálogo de Athena, columna cargada que el catálogo no tiene. |
 | Modelo | Relación con lógica no clara, tabla de función desconocida, auto fecha/hora activo, medidas duplicadas o vacías. |
 | Métrica | Rótulo que no coincide con el cálculo, agregación implícita, conteo de texto usado como conteo distinto. |
 | Reporte | Visual sin propósito claro, slicers repetidos, página oculta sin finalidad. |

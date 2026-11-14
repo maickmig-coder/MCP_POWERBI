@@ -1,4 +1,4 @@
-# AI-DLC-CENSO (v2.3.6)
+# AI-DLC-CENSO (v2.3.7)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
@@ -18,7 +18,7 @@ En `MCP_POWERBI\02_censo\[Nombre exacto del BI]`:
 
 **¿Este censo es el del tablero final?** Ejecute `censo.py vigencia`: responde VIGENTE o DESACTUALIZADO (comparando con la última versión guardada en `01_versiones` y con la huella del PBIP) y APTO o NO APTO para el DLC de modificación o depuración.
 
-Cubre fuentes y conexiones, código M y sus pasos, tablas, columnas (uso por clase de dependencia), medidas, relaciones, seguridad, páginas, visuales (posición, tamaño y bindings), filtros, segmentaciones, interacciones, bookmarks, botones, **estética: banners, logos, imágenes, formas y textos con su ubicación en cada página, escala de cada imagen y ruta del archivo**, tema y metadatos.
+Cubre **todas las fuentes** (bases de datos comparadas columna por columna con su estructura real en el catálogo de Athena, contenido de las tablas escritas a mano, tablas calculadas y tablas de fecha automáticas con su columna de origen), código M y sus pasos, tablas, columnas (uso por clase de dependencia), medidas, relaciones, seguridad, páginas, visuales (posición, tamaño y bindings), filtros, segmentaciones, interacciones, bookmarks, botones, **estética: banners, logos, imágenes, formas y textos con su ubicación en cada página, escala de cada imagen y ruta del archivo**, tema y metadatos.
 
 ## Cómo se reparte el trabajo
 
@@ -35,7 +35,7 @@ Cubre fuentes y conexiones, código M y sus pasos, tablas, columnas (uso por cla
 ├── CHANGELOG.md
 ├── ai-dlc/
 │   ├── ritual-censo-bi.md            Fases, estructura del resultado y criterios de clasificación
-│   ├── reglas-censo.md               Reglas R01–R60 (R03 retirada)
+│   ├── reglas-censo.md               Reglas R01–R64 (R03 retirada)
 │   ├── catalogos.md                  Valores permitidos (CAT-01 a CAT-15) e IDs nativos
 │   ├── checklist-censo.md            Qué genera el script, qué valida y qué revisa la IA
 │   └── criterios-puntos-revision.md  Cómo registrar hallazgos sin prescribir cambios

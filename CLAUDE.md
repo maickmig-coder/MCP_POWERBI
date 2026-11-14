@@ -45,7 +45,7 @@ Rutas, versiones y puerta del censo de los tres procesos: `00_dlc\02_ai_dlc_bi\0
 filtros, bookmarks, reglas de negocio, hallazgos y candidatos a depuración. Un tablero a la vez.
 
 **Antes de censar:** leer el `README.md` de esa carpeta; es el documento rector y define el ritual vigente
-(versión 2.3.6, con su script `censo.py`). Guías de Kiro instaladas en `.kiro\steering\`; si se cambia una guía en
+(versión 2.3.7, con su script `censo.py`). Guías de Kiro instaladas en `.kiro\steering\`; si se cambia una guía en
 `00_dlc\01_ai-dlc-censo\kiro\`, volver a copiarla allí.
 
 Reglas que nunca cambian:
@@ -57,6 +57,9 @@ Reglas que nunca cambian:
   las reglas inferidas y los pendientes. Modificación y depuración quedan **bloqueadas** hasta esa confirmación.
 - El censo **no autoriza eliminar** nada; solo lista candidatos con evidencia.
 - No registrar credenciales.
+- La sección 3 documenta **todas** las fuentes (R61–R63): cada base comparada columna por columna con el catálogo de
+  Athena, el contenido de las tablas escritas a mano y las tablas de fecha automáticas con su columna de origen. En la
+  sección 14 se revisan las reglas de conjunto (R64), por ejemplo un tablero repartido en una página por segmento.
 
 Al cerrar un censo (`registrar`), el propio censo actualiza el diccionario de datos (R60); no pedir «actualiza
 censos» aparte. Si `registrar` muestra «AVISO (R60)», informarlo y sugerir «actualiza censos» para repetirlo.

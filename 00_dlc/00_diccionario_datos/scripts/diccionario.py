@@ -475,7 +475,9 @@ def consolidar(censos: list[dict], cat: dict) -> dict:
             continue
         for f in c["fuentes"]:
             tabla, part = limpiar(f.get("Tabla del modelo", "")), limpiar(f.get("Partición", ""))
-            codigo = c["m"].get((tabla, part)) or next((v for (t, _), v in c["m"].items() if t == tabla), "")
+            if re.search(r"calculada|automática", f.get("Tipo", ""), re.I):
+                continue  # tabla calculada DAX o de fechas automática: la genera Power BI, no viene de una base
+            codigo =c["m"].get((tabla, part)) or next((v for (t, _), v in c["m"].items() if t == tabla), "")
             if not codigo:
                 avisos.append(f"{c['bi']}: la tabla «{tabla}» no tiene código M en el censo")
                 continue
@@ -601,9 +603,9 @@ def generar_md(d: dict, censos: list[dict], ejecutor: str) -> str:
     usados = [c for c in censos if c["consumible"]]
     w("# Diccionario de datos — Fuentes de los tableros\n")
     w(f"> diccionario_id: {d['diccionario_id']} · generado {d['generado']} por {ejecutor} · versión {VERSION}\n>\n"
-      f"> Censos usados: " + ", ".join(f"{c['bi']} ({c['census_id']}"
-                                       + ("; ⚠ NO describe el tablero final" if c.get("vigente") is False else "") + ")"
-                                       for c in usados) + "\n")
+      f"> Censos usados: " + (", ".join(f"{c['bi']} ({c['census_id']}"
+                                        + ("; ⚠ NO describe el tablero final" if c.get("vigente") is False else "") + ")"
+                                        for c in usados) or "ninguno todavía") + "\n")
     w("La estructura es la **real de la base**, antes de cualquier ajuste de un tablero: si la tabla está en el "
       "catálogo de Athena, columnas y tipos salen de ahí; si no (fuente aún no migrada), salen del censo y se marcan "
       "«no verificado en catálogo». No se registran datos ni contraseñas. Aquí aparecen las tablas que algún "
@@ -800,8 +802,8 @@ def cmd_actualizar(a) -> int:
         return 0
     archivos = buscar_censos(raiz)
     if not archivos:
-        print(f"ERROR: no se encontraron censos en {raiz}")
-        return 2
+        # sin censos el diccionario igual se genera (vacío): así la búsqueda en el catálogo de Athena sigue disponible
+        print(f"AVISO: no hay censos en {raiz}; se genera un diccionario sin tablas de tableros.")
     censos = [leer_censo(p) for p in archivos]
     for c, p in zip(censos, archivos):
         c["archivo"] = clave_censo(p, raiz)
@@ -991,6 +993,11 @@ def cmd_simulacion(a) -> int:
 
 
 def main() -> int:
+    for flujo in (sys.stdout, sys.stderr):  # tildes correctas en la consola de Windows y al ser llamado por el censo (R60)
+        try:
+            flujo.reconfigure(encoding="utf-8")
+        except Exception:  # noqa: BLE001
+            pass
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
     comandos = {

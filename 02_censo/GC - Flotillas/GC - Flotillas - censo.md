@@ -11,9 +11,9 @@ Ambos correos se registraron antes de leer el PBIP (R02).
 
 > Estado: Completado pendiente de validación
 >
-> census_id: 20261105T124212-gc-flotillas
+> census_id: 20261113T192401-gc-flotillas
 >
-> Fecha y hora de ejecución: 2026-11-05T12:42:12-05:00
+> Fecha y hora de ejecución: 2026-11-13T19:24:01-05:00
 >
 > Versión analizada: 00_original
 >
@@ -21,7 +21,7 @@ Ambos correos se registraron antes de leer el PBIP (R02).
 >
 > Tipo de CENSO: Inicial
 >
-> Versión del ritual: 2.3
+> Versión del ritual: 2.3.7
 
 Convenciones de todo el documento: los IDs son nativos y completos (CAT-15); `—` = no aplica o no disponible; las rutas de evidencia se indican una vez por tabla, relativas a la carpeta del BI. Cada dato aparece en un solo lugar; las demás secciones lo citan por su ID.
 
@@ -31,11 +31,11 @@ Convenciones de todo el documento: los IDs son nativos y completos (CAT-15); `�
 
 | Campo | Valor |
 |---|---|
-| census_id | 20261105T124212-gc-flotillas |
+| census_id | 20261113T192401-gc-flotillas |
 | census_id del censo anterior | No aplica |
 | Nombre BI | GC - Flotillas |
 | Archivo .pbip | GC - Flotillas.pbip |
-| Área | Comercial / ventas de flotillas, convenios y renting de maquinaria y vehículos (Inferido: a partir de las entidades del modelo —entregas, procedencia, convenios, renting— y los nombres de las páginas Dashboard_Empresas, Dashboard_Convenios y Dashboard_Renting; el PBIP no declara un área) |
+| Área | Ventas de flotas (renting, convenios y empresas) — Inferido: sale de los nombres de las páginas, del filtro `tipoventa_vista` y del origen `entregas_totales`; el PBIP no declara el área |
 | Tecnología | Power BI PBIP — reporte PBIR, modelo TMDL, compatibilityLevel 1606 |
 | Repositorio | No identificado en el PBIP |
 | Ambiente | No identificado en el PBIP |
@@ -45,15 +45,15 @@ Convenciones de todo el documento: los IDs son nativos y completos (CAT-15); `�
 
 ## 2.1 Objetivo del BI
 
-El tablero da seguimiento comercial a las entregas de unidades (vehículos y maquinaria) organizadas en tres vistas de negocio: empresas/flotillas, convenios y renting, cada una en su propia página. A partir de la tabla de hechos `Entregas Totales` (origen Athena `bi_materialized_data.entregas_totales`, filtrada en carga a `Cantidad = 1` y `tipo = "Nuevos"`), muestra por vista el conteo de unidades entregadas, el ticket promedio y el valor (`Entregas Totales[Valor]`, definición pendiente: V01), con cortes por marca, región (ciudad derivada de `Centro`), trimestre (`Q`), semestre (`DIVISION S`), procedencia y tipo de venta. El grano de dato es la entrega individual (una fila por unidad entregada). Certeza: Inferido en cuanto a la audiencia y el propósito (el PBIP no los documenta); Encontrado en cuanto a las entidades, el origen y el grano, leídos directamente del modelo (secciones 3, 4 y 5).
+Tablero de entregas de vehículos y maquinaria a clientes de flotas, dividido en tres páginas: Dashboard_Renting (empresas de renting), Dashboard_Convenios (ventas por convenio) y Dashboard_Empresas (ventas empresariales de flotas). Cada página muestra unidades entregadas (conteo de filas de `Entregas Totales`), un valor (`Entregas Totales[Valor]`, definición pendiente: V01), desglose por trimestre y filtros por marca, gama, centro, año y tecnología. El grano del dato es una fila por entrega, filtrada en la carga a `Cantidad = 1` y `tipo = "Nuevos"` (RN01, RN02). El público del tablero no está declarado en el PBIP: V04. Certeza: Inferido.
 
 ## 2.2 Pregunta central
 
-¿Cuántas unidades se entregaron y con qué valor y ticket promedio en cada vista de negocio (empresas, convenios y renting), y cómo se distribuyen por marca, región, trimestre y semestre?
+¿Cuántas unidades nuevas se entregaron a clientes de flotas (renting, convenios y empresas), en qué trimestre y por qué marca, gama y centro? Certeza: Inferido; el uso que se le da a esa información está pendiente de confirmar (V04).
 
 ## 2.3 Alcance del censo
 
-Lectura de solo lectura de todo el PBIP con `scripts/censo.py borrador`: modelo TMDL (tablas, columnas, medidas, relaciones, jerarquías, roles, particiones M), reporte PBIR (páginas, visuales, bindings, filtros, interacciones, bookmarks, botones, recursos y tema). No incluye datos (filas), el servicio Power BI, la fuente de datos ni consumidores externos.
+Lectura de solo lectura de todo el PBIP con `scripts/censo.py borrador`: modelo TMDL (tablas, columnas, medidas, relaciones, jerarquías, roles, particiones M), reporte PBIR (páginas, visuales, bindings, filtros, interacciones, bookmarks, botones, recursos y tema), contenido de las tablas embebidas y comparación de cada fuente con su estructura real en el catálogo de Athena (3.2). No incluye datos de las bases (filas), el servicio Power BI ni consumidores externos.
 
 ## 2.4 Fuentes inspeccionadas
 
@@ -69,21 +69,134 @@ Lectura de solo lectura de todo el PBIP con `scripts/censo.py borrador`: modelo 
 
 # 3. Fuentes de datos y conexiones
 
+Todas las tablas del modelo con su origen: bases de datos, tablas escritas a mano (embebidas), tablas calculadas y tablas de fecha automáticas. 3.2 compara cada base con su estructura real; 3.3 muestra el contenido de las tablas embebidas; 3.4 detalla las tablas de fecha automáticas (R61–R63).
+
+## 3.1 Fuentes y conexiones
+
 Evidencia: particiones en `GC - Flotillas.SemanticModel/definition/tables/<Tabla>.tmdl`.
 
 | fuente_id | Tabla del modelo | Partición | Modo | Tipo | Conector | Navegación |
 |---|---|---|---|---|---|---|
 | F01 | Entregas Totales | Entregas Totales | import | Origen | AmazonAthena.Databases("Athena_ODBC2") | AwsDataCatalog / bi_materialized_data / entregas_totales |
 | F02 | Fecha De Actualización | Fecha De Actualización | import | Origen (DateTimeZone.SwitchZone) | DateTimeZone.SwitchZone | — |
-| F03 | Val nombres | Val nombres | import | Tabla embebida | Tabla embebida (base64) | — |
+| F03 | Val nombres | Val nombres | import | Tabla embebida | Tabla embebida (base64; contenido en 3.3) | — |
+| F04 | DateTableTemplate_f19d1d27-b424-47df-bd6f-ec6f68132e7d | DateTableTemplate_f19d1d27-b424-47df-bd6f-ec6f68132e7d | import | Tabla de fecha automática (Power BI) | Calendario DAX (3.4) | Plantilla (sin relación) |
+| F05 | LocalDateTable_1bea27a1-b01a-406b-b09d-312a3807684b | LocalDateTable_1bea27a1-b01a-406b-b09d-312a3807684b | import | Tabla de fecha automática (Power BI) | Calendario DAX (3.4) | Fechas de Entregas Totales[FechaMod] |
+| F06 | LocalDateTable_27076615-e8ea-4cd4-9388-415e2ab86793 | LocalDateTable_27076615-e8ea-4cd4-9388-415e2ab86793 | import | Tabla de fecha automática (Power BI) | Calendario DAX (3.4) | Fechas de Fecha De Actualización[Fecha De Actualización] |
+| F07 | LocalDateTable_8f7b7b5e-ad22-4ad1-8cc1-80b84c190664 | LocalDateTable_8f7b7b5e-ad22-4ad1-8cc1-80b84c190664 | import | Tabla de fecha automática (Power BI) | Calendario DAX (3.4) | Fechas de Entregas Totales[FechaDeCorte] |
+| F08 | LocalDateTable_da3d9bb4-8ca6-4cba-b3ff-391ced20ca41 | LocalDateTable_da3d9bb4-8ca6-4cba-b3ff-391ced20ca41 | import | Tabla de fecha automática (Power BI) | Calendario DAX (3.4) | Fechas de Entregas Totales[fechamatriculacion] |
+| F09 | LocalDateTable_db36dc30-cffa-4632-baeb-6977b4539a2b | LocalDateTable_db36dc30-cffa-4632-baeb-6977b4539a2b | import | Tabla de fecha automática (Power BI) | Calendario DAX (3.4) | Fechas de Entregas Totales[FechaEntregaCliente] |
+| F10 | LocalDateTable_ebcf95e2-ffd9-4b81-ad25-765b67aa04be | LocalDateTable_ebcf95e2-ffd9-4b81-ad25-765b67aa04be | import | Tabla de fecha automática (Power BI) | Calendario DAX (3.4) | Fechas de Entregas Totales[FechaFactura] |
 
 El código M completo de cada consulta está en la sección 4.
-
-Las 7 tablas de fecha automáticas son tablas calculadas que genera Power BI (ver 6.2); no son fuentes.
 
 **Parámetros M:** No aplica (sin `expressions.tmdl`).
 
 Credenciales: el PBIP no contiene credenciales; no se registran (R06). Frecuencia de actualización y propietario: ver sección 16.
+
+## 3.2 Estructura real de las fuentes
+
+Catálogo de Athena: diccionario-datos.md (654 tablas), configurado en `00_dlc/00_diccionario_datos/config.json`. Es una copia del catálogo; si está desactualizado, una columna puede figurar como «No está en el catálogo» sin que falte en la base.
+
+### Entregas Totales
+
+`bi_materialized_data.entregas_totales`: 47 columnas en la base. Resultado: Igual 45, Cambia de tipo 1, Quitada 1.
+
+| Columna en la base | Tipo real | Columna en el tablero | Tipo en el tablero | Resultado | Posible dato personal |
+|---|---|---|---|---|---|
+| fechadecorte | timestamp | Entregas Totales[FechaDeCorte] | dateTime | Igual | — |
+| idempresas | int | Entregas Totales[IdEmpresas] | int64 | Igual | — |
+| año | int | Entregas Totales[año] | int64 | Igual | — |
+| codigoempresa | int | Entregas Totales[CodigoEmpresa] | int64 | Igual | — |
+| empresa | string | Entregas Totales[Empresa] | string | Igual | — |
+| codigocentro | int | Entregas Totales[CodigoCentro] | int64 | Igual | — |
+| centro | string | Entregas Totales[Centro] | string | Igual | — |
+| codigoseccion | int | Entregas Totales[CodigoSeccion] | int64 | Igual | — |
+| seccion | string | Entregas Totales[Seccion] | string | Igual | — |
+| codigomarca | int | Entregas Totales[CodigoMarca] | int64 | Igual | — |
+| marca | string | Entregas Totales[Marca] | string | Igual | — |
+| codigogama | int | Entregas Totales[CodigoGama] | int64 | Igual | — |
+| gama | string | Entregas Totales[Gama] | string | Igual | — |
+| codigomodelo | string | Entregas Totales[CodigoModelo] | string | Igual | — |
+| añomodelo | string | Entregas Totales[AñoModelo] | string | Igual | — |
+| modelo | string | Entregas Totales[Modelo] | string | Igual | — |
+| cedulavendedor | string | Entregas Totales[CedulaVendedor] | string | Igual | Sí (por el nombre) |
+| nombrevendedor | string | Entregas Totales[NombreVendedor] | string | Igual | — |
+| nit | string | Entregas Totales[Nit] | int64 | Cambia de tipo: texto → número | Sí (por el nombre) |
+| nombretercero | string | Entregas Totales[NombreTercero] | string | Igual | Sí (por el nombre) |
+| cantidad | int | Entregas Totales[Cantidad] | int64 | Igual | — |
+| valor | double | Entregas Totales[Valor] | double | Igual | — |
+| tipo | string | Entregas Totales[tipo] | string | Igual | — |
+| fechaentregacliente | timestamp | Entregas Totales[FechaEntregaCliente] | dateTime | Igual | — |
+| fechafactura | timestamp | Entregas Totales[FechaFactura] | dateTime | Igual | — |
+| fechamod | timestamp | Entregas Totales[FechaMod] | dateTime | Igual | — |
+| vin | string | Entregas Totales[VIN] | string | Igual | — |
+| entrega | string | Entregas Totales[Entrega] | string | Igual | — |
+| placa | string | Entregas Totales[placa] | string | Igual | Sí (por el nombre) |
+| fechamatriculacion | timestamp | Entregas Totales[fechamatriculacion] | dateTime | Igual | — |
+| combustible | string | Entregas Totales[combustible] | string | Igual | — |
+| procedencia | string | Entregas Totales[procedencia] | string | Igual | — |
+| procedenciadetalle | string | Entregas Totales[procedenciadetalle] | string | Igual | — |
+| tipooportunidad | string | Entregas Totales[tipooportunidad] | string | Igual | — |
+| correo | string | Entregas Totales[correo] | string | Igual | Sí (por el nombre) |
+| telefono | string | — | — | Quitada en el paso 5 «Columnas quitadas» (4) | Sí (por el nombre) |
+| codunidadnegocio | int | Entregas Totales[codunidadnegocio] | int64 | Igual | — |
+| nombreunidadnegocio | string | Entregas Totales[nombreunidadnegocio] | string | Igual | — |
+| tipocliente | string | Entregas Totales[tipocliente] | string | Igual | — |
+| nombrevendedorhomologado | string | Entregas Totales[nombrevendedorhomologado] | string | Igual | — |
+| clase | string | Entregas Totales[clase] | string | Igual | — |
+| color | string | Entregas Totales[color] | string | Igual | — |
+| esultimamodificacion | int | Entregas Totales[esultimamodificacion] | int64 | Igual | — |
+| emailvendedor | string | Entregas Totales[emailvendedor] | string | Igual | Sí (por el nombre) |
+| tipoventa_vista | string | Entregas Totales[tipoventa_vista] | string | Igual | — |
+| rowhash | string | Entregas Totales[rowhash] | string | Igual | — |
+| extractionid | bigint | Entregas Totales[extractionid] | int64 | Igual | — |
+
+## 3.3 Contenido de las tablas embebidas
+
+### Val nombres
+
+Evidencia: `GC - Flotillas.SemanticModel/definition/tables/Val nombres.tmdl` (literal en base64 de la sección 4). 23 filas, 2 columnas. Posible dato personal (por el nombre): NombreTercero. Es parte de la lógica del tablero: el dueño valida que la lista esté completa y vigente.
+
+| # | NombreTercero | Val nombre |
+|---:|---|---|
+| 1 | Equirent Vehiculos Y Maquinaria S.A.S. Bic | Equirent Vehiculos Y Maquinaria Sas |
+| 2 | Equirent Vehiculos Y Maquinaria S A S Bic | Equirent Vehiculos Y Maquinaria Sas |
+| 3 | Equirent Vehiculos Y Maquinaria Sas | Equirent Vehiculos Y Maquinaria Sas |
+| 4 | Equirent Vehiculos Y Maquinaria S.A.S . Bic | Equirent Vehiculos Y Maquinaria Sas |
+| 5 | Bancolombia S.A. | Bancolombia S.A. |
+| 6 | Bancolombia S.A | Bancolombia S.A. |
+| 7 | Arval Colombia S A S | Arval Colombia Sas |
+| 8 | Arval Colombia Sas | Arval Colombia Sas |
+| 9 | Arval Relsa Colombia Sas | Arval Colombia Sas |
+| 10 | Arval Relsa Colombia  S.A.S | Arval Colombia Sas |
+| 11 | Rentandes S.A.S | Rentandes S.A.S. |
+| 12 | Rentandes S.A.S. | Rentandes S.A.S. |
+| 13 | Rentandes S.A. | Rentandes S.A.S. |
+| 14 | Itaú Corpbanca Colombia S.A | Itaú Corpbanca Colombia S.A |
+| 15 | Itaú Corpbanca Colombia S A | Itaú Corpbanca Colombia S.A |
+| 16 | Itaú Colombia S A | Itaú Corpbanca Colombia S.A |
+| 17 | Itau Corpbanca Colombia S.A | Itaú Corpbanca Colombia S.A |
+| 18 | Transportes Y Servicios Rda S.A.C. | Transportes Y Servicios Rda S.A.C. |
+| 19 | Tiwala Rent Sas | Tiwala Rent Sas |
+| 20 | Tattersall Rental S.A.S | Tattersall Rental S.A.S |
+| 21 | Banco Davivienda S.A | Davivienda |
+| 22 | Banco Davivienda S.A. | Davivienda |
+| 23 | Banco Davivienda | Davivienda |
+
+## 3.4 Tablas de fecha automáticas
+
+Las crea Power BI por cada columna de fecha cuando la inteligencia de tiempo automática está activa (5.4); no vienen de una base. Cada una cubre los años completos entre la fecha mínima y la máxima de su columna de origen. Columnas e IDs en 6.2.
+
+| Tabla | Columna de fecha que la origina | Rango (expresión DAX) | Columnas | Estado de uso de sus columnas |
+|---|---|---|---:|---|
+| DateTableTemplate_f19d1d27-b424-47df-bd6f-ec6f68132e7d | Plantilla (sin relación) | `Calendar(Date(2015,1,1), Date(2015,1,1))` | 7 | En uso 3, Uso técnico 4 |
+| LocalDateTable_1bea27a1-b01a-406b-b09d-312a3807684b | Entregas Totales[FechaMod] | `Calendar(Date(Year(MIN('Entregas Totales'[FechaMod])), 1, 1), Date(Year(MAX('Entregas Totales'[FechaMod])), 12, 31))` | 7 | En uso 3, Uso técnico 4 |
+| LocalDateTable_27076615-e8ea-4cd4-9388-415e2ab86793 | Fecha De Actualización[Fecha De Actualización] | `Calendar(Date(Year(MIN('Fecha De Actualización'[Fecha De Actualización])), 1, 1), Date(Year(MAX('Fecha De Actualización'[Fecha De Actualización])), 12, 31))` | 7 | En uso 3, Uso técnico 4 |
+| LocalDateTable_8f7b7b5e-ad22-4ad1-8cc1-80b84c190664 | Entregas Totales[FechaDeCorte] | `Calendar(Date(Year(MIN('Entregas Totales'[FechaDeCorte])), 1, 1), Date(Year(MAX('Entregas Totales'[FechaDeCorte])), 12, 31))` | 7 | En uso 3, Uso técnico 4 |
+| LocalDateTable_da3d9bb4-8ca6-4cba-b3ff-391ced20ca41 | Entregas Totales[fechamatriculacion] | `Calendar(Date(Year(MIN('Entregas Totales'[fechamatriculacion])), 1, 1), Date(Year(MAX('Entregas Totales'[fechamatriculacion])), 12, 31))` | 7 | En uso 3, Uso técnico 4 |
+| LocalDateTable_db36dc30-cffa-4632-baeb-6977b4539a2b | Entregas Totales[FechaEntregaCliente] | `Calendar(Date(Year(MIN('Entregas Totales'[FechaEntregaCliente])), 1, 1), Date(Year(MAX('Entregas Totales'[FechaEntregaCliente])), 12, 31))` | 7 | En uso 3, Uso técnico 4 |
+| LocalDateTable_ebcf95e2-ffd9-4b81-ad25-765b67aa04be | Entregas Totales[FechaFactura] | `Calendar(Date(Year(MIN('Entregas Totales'[FechaFactura])), 1, 1), Date(Year(MAX('Entregas Totales'[FechaFactura])), 12, 31))` | 7 | En uso 3, Uso técnico 4 |
 
 # 4. Transformaciones (Power Query/M)
 
@@ -234,10 +347,10 @@ Evidencia: `GC - Flotillas.SemanticModel/definition/tables/<Tabla>.tmdl`.
 
 Además, 7 tablas de fecha automáticas (inventario en 6.2).
 
-- `93060b2a-375c-4d50-968b-1547fed5fa65` · Entregas Totales — **hechos**. Granularidad: una fila por unidad/entrega (filtrada en carga a `Cantidad = 1` y `tipo = "Nuevos"`); concentra las 15 medidas y las dimensiones embebidas como columnas (marca, región, trimestre `Q`, semestre `DIVISION S`, procedencia, tipo de venta).
-- `81048dff-8a9d-470a-84cf-65448a0e4ff3` · Val nombres — **dimensión** de homologación de nombres de tercero. Granularidad: una fila por `NombreTercero` a homologar; sin relación física con la tabla de hechos (se consume por `LOOKUPVALUE` desde la columna calculada `val nombre`, ver secciones 6.1 y 15).
-- `6b97fbbd-9f96-46d2-a0c1-268a68ffc23b` · Fecha De Actualización — **auxiliar**. Granularidad: una sola fila con la marca de tiempo de refresco (reloj M con `DateTimeZone.SwitchZone(..., -5, ...)`); no aporta dimensión de negocio.
-- Las 7 tablas `LocalDateTable_*`/`DateTableTemplate_*` (inventario en 6.2) son **auxiliares** de fecha generadas automáticamente por la inteligencia de tiempo; granularidad de un día por fila, una por cada columna de fecha de `Entregas Totales` y de `Fecha De Actualización`.
+- `Entregas Totales`: hechos. Una fila por entrega de vehículo o máquina nueva con `Cantidad = 1` (RN01, RN02); incluye atributos de dimensión (empresa, centro, marca, gama, cliente, vendedor) y las columnas calculadas de 6.1. Certeza: Inferido.
+- `Fecha De Actualización`: auxiliar. Una sola fila con la fecha y hora de la última carga (zona UTC-5); la usan las tarjetas «Última Actualización». Certeza: Encontrado.
+- `Val nombres`: auxiliar (tabla de homologación). 23 filas, una por variante de nombre de cliente, con su nombre unificado (3.3); alimenta la columna calculada `val nombre`. Certeza: Encontrado. No tiene relaciones.
+- Tablas de fecha automáticas: auxiliares de Power BI, una por columna de fecha (3.4 y 6.2).
 
 ## 5.2 Relaciones
 
@@ -865,22 +978,24 @@ La columna «Suma» debe ser igual a «visual.json en PBIP». «Con formato hué
 
 Se listan los visuales de tipo tarjeta o indicador con lo que calculan realmente.
 
+Interpretación de cada tarjeta, con certeza Inferido salvo que se indique. Los títulos que no coinciden con lo calculado están en la sección 16 (H-A11, H-A12, H-A13, V01).
+
 | Página | visual_id | Título | Calcula | Oculto | Interpretación funcional |
 |---|---|---|---|---|---|
-| Dashboard_Empresas | 1ab49030c00e0a200aa4 | Empresas distintas | Count(Entregas Totales[procedenciadetalle]) | No | Pretende contar empresas distintas, pero calcula un conteo implícito de filas de `procedenciadetalle`, no un conteo de valores únicos ni una medida; el valor puede no coincidir con el título (ver H-A11). |
-| Dashboard_Empresas | 207ac3eed23edebbbe0c | Última Actualización | Min(Fecha De Actualización[Fecha De Actualización]) | No | Muestra la marca de tiempo del último refresco (reloj M de la tabla auxiliar Fecha De Actualización); coherente con el título. |
-| Dashboard_Empresas | 856aee5d89c35b6c0aeb | Utilidad bruta total | Sum(Entregas Totales[Valor]) | No | Suma la columna `Entregas Totales[Valor]`; el título la rotula «utilidad bruta», pero no se conoce la definición de `Valor` (ver V01), así que no puede confirmarse que sea utilidad. |
-| Dashboard_Empresas | 94deb273c33108980691 | Total unidades empresarial | CountNonNull(Entregas Totales[año]) | No | Pretende el total de unidades empresariales, pero cuenta filas no nulas de `año`; coincide con el total de entregas solo si `año` nunca es nulo, y no es una medida (ver H-A12). |
-| Dashboard_Empresas | f8afa36aecb1ce0d8a16 | Ticket promedio | CountNonNull(Entregas Totales[año]) | No | El título dice «ticket promedio», pero calcula un conteo de filas no nulas de `año`, no un promedio de valor por unidad; el valor no corresponde al título (ver H-A12). |
-| Dashboard_Renting | 4caed66b2e79ca489edc | Total unidades renting | [cantidad de maquinas] | No | Usa la medida explícita [cantidad de maquinas] (conteo de filas de la tabla de hechos en el contexto de la página); coherente con el título. |
-| Dashboard_Renting | 918d228ab18d5045e510 | Utilidad bruta total | Sum(Entregas Totales[Valor]) | No | Suma `Entregas Totales[Valor]`; mismo caso que la tarjeta de Empresas: la definición de `Valor` no se conoce (ver V01). |
-| Dashboard_Renting | 9734d2820ecd3ae8a0a0 | Última Actualización | Min(Fecha De Actualización[Fecha De Actualización]) | No | Marca de tiempo del último refresco; coherente con el título. |
-| Dashboard_Renting | de06c3fb442c76b90246 | Empresas renting activas | Count(Entregas Totales[val nombre]) | No | Pretende contar empresas de renting activas, pero calcula un conteo implícito de filas de `val nombre`, no de valores únicos ni una medida; el valor puede no coincidir con el título (ver H-A13). |
-| Dashboard_Renting | edd05e9bad4b3666886d | Ticket promedio | [Ticket promedio] | No | Usa la medida explícita [Ticket promedio] (Valor / cantidad de maquinas); coherente con el título. |
-| Dashboard_Convenios | 5f7e3e000ac60870579e | Utilidad bruta total | Sum(Entregas Totales[Valor]) | No | Suma `Entregas Totales[Valor]`; igual que las otras dos tarjetas homónimas: la definición de `Valor` no se conoce (ver V01). |
-| Dashboard_Convenios | 9769d8556306a6bbd114 | Última Actualización | Min(Fecha De Actualización[Fecha De Actualización]) | No | Marca de tiempo del último refresco; coherente con el título. |
-| Dashboard_Convenios | 9a88093ab5402c6e7a10 | Convenios vigentes hoy | Count(Entregas Totales[procedenciadetalle]) | No | El título sugiere convenios vigentes a la fecha, pero calcula un conteo implícito de filas de `procedenciadetalle`, sin filtro de vigencia ni medida; el valor puede no coincidir con el título (ver H-A11). |
-| Dashboard_Convenios | b0bdeb16560aa2033e76 | Total unidades convenios | CountNonNull(Entregas Totales[año]) | No | Pretende el total de unidades de convenios, pero cuenta filas no nulas de `año`; coincide con el total de entregas solo si `año` nunca es nulo, y no es una medida (ver H-A12). |
+| Dashboard_Empresas | 1ab49030c00e0a200aa4 | Empresas distintas | Count(Entregas Totales[procedenciadetalle]) | No | Cuenta filas con `procedenciadetalle` informado, no empresas distintas; ver H-A11. |
+| Dashboard_Empresas | 207ac3eed23edebbbe0c | Última Actualización | Min(Fecha De Actualización[Fecha De Actualización]) | No | Fecha y hora de la última carga de datos. |
+| Dashboard_Empresas | 856aee5d89c35b6c0aeb | Utilidad bruta total | Sum(Entregas Totales[Valor]) | No | Suma de `Entregas Totales[Valor]`; que sea una utilidad bruta no está confirmado (V01). |
+| Dashboard_Empresas | 94deb273c33108980691 | Total unidades empresarial | CountNonNull(Entregas Totales[año]) | No | Cuenta filas con año informado: unidades de la página; ver H-A12. |
+| Dashboard_Empresas | f8afa36aecb1ce0d8a16 | Ticket promedio | CountNonNull(Entregas Totales[año]) | No | Muestra un conteo de filas, no un valor promedio; el título no coincide con el cálculo (H-A12). |
+| Dashboard_Renting | 4caed66b2e79ca489edc | Total unidades renting | [cantidad de maquinas] | No | Número de unidades entregadas en el contexto de filtros de la página (conteo de filas de `Entregas Totales`). |
+| Dashboard_Renting | 918d228ab18d5045e510 | Utilidad bruta total | Sum(Entregas Totales[Valor]) | No | Suma de `Entregas Totales[Valor]`; que sea una utilidad bruta no está confirmado (V01). |
+| Dashboard_Renting | 9734d2820ecd3ae8a0a0 | Última Actualización | Min(Fecha De Actualización[Fecha De Actualización]) | No | Fecha y hora de la última carga de datos. |
+| Dashboard_Renting | de06c3fb442c76b90246 | Empresas renting activas | Count(Entregas Totales[val nombre]) | No | Cuenta filas con `val nombre` informado, no empresas distintas; ver H-A13. |
+| Dashboard_Renting | edd05e9bad4b3666886d | Ticket promedio | [Ticket promedio] | No | Valor total dividido entre las unidades; es el único «Ticket promedio» que calcula un promedio (V01). |
+| Dashboard_Convenios | 5f7e3e000ac60870579e | Utilidad bruta total | Sum(Entregas Totales[Valor]) | No | Suma de `Entregas Totales[Valor]`; que sea una utilidad bruta no está confirmado (V01). |
+| Dashboard_Convenios | 9769d8556306a6bbd114 | Última Actualización | Min(Fecha De Actualización[Fecha De Actualización]) | No | Fecha y hora de la última carga de datos. |
+| Dashboard_Convenios | 9a88093ab5402c6e7a10 | Convenios vigentes hoy | Count(Entregas Totales[procedenciadetalle]) | No | Cuenta filas con `procedenciadetalle` informado; que sean convenios «vigentes hoy» no se verifica con el cálculo (H-A11). |
+| Dashboard_Convenios | b0bdeb16560aa2033e76 | Total unidades convenios | CountNonNull(Entregas Totales[año]) | No | Cuenta filas con año informado: unidades de convenios; ver H-A12. |
 
 # 11. Filtros, segmentaciones e interacciones
 
@@ -1234,23 +1349,25 @@ Incluye todo lo que está dentro de un banner (también tarjetas y segmentacione
 
 La implementación remite al objeto que la contiene; el código está en las secciones 4, 6.1 y 11. Los filtros sin condición guardada no son reglas (siguen inventariados en 11.1).
 
+Las reglas RN03 a RN09 se interpretan desde la expresión de la columna (6.1) y su estado de uso; su significado de negocio es «Inferido» (R51). RN15 es una regla de conjunto (R64).
+
 | rule_id | Regla | Implementación (dónde) | Interpretación funcional | Certeza | Validación del dueño | Respuesta del dueño |
 |---|---|---|---|---|---|---|
-| RN01 | Filtro de carga en Entregas Totales | Paso 8 «Filtro Cantidad» (4): Table.SelectRows(#"Tipo cambiado inicial", each ([Cantidad] = 1)) | Solo entran a la tabla de hechos las filas con `Cantidad = 1`, dejando una fila por unidad; fija la granularidad de entrega individual. | Encontrado (código M) | No requerida | — |
-| RN02 | Filtro de carga en Entregas Totales | Paso 10 «Filas filtradas1» (4): Table.SelectRows(#"Poner En Mayúsculas Cada Palabra", each ([tipo] = "Nuevos")) | Solo se consideran entregas con `tipo = "Nuevos"`; se excluye cualquier otro tipo (p. ej. usados) del universo del tablero. | Encontrado (código M) | No requerida | — |
-| RN03 | Columna calculada Linea | Entregas Totales[Linea] (6.1) | Según su expresión en 6.1, anida condiciones sobre `Centro` y `[Marca]` para asignar una línea de producto (p. ej. «JD Construccion», «JD Agricola», «Wirtgen», «Usados»). Su «Estado de uso» en 6.1 es «Sin uso interno identificado»: ningún visor, filtro ni medida del PBIP la consume (candidata 17.2, fila 1). | Inferido (expresión Encontrada; significado de negocio no documentado) | Pendiente de validación | — |
-| RN04 | Columna calculada Región | Entregas Totales[Región] (6.1) | Según su expresión en 6.1, mapea cada valor de `Centro` a una ciudad/región (Barranquilla, Bogotá, Cali, Ibagué, Medellín…). «En uso»: alimenta al menos una segmentación/filtro (6.1). | Inferido (expresión Encontrada; significado de negocio no documentado) | Pendiente de validación | — |
-| RN05 | Columna calculada Q | Entregas Totales[Q] (6.1) | Según su expresión en 6.1 (`"Q"&SWITCH(MONTH(FechaEntregaCliente)…)`), deriva el trimestre Q1–Q4 a partir del mes de `FechaEntregaCliente`. «En uso»: alimenta las medidas Q1–Q4 y segmentaciones. | Inferido (expresión Encontrada; significado de negocio no documentado) | Pendiente de validación | — |
-| RN06 | Columna calculada DIVISION S | Entregas Totales[DIVISION S] (6.1) | Según su expresión en 6.1 (`"S"&SWITCH(MONTH(FechaEntregaCliente)…)`), es el semestre: S1 para los meses enero–junio y S2 para julio–diciembre; no es una «división» organizativa pese al nombre. «En uso»: alimenta las medidas S1/S2 y el recambio semestral. | Inferido (expresión Encontrada; significado de negocio no documentado) | Pendiente de validación | — |
-| RN07 | Columna calculada val nombre | Entregas Totales[val nombre] (6.1) | Según su expresión en 6.1, homologa `NombreTercero` con `LOOKUPVALUE` contra la dimensión Val nombres y, si no encuentra correspondencia, asigna «OTROS». «En uso»: alimenta visuales y filtros. | Inferido (expresión Encontrada; significado de negocio no documentado) | Pendiente de validación | — |
-| RN08 | Columna calculada RENTING | Entregas Totales[RENTING] (6.1) | Según su expresión en 6.1, marca «RENTING» cuando el `val nombre` homologado es distinto de «OTROS», y cadena vacía en caso contrario. Su «Estado de uso» en 6.1 es «Sin uso interno identificado»: ningún objeto del PBIP la consume (candidata 17.2). | Inferido (expresión Encontrada; significado de negocio no documentado) | Pendiente de validación | — |
-| RN09 | Columna calculada Convenios | Entregas Totales[Convenios] (6.1) | Según su expresión en 6.1, marca «CONVENIOS» cuando `procedencia = "Convenios"`, y cadena vacía en caso contrario. Su «Estado de uso» en 6.1 es «Sin uso interno identificado»: ningún objeto del PBIP la consume (candidata 17.2). | Inferido (expresión Encontrada; significado de negocio no documentado) | Pendiente de validación | — |
-| RN10 | Filtro de página en Dashboard_Empresas | 569ba6f7876046e008bb: Entregas Totales[tipoventa_vista] IN (Flotas - Oficial, Flotas de Proximidad Oficial, Flotas Oficial, Flotilla Coorporativa) (11.1) | La página de Empresas solo muestra ventas de los tipos de flota/flotilla oficial listados; acota el universo a flotillas corporativas. | Encontrado (filtro de página) | No requerida | — |
-| RN11 | Filtro de página en Dashboard_Empresas | b9e3f918c85149bec155: Entregas Totales[val nombre] IN (OTROS) (11.1) | Restringe además la página de Empresas al valor homologado «OTROS» de `val nombre` (los terceros sin correspondencia en Val nombres); conviene confirmar con el dueño si acotar a «OTROS» es intencional, porque reduce fuertemente el universo. | Encontrado (filtro de página); interpretación del propósito: Inferido | Pendiente de validación | — |
-| RN12 | Filtro de página en Dashboard_Renting | 5967654bebb0c4008a32: Entregas Totales[val nombre] NOT IN (OTROS) (11.1) | La página de Renting excluye el valor «OTROS» de `val nombre` (deja los terceros sí homologados); complementaria de RN11. | Encontrado (filtro de página) | No requerida | — |
-| RN13 | Filtro de página en Dashboard_Convenios | 9735a5b6184a47d3e9cd: Entregas Totales[procedencia] IN (Convenios) (11.1) | La página de Convenios solo muestra entregas cuya `procedencia` es «Convenios». | Encontrado (filtro de página) | No requerida | — |
-| RN14 | Filtro de página en Dashboard_Convenios | fe62f9fc0877e0ca25c0: Entregas Totales[procedenciadetalle] NOT IN (null) (11.1) | Excluye de Convenios las filas sin `procedenciadetalle`; evita registros sin detalle de convenio. | Encontrado (filtro de página) | No requerida | — |
-| RN15 | Segmentación del tablero en tres vistas de negocio (regla de conjunto) | Combinación de los filtros de página RN10–RN14 sobre las páginas Dashboard_Empresas, Dashboard_Renting y Dashboard_Convenios | A nivel de conjunto, el tablero parte el universo de entregas «Nuevos» en tres vistas (empresas/flotillas, renting y convenios) mediante filtros de página sobre `tipoventa_vista`, `val nombre`, `procedencia` y `procedenciadetalle`; no lo hacen las columnas RENTING ni Convenios (ambas «Sin uso interno identificado»), sino la intersección de esos filtros por página. | Inferido (deducida de la combinación de filtros y páginas) | Pendiente de validación | — |
+| RN01 | Filtro de carga en Entregas Totales | Paso 8 «Filtro Cantidad» (4): Table.SelectRows(#"Tipo cambiado inicial", each ([Cantidad] = 1)) | Solo se cargan entregas con `Cantidad` igual a 1; las demás filas de la base no entran al tablero. | Encontrado | No requerida | — |
+| RN02 | Filtro de carga en Entregas Totales | Paso 10 «Filas filtradas1» (4): Table.SelectRows(#"Poner En Mayúsculas Cada Palabra", each ([tipo] = "Nuevos")) | Solo se cargan entregas de tipo «Nuevos»; se excluyen otros tipos de la base (por ejemplo, usados). | Encontrado | No requerida | — |
+| RN03 | Columna calculada Linea | Entregas Totales[Linea] (6.1) | Clasifica cada fila en una línea (Wirtgen, JD Agricola, JD Construccion o Usados) según la marca, cuando el centro no empieza por «VO»; sin uso interno identificado (17.2). | Inferido | Pendiente de validación | — |
+| RN04 | Columna calculada Región | Entregas Totales[Región] (6.1) | Traduce el nombre del centro a una región o ciudad (por ejemplo, JD-Cali-Palmira → Cali); si el centro no está en la lista, deja el nombre del centro. La usa un filtro del tablero. | Inferido | Pendiente de validación | — |
+| RN05 | Columna calculada Q | Entregas Totales[Q] (6.1) | Asigna el trimestre (Q1 a Q4) según el mes de `FechaEntregaCliente`: enero-marzo Q1, abril-junio Q2, julio-septiembre Q3, octubre-diciembre Q4. | Inferido | Pendiente de validación | — |
+| RN06 | Columna calculada DIVISION S | Entregas Totales[DIVISION S] (6.1) | Asigna el semestre (S1 enero-junio, S2 julio-diciembre) según el mes de `FechaEntregaCliente`. | Inferido | Pendiente de validación | — |
+| RN07 | Columna calculada val nombre | Entregas Totales[val nombre] (6.1) | Busca el nombre del cliente en la tabla `Val nombres` (3.3) y devuelve su nombre unificado; si no lo encuentra, devuelve «OTROS». | Inferido | Pendiente de validación | — |
+| RN08 | Columna calculada RENTING | Entregas Totales[RENTING] (6.1) | Marca «RENTING» las filas cuyo `val nombre` no es «OTROS»; sin uso interno identificado (17.2). | Inferido | Pendiente de validación | — |
+| RN09 | Columna calculada Convenios | Entregas Totales[Convenios] (6.1) | Marca «CONVENIOS» las filas cuya `procedencia` es «Convenios»; sin uso interno identificado (17.2). | Inferido | Pendiente de validación | — |
+| RN10 | Filtro de página en Dashboard_Empresas | 569ba6f7876046e008bb: Entregas Totales[tipoventa_vista] IN (Flotas - Oficial, Flotas de Proximidad Oficial, Flotas Oficial, Flotilla Coorporativa) (11.1) | La página Dashboard_Empresas solo muestra ventas de tipo Flotas - Oficial, Flotas de Proximidad Oficial, Flotas Oficial o Flotilla Coorporativa. | Encontrado | No requerida | — |
+| RN11 | Filtro de página en Dashboard_Empresas | b9e3f918c85149bec155: Entregas Totales[val nombre] IN (OTROS) (11.1) | La página Dashboard_Empresas solo muestra clientes cuyo `val nombre` es «OTROS», es decir, los que no están en la lista de 3.3. | Encontrado | No requerida | — |
+| RN12 | Filtro de página en Dashboard_Renting | 5967654bebb0c4008a32: Entregas Totales[val nombre] NOT IN (OTROS) (11.1) | La página Dashboard_Renting muestra todo cliente cuyo `val nombre` no es «OTROS», es decir, los que están en la lista de 3.3. | Encontrado | No requerida | — |
+| RN13 | Filtro de página en Dashboard_Convenios | 9735a5b6184a47d3e9cd: Entregas Totales[procedencia] IN (Convenios) (11.1) | La página Dashboard_Convenios solo muestra filas con `procedencia` «Convenios». | Encontrado | No requerida | — |
+| RN14 | Filtro de página en Dashboard_Convenios | fe62f9fc0877e0ca25c0: Entregas Totales[procedenciadetalle] NOT IN (null) (11.1) | La página Dashboard_Convenios excluye las filas sin `procedenciadetalle`. | Encontrado | No requerida | — |
+| RN15 | Regla de conjunto: reparto del tablero por segmento de cliente | RN07, RN10, RN11, RN12, RN13, RN14 y la lista `Val nombres` (3.3) | Cada página muestra un segmento: Renting reúne a los clientes de la lista de 3.3; Empresas, los clientes que no están en esa lista y cuya venta es de tipo flotas; Convenios, las ventas con procedencia «Convenios». La lista de 3.3 decide qué cliente cuenta como renting: un cliente que no esté en la lista pasa a Empresas. Los filtros no son excluyentes entre sí (por ejemplo, una venta de convenio de un cliente de la lista aparecería en Renting y en Convenios), por lo que sumar las tres páginas podría contar una entrega dos veces. | Inferido | Pendiente de validación | — |
 
 # 15. Dependencias
 
@@ -1258,29 +1375,21 @@ La implementación remite al objeto que la contiene; el código está en las sec
 - Tablas sin relaciones con otras tablas: Val nombres.
 
 ```text
-Fuente: Athena bi_materialized_data.entregas_totales
-  -> Consulta M "Entregas Totales" (filtros de carga RN01 Cantidad=1 y RN02 tipo="Nuevos")
-     -> Tabla 93060b2a-375c-4d50-968b-1547fed5fa65 · Entregas Totales (hechos)
-        -> Columnas calculadas en uso: Región (RN04, ciudad desde Centro), Q (RN05, trimestre),
-           DIVISION S (RN06, semestre), val nombre (RN07, homologa NombreTercero por LOOKUPVALUE)
-        -> Columnas calculadas sin uso interno: Linea (RN03), RENTING (RN08), Convenios (RN09) -> candidatas 17.2
-        -> Medidas: [cantidad de maquinas] (base de 12 medidas), [Ticket promedio], [S1]/[S2] (usan DIVISION S), [Q1..Q4] (usan Q)
-           -> Visuales tarjeta KPI: 4caed66b2e79ca489edc · Total unidades renting;
-              edd05e9bad4b3666886d · Ticket promedio
-           -> Páginas: ac291ea509382034e4ab · Dashboard_Renting (RN12);
-              377df594a011ae294444 · Dashboard_Empresas (RN10, RN11);
-              b597e26007760b8239c0 · Dashboard_Convenios (RN13, RN14)
-  Dimensión embebida 81048dff-8a9d-470a-84cf-65448a0e4ff3 · Val nombres: sin relación física;
-     solo se consume por LOOKUPVALUE desde Entregas Totales[val nombre].
-  Auxiliar 6b97fbbd-9f96-46d2-a0c1-268a68ffc23b · Fecha De Actualización: reloj M del refresco
-     -> tarjetas "Última Actualización" (207ac3eed23edebbbe0c, 9734d2820ecd3ae8a0a0, 9769d8556306a6bbd114).
-  Nota: varias tarjetas KPI calculan conteos implícitos en lugar de medidas (ver H-A11, H-A12, H-A13)
-  y la columna Entregas Totales[Valor] alimenta las tarjetas "Utilidad bruta total" sin definición confirmada (ver V01).
+Athena bi_materialized_data.entregas_totales (F01) → consulta Entregas Totales (filtros RN01, RN02)
+  → tabla Entregas Totales → columnas calculadas (Q, DIVISION S, Región, val nombre) → medida [cantidad de maquinas]
+  → medidas derivadas (S1, S2, Q1–Q4, Año actual/Anterior, Ticket promedio, Recambio, Crecimiento)
+Tabla embebida Val nombres (F03) → columna calculada val nombre → filtros de página RN11 y RN12
+Fecha De Actualización (F02) → tarjetas «Última Actualización» de las tres páginas
+Entregas Totales → visuales válidos de Dashboard_Renting, Dashboard_Convenios y Dashboard_Empresas → tarjetas KPI (sección 10)
+Visuales y bookmarks que apuntan a RUNT, Cultivos e Importaciones no tienen datos en el modelo: H-A01, H-A02, H-A03, H-A05, H-A06
+Tablas LocalDateTable (F05–F10) → relaciones por fecha de Entregas Totales (5.2); su uso está en 6.2
 ```
 
 # 16. Hallazgos, vacíos y puntos de revisión
 
 Tabla maestra única (R45): hallazgos, riesgos, observaciones y vacíos de información, una fila por asunto. Las filas `H-A*` y `V-A*` las genera el script; la IA revisa certeza, prioridad e impacto y agrega las de negocio (`H01`, `V01`…). No se repite un asunto que ya cubre otra fila: se ajusta esa fila. La columna «Punto de revisión» no usa verbos de cambio (R47).
+
+Filas H-A y V-A revisadas; las filas `V01`–`V04` son vacíos de negocio agregados en la lectura funcional.
 
 | ID | Tipo | Categoría | Descripción concreta | Página y objeto | page_id | visual_id / object_id (con nombre) | bookmark_id / estado | Evidencia exacta | Certeza | Objetos afectados y dependencias | Impacto | Prioridad | Punto de revisión | Validación requerida | Estado | Respuesta del dueño |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -1295,22 +1404,26 @@ Tabla maestra única (R45): hallazgos, riesgos, observaciones y vacíos de infor
 | H-A09 | Observación | Modelo | Medidas con la misma expresión: Año Anterior, Medida 2. | Modelo | — | 5e65ec2b-b63c-4038-8140-d68832f20c73 · Año Anterior; d96eb974-557d-4111-9838-b22f90197c83 · Medida 2 | — | TMDL (sección 7) | Encontrado | Ver columna «Usa» de la sección 7 | Bajo | Baja | Confirmar con el dueño cuál de las medidas es la vigente. | Sí | Pendiente de validación | — |
 | H-A10 | Observación | Reporte | 2 segmentaciones visibles de Entregas Totales[Q] en la misma página. | Dashboard_Empresas | 377df594a011ae294444 | 86c38682d276ded8a3ea · Segmentación: Trimestre (Entregas Totales[Q]); b2df3c91709631415d59 · Segmentación: Trimestre (Entregas Totales[Q]) | — | Bindings (sección 9) y 11.2 | Encontrado | Interacciones de 11.3 | Bajo | Baja | Revisar con el dueño el propósito de cada segmentación. | Sí | Pendiente de validación | — |
 | H-A11 | Hallazgo | Métrica | 2 tarjeta(s) calculan Count(Entregas Totales[procedenciadetalle]), un conteo implícito de filas y no una medida. | Dashboard_Convenios, Dashboard_Empresas | 377df594a011ae294444, b597e26007760b8239c0 | 1ab49030c00e0a200aa4 · Empresas distintas; 9a88093ab5402c6e7a10 · Convenios vigentes hoy | — | Bindings en visual.json (secciones 9 y 10) | Encontrado | Columna Entregas Totales[procedenciadetalle] | El valor puede no corresponder al título de la tarjeta | Media | Confirmar con el dueño qué debe mostrar cada tarjeta y si el título coincide con lo calculado. | Sí | Pendiente de validación | — |
-| H-A12 | Hallazgo | Métrica | 3 tarjeta(s) calculan CountNonNull(Entregas Totales[año]), un conteo implícito de filas y no una medida. Incluye una tarjeta rotulada «Ticket promedio» (f8afa36aecb1ce0d8a16) que muestra un conteo, no un promedio: el valor no corresponde al concepto del título. | Dashboard_Convenios, Dashboard_Empresas | 377df594a011ae294444, b597e26007760b8239c0 | 94deb273c33108980691 · Total unidades empresarial; f8afa36aecb1ce0d8a16 · Ticket promedio; b0bdeb16560aa2033e76 · Total unidades convenios | — | Bindings en visual.json (secciones 9 y 10) | Encontrado | Columna Entregas Totales[año] | Un KPI rotulado «Ticket promedio» muestra un conteo; riesgo de lectura errónea del valor | Alta | Confirmar con el dueño qué debe mostrar cada tarjeta y si el título coincide con lo calculado, en especial la tarjeta «Ticket promedio». | Sí | Pendiente de validación | — |
+| H-A12 | Hallazgo | Métrica | 3 tarjeta(s) calculan CountNonNull(Entregas Totales[año]), un conteo implícito de filas y no una medida. | Dashboard_Convenios, Dashboard_Empresas | 377df594a011ae294444, b597e26007760b8239c0 | 94deb273c33108980691 · Total unidades empresarial; f8afa36aecb1ce0d8a16 · Ticket promedio; b0bdeb16560aa2033e76 · Total unidades convenios | — | Bindings en visual.json (secciones 9 y 10) | Encontrado | Columna Entregas Totales[año] | El valor puede no corresponder al título de la tarjeta | Media | Confirmar con el dueño qué debe mostrar cada tarjeta y si el título coincide con lo calculado. | Sí | Pendiente de validación | — |
 | H-A13 | Hallazgo | Métrica | 1 tarjeta(s) calculan Count(Entregas Totales[val nombre]), un conteo implícito de filas y no una medida. | Dashboard_Renting | ac291ea509382034e4ab | de06c3fb442c76b90246 · Empresas renting activas | — | Bindings en visual.json (secciones 9 y 10) | Encontrado | Columna Entregas Totales[val nombre] | El valor puede no corresponder al título de la tarjeta | Media | Confirmar con el dueño qué debe mostrar cada tarjeta y si el título coincide con lo calculado. | Sí | Pendiente de validación | — |
 | H-A14 | Observación | Seguridad | El rol «Todo» no tiene reglas RLS. | Modelo | — | Todo | — | GC - Flotillas.SemanticModel/definition/roles/Todo.tmdl | Encontrado | Todas las tablas | Acceso total a las filas | Baja | Confirmar con el dueño si corresponde seguridad por filas. | Sí | Pendiente de validación | — |
+| H-A15 | Riesgo | Fuentes | 1 columna(s) de `bi_materialized_data.entregas_totales` tienen en el tablero un tipo distinto al de la base: nit (string en la base, int64 en el tablero: texto → número). | Modelo | — | 576abc15-8686-4c32-a229-182c113e5324 · Entregas Totales[Nit] | — | Sección 3.2 y pasos de cambio de tipo (4) | Encontrado | Visuales y medidas que usan esas columnas (6.1) | Un valor con letras, guiones o ceros a la izquierda se pierde o hace fallar la actualización | Media | Confirmar con el dueño si esas columnas siempre traen valores compatibles con el tipo del tablero. | Sí | Pendiente de validación | — |
 | V-A01 | Vacío | Gobierno | No se conoce: Frecuencia y proceso de actualización. | BI | — | — | — | El PBIP no guarda la programación de refresco | Desconocido | — | Vigencia del dato | Media | Confirmar con el dueño. | Sí (edgar.p@nebula.com.co) | Pendiente de validación | — |
 | V-A02 | Vacío | Gobierno | No se conoce: Ambiente y workspace de publicación. | BI | — | — | — | Sin evidencia en el PBIP | Desconocido | — | Dónde se consume | Media | Confirmar con el dueño. | Sí (edgar.p@nebula.com.co) | Pendiente de validación | — |
 | V-A03 | Vacío | Gobierno | No se conoce: Propietario de cada fuente de la sección 3. | BI | — | — | — | No está en el PBIP | Desconocido | — | Gobierno del dato | Media | Confirmar con el dueño. | Sí (edgar.p@nebula.com.co) | Pendiente de validación | — |
-| V01 | Vacío | Métrica | No se conoce la definición de la columna Entregas Totales[Valor]: tres tarjetas la suman y la rotulan «Utilidad bruta total», y la medida [Ticket promedio] la divide entre [cantidad de maquinas], pero no hay evidencia de que sea utilidad bruta (podría ser precio, costo, importe facturado u otro). | Dashboard_Empresas, Dashboard_Renting, Dashboard_Convenios | 377df594a011ae294444, ac291ea509382034e4ab, b597e26007760b8239c0 | 856aee5d89c35b6c0aeb · Utilidad bruta total; 918d228ab18d5045e510 · Utilidad bruta total; 5f7e3e000ac60870579e · Utilidad bruta total | — | Columna Entregas Totales[Valor] en el modelo (secciones 6.1 y 10); el TMDL no la describe | Desconocido | Tarjetas «Utilidad bruta total» de las tres páginas y la medida [Ticket promedio] | Un KPI financiero puede estar mal rotulado | Media | Confirmar con el dueño qué representa Entregas Totales[Valor] y si «Utilidad bruta total» es el título correcto. | Sí (edgar.p@nebula.com.co) | Pendiente de validación | — |
+| V01 | Vacío | Métrica | No se conoce qué representa `Entregas Totales[Valor]`. Tres tarjetas «Utilidad bruta total» lo suman, pero el nombre de la columna no dice si es utilidad, precio o facturación. | Dashboard_Convenios, Dashboard_Empresas, Dashboard_Renting | 377df594a011ae294444, ac291ea509382034e4ab, b597e26007760b8239c0 | 856aee5d89c35b6c0aeb · Utilidad bruta total; 918d228ab18d5045e510 · Utilidad bruta total; 5f7e3e000ac60870579e · Utilidad bruta total; 8a477545-83ea-4fc9-ab75-e12f341f139e · Ticket promedio (medida) | — | Bindings `Sum(Entregas Totales[Valor])` (secciones 9 y 10) y medida `Ticket promedio` (7) | Desconocido | Medida [Ticket promedio] y la tarjeta «Ticket promedio» de Dashboard_Renting (`edd05e9bad4b3666886d`) | El título «Utilidad bruta total» podría no corresponder al valor que se suma | Alta | Confirmar con el dueño qué representa `Valor` y si el título de las tarjetas es correcto. | Sí (edgar.p@nebula.com.co) | Pendiente de validación | — |
+| V02 | Vacío | Datos | No se conoce si la lista de `Val nombres` (23 filas, 3.3) está completa y vigente. Un cliente que no esté en ella se clasifica «OTROS» y pasa de Renting a Empresas (RN15). | Modelo | — | 81048dff-8a9d-470a-84cf-65448a0e4ff3 · Val nombres | — | Sección 3.3 y RN07, RN11, RN12 | Desconocido | Columna `val nombre`, filtros de página RN11 y RN12, tarjeta «Empresas renting activas» | La clasificación de un cliente depende de que su nombre esté escrito igual en la lista | Alta | Confirmar con el dueño que la lista está completa y quién la mantiene. | Sí (edgar.p@nebula.com.co) | Pendiente de validación | — |
+| V03 | Vacío | Datos | No se conoce si el criterio de carga `Cantidad = 1` y `tipo = "Nuevos"` es el esperado: se desconoce si las filas con otra cantidad u otro tipo deben quedar fuera del tablero. | Modelo | — | 93060b2a-375c-4d50-968b-1547fed5fa65 · Entregas Totales | — | Pasos 8 y 10 de la consulta (sección 4); RN01, RN02 | Desconocido | Todos los visuales y medidas del tablero | Un cambio de criterio en la base modificaría todas las cifras | Media | Confirmar con el dueño que ese filtro de carga es el esperado. | Sí (edgar.p@nebula.com.co) | Pendiente de validación | — |
+| V04 | Vacío | Gobierno | No se conoce el público del tablero ni la decisión que apoya. | BI | — | — | — | Sin evidencia en el PBIP | Desconocido | — | Define si los vacíos y los hallazgos son críticos | Media | Confirmar con el dueño quién usa el tablero y para qué. | Sí (edgar.p@nebula.com.co) | Pendiente de validación | — |
 
 # 17. Limitaciones y control para DLC posteriores
 
 ## 17.1 Limitaciones
 
 1. Censo estructural: no se ejecutó el modelo ni se vieron datos; un binding correcto no garantiza el valor mostrado.
-2. La fuente de datos (sección 3) no se consultó; el uso de columnas fuera del PBIP no es verificable.
+2. La base de datos no se consultó: su estructura real sale del catálogo de Athena (3.2), que es una copia y puede estar desactualizada; el uso de columnas fuera del PBIP no es verificable.
 3. El efecto en ejecución de bookmarks y botones requiere validación visual en Power BI Desktop.
-4. Literales de más de 300 caracteres en M (por ejemplo, tablas embebidas en base64) se omiten en la sección 4; están en el TMDL. Del contenido de esas tablas (por ejemplo, un mapeo de homologación) solo se documenta su efecto en el modelo.
+4. Literales de más de 300 caracteres en M se omiten en el código de la sección 4; el contenido de las tablas embebidas se muestra en 3.3.
 5. El censo describe solo la versión analizada del PBIP; los cambios respecto a versiones anteriores están en «[BI] - cambios.md» (R52).
 
 Sin limitaciones adicionales.
@@ -1448,4 +1561,4 @@ Riesgo y pruebas por defecto según el tipo de objeto (la IA puede precisarlos e
 
 ## 18.2 Estado final
 
-El censo cubrió por completo el PBIP en lectura (modelo TMDL, consultas M, DAX, reporte PBIR, filtros, interacciones, bookmarks, botones y recursos) y todos los marcadores quedaron resueltos. El estado es «Completado pendiente de validación» porque quien ejecuta el censo no es el dueño del tablero: los 14 hallazgos (H-A01–H-A14) y los 4 vacíos (V-A01–V-A03 y V01), más las reglas Inferidas de la sección 14, quedan pendientes de la confirmación del dueño (edgar.p@nebula.com.co) y de la validación visual en Power BI Desktop; el ritual no autoriza cerrar como validado ni eliminar objetos sin esa confirmación.
+Completado pendiente de validación: la conciliación con el PBIP no tiene diferencias y no quedan marcadores sin completar, pero las reglas de negocio inferidas (14) y los puntos de la sección 16 siguen sin confirmar por el dueño (edgar.p@nebula.com.co); quien realizó el censo (miguel.b@nebula.com.co) no es el dueño. Hasta cerrar esa validación el tablero no es apto para modificación (R56).

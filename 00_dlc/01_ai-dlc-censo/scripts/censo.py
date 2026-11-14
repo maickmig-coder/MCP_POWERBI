@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CENSO BI — ritual AI-DLC v2.3.6. Genera, valida y registra el censo de un tablero Power BI en PBIP.
+"""CENSO BI — ritual AI-DLC v2.3.7. Genera, valida y registra el censo de un tablero Power BI en PBIP.
 
 La única salida es un Markdown. El script hace todo el trabajo mecánico (inventarios, IDs, posiciones, bindings,
 dependencias, clasificación de uso, conciliación); la IA solo completa los marcadores [IA: ...].
@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
@@ -41,7 +42,7 @@ from censo_analisis import TARJETAS, TIPO_LEGIBLE, analyze  # noqa: E402
 from censo_lectura import elide_long_literals, read_pbip  # noqa: E402
 import censo_versiones as cv  # noqa: E402
 
-RITUAL = "2.3.6"
+RITUAL = "2.3.7"
 # DLC del diccionario de datos (hermano de este DLC en 00_dlc): se actualiza al registrar un censo (R60)
 DICCIONARIO_DIR = Path(__file__).resolve().parents[2] / "00_diccionario_datos"
 
@@ -55,10 +56,12 @@ def actualizar_diccionario(censo_vigente: Path, correo: str) -> None:
         return
     censos = censo_vigente.resolve().parent.parent  # 02_censo
     print("\nActualizando el diccionario de datos (R60)…")
+    # el proceso hijo escribe en UTF-8 (sin esto usa la página de códigos de Windows y las tildes salen dañadas)
+    entorno = {**os.environ, "PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1"}
     try:
         r = subprocess.run([sys.executable, str(script), "actualizar", "--censos", str(censos), "--salida",
                             str(DICCIONARIO_DIR), "--correo-ejecutor", correo],
-                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
+                           capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600, env=entorno)
         print(r.stdout.rstrip())
         if r.returncode != 0:
             print((r.stderr or "").rstrip())
@@ -128,6 +131,128 @@ def ref_txt(t, c):
 
 
 # =============================================================================================
+# Fuentes: estructura real (catálogo de Athena), tablas embebidas y tablas de fecha automáticas (R61–R63)
+# =============================================================================================
+MAX_FILAS_EMBEBIDA = 200  # se muestran completas hasta este tamaño; si no, las primeras y el total
+
+
+def _modulo_diccionario():
+    """diccionario.py del DLC del diccionario: el censo lee el catálogo de Athena igual que el diccionario."""
+    ruta = DICCIONARIO_DIR / "scripts"
+    if not (ruta / "diccionario.py").exists():
+        return None
+    if str(ruta) not in sys.path:
+        sys.path.insert(0, str(ruta))
+    try:
+        import diccionario  # noqa: PLC0415
+        return diccionario
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def estructura_real(inv: dict, a: dict) -> dict:
+    """R61: compara cada fuente de base de datos con su estructura real en el catálogo de Athena.
+    Devuelve {"estado": texto del catálogo, "fuentes": [ {tabla, clave, en_catalogo, filas, cambios, fuera} ]}."""
+    dd = _modulo_diccionario()
+    res = {"estado": "", "fuentes": [], "n_catalogo": 0}
+    if dd is None:
+        res["estado"] = "No se encontró el DLC del diccionario de datos; la comparación con la estructura real no se hizo."
+        return res
+    rutas = dd.rutas_catalogo(DICCIONARIO_DIR)
+    if not rutas:
+        res["estado"] = "No hay catálogo configurado (`00_dlc/00_diccionario_datos/config.json`); la comparación no se hizo."
+        return res
+    faltan = dd.catalogo_faltante(DICCIONARIO_DIR)
+    if faltan:
+        res["estado"] = ("No se encontró el catálogo de Athena (" + ", ".join(p.name for p in faltan) +
+                         "); la comparación con la estructura real no se hizo.")
+        return res
+    cat = dd.leer_catalogo(DICCIONARIO_DIR)
+    res["n_catalogo"] = len(cat)
+    res["estado"] = (f"Catálogo de Athena: {', '.join(p.name for p in rutas)} ({len(cat)} tablas), configurado en "
+                     "`00_dlc/00_diccionario_datos/config.json`. Es una copia del catálogo; si está desactualizado, una "
+                     "columna puede figurar como «No está en el catálogo» sin que falte en la base.")
+    tablas = {t["tabla"]: t for t in inv.get("tablas", [])}
+    for q in a["consultas"]:
+        info = dd.analizar_m(q["codigo"])
+        if not info["conector"]:
+            continue  # embebida, literal o calculada en M: no viene de una base
+        f = {"tabla": q["tabla"], "motor": info["motor"], "clave": None, "en_catalogo": False, "filas": [], "cambios": [],
+             "fuera": [], "compuesto": info["compuesto"]}
+        res["fuentes"].append(f)
+        clave = dd.clave_catalogo(info) if info["motor"] == "Amazon Athena" else None
+        f["clave"] = clave
+        entrada = cat.get(clave) if clave else None
+        if not entrada:
+            continue
+        f["en_catalogo"] = True
+        t = tablas.get(q["tabla"], {"columnas": []})
+        modelo = {}
+        for c in t["columnas"]:
+            if c["calculada"]:
+                continue
+            origen = a["col_rows"][(q["tabla"], c["nombre"])]["origen"]
+            modelo.setdefault(dd.clave_col(origen if origen not in ("", "—") else c["nombre"]), (origen, c))
+        quitadas = {}
+        for st in q["pasos"]:
+            for x in st.get("eliminadas") or []:
+                quitadas[dd.clave_col(x)] = f"Quitada en el paso {st['idx']} «{st['paso']}» (4)"
+        for nombre, tipo_real in entrada["columnas"]:
+            k = dd.clave_col(nombre)
+            pii = "Sí (por el nombre)" if dd.PII_RE.search(nombre) else "—"
+            if k in modelo:
+                origen, c = modelo.pop(k)
+                tipo_mod = c["tipo_dato"] or "—"
+                m_real, m_mod = dd.tipo_m_catalogo(tipo_real), dd.tipo_m(tipo_mod)
+                fam_r, fam_m = dd.FAMILIA_M.get(m_real), dd.FAMILIA_M.get(m_mod)
+                if fam_r and fam_m and fam_r != fam_m:
+                    resultado = f"Cambia de tipo: {fam_r} → {fam_m}"
+                    f["cambios"].append((origen, tipo_real, tipo_mod, c, f"{fam_r} → {fam_m}"))
+                elif m_real == "type number" and m_mod == "Int64.Type":
+                    resultado = "Cambia de tipo: decimal → entero"
+                    f["cambios"].append((origen, tipo_real, tipo_mod, c, "decimal → entero"))
+                else:
+                    resultado = "Igual"
+                f["filas"].append([origen, tipo_real, ref_txt(q["tabla"], c["nombre"]), tipo_mod, resultado, pii])
+            else:
+                f["filas"].append([nombre, tipo_real, "—", "—", quitadas.get(k, "No se carga"), pii])
+        for origen, c in modelo.values():  # columnas que el tablero carga y el catálogo no tiene
+            f["fuera"].append((origen, c))
+            f["filas"].append([origen, "—", ref_txt(q["tabla"], c["nombre"]), c["tipo_dato"] or "—", "No está en el catálogo",
+                               "Sí (por el nombre)" if dd.PII_RE.search(origen) else "—"])
+    return res
+
+
+def tabla_embebida(codigo: str) -> dict | None:
+    """R62: decodifica una tabla escrita a mano en Power Query (Binary.FromText en base64, con o sin compresión).
+    Devuelve {"columnas", "filas"} o {"error"}; None si el código no tiene tabla embebida."""
+    import base64  # noqa: PLC0415
+    import gzip  # noqa: PLC0415
+    import zlib  # noqa: PLC0415
+    m = re.search(r'Binary\.FromText\(\s*"([^"]+)"', codigo)
+    if not m:
+        return None
+    try:
+        raw = base64.b64decode(m.group(1))
+        if "Compression.Deflate" in codigo:
+            raw = zlib.decompress(raw, -15)
+        elif "Compression.GZip" in codigo:
+            raw = gzip.decompress(raw)
+        filas = json.loads(raw.decode("utf-8"))
+    except Exception as e:  # noqa: BLE001
+        return {"error": f"no se pudo decodificar ({type(e).__name__})"}
+    cols = []
+    tt = re.search(r"type\s+table\s*\[(.*?)\]\s*\)?\s*in\s+type", codigo, re.S) or re.search(r"type\s+table\s*\[(.*?)\]", codigo, re.S)
+    if tt:
+        cols = [x[2:-1].replace('""', '"') if x.startswith('#"') else x
+                for x in re.findall(r'(#"(?:[^"]|"")*"|[^\s,=\[\]]+)\s*=', tt.group(1))]
+    ancho = max((len(f) for f in filas), default=0)
+    if len(cols) != ancho:
+        cols = [f"Columna{i}" for i in range(1, ancho + 1)]
+    return {"columnas": cols, "filas": filas}
+
+
+# =============================================================================================
 # Borrador
 # =============================================================================================
 def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
@@ -180,7 +305,8 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
     w("## 2.3 Alcance del censo\n")
     w("Lectura de solo lectura de todo el PBIP con `scripts/censo.py borrador`: modelo TMDL (tablas, columnas, medidas, relaciones, "
       "jerarquías, roles, particiones M), reporte PBIR (páginas, visuales, bindings, filtros, interacciones, bookmarks, botones, "
-      "recursos y tema). No incluye datos (filas), el servicio Power BI, la fuente de datos ni consumidores externos.\n")
+      "recursos y tema), contenido de las tablas embebidas y comparación de cada fuente con su estructura real en el catálogo "
+      "de Athena (3.2). No incluye datos de las bases (filas), el servicio Power BI ni consumidores externos.\n")
     w("## 2.4 Fuentes inspeccionadas\n")
     w(tabla(["Elemento", "Ruta", "Objetos leídos"], [
         ["Tablas TMDL", f"{M}/definition/tables/", len(tablas)], ["Relaciones", f"{M}/definition/relationships.tmdl", len(inv.get("relaciones", []))],
@@ -193,6 +319,10 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
 
     # ---------------------------------------------------------------- 3
     w("# 3. Fuentes de datos y conexiones\n")
+    w("Todas las tablas del modelo con su origen: bases de datos, tablas escritas a mano (embebidas), tablas calculadas y "
+      "tablas de fecha automáticas. 3.2 compara cada base con su estructura real; 3.3 muestra el contenido de las tablas "
+      "embebidas; 3.4 detalla las tablas de fecha automáticas (R61–R63).\n")
+    w("## 3.1 Fuentes y conexiones\n")
     w(f"Evidencia: particiones en `{M}/definition/tables/<Tabla>.tmdl`.\n")
     rows = []
     for i, q in enumerate(a["consultas"], 1):
@@ -202,19 +332,80 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
         arg = re.match(r"\s*[\w.#]+\s*\(\s*(\"[^\"]{0,60}\")", s0.get("codigo", "")) if s0 else None
         conn = f"{func}({arg.group(1)})" if arg and func != "—" else func
         if s0.get("op") == "Tabla embebida":
-            conn = "Tabla embebida (base64)"
+            conn = "Tabla embebida (base64; contenido en 3.3)"
         rows.append([f"F{i:02d}", q["tabla"], q["particion"], q["modo"], s0.get("op", "—"), conn, " / ".join(nav) or "—"])
     for t in reales:
         for p in t["particiones"]:
             if p["tipo"].startswith("calculated"):
                 rows.append([f"F{len(rows) + 1:02d}", t["tabla"], p["nombre"], p["modo"], "Tabla calculada DAX", "—", "—"])
+    rel_fecha = {r["tabla_hacia"]: ref_txt(r["tabla_desde"], r["columna_desde"]) for r in inv.get("relaciones", [])}
+    for t in autos:
+        p = (t["particiones"] or [{}])[0]
+        rows.append([f"F{len(rows) + 1:02d}", t["tabla"], p.get("nombre", "—"), p.get("modo", "import"),
+                     "Tabla de fecha automática (Power BI)", "Calendario DAX (3.4)",
+                     f"Fechas de {rel_fecha[t['tabla']]}" if t["tabla"] in rel_fecha else "Plantilla (sin relación)"])
     w(tabla(["fuente_id", "Tabla del modelo", "Partición", "Modo", "Tipo", "Conector", "Navegación"], rows))
     w("El código M completo de cada consulta está en la sección 4.\n")
-    if autos:
-        w(f"Las {len(autos)} tablas de fecha automáticas son tablas calculadas que genera Power BI (ver 6.2); no son fuentes.\n")
     params = inv.get("parametros", [])
     w("**Parámetros M:** " + ("; ".join(f"`{p['nombre']}` = `{cell(p['expr'])[:120]}`" for p in params) if params else "No aplica (sin `expressions.tmdl`).") + "\n")
     w("Credenciales: el PBIP no contiene credenciales; no se registran (R06). Frecuencia de actualización y propietario: ver sección 16.\n")
+
+    w("## 3.2 Estructura real de las fuentes\n")
+    er = a["estructura_real"] = estructura_real(inv, a)
+    w(er["estado"] + "\n")
+    if not er["fuentes"]:
+        w("No aplica: ninguna tabla del modelo se carga desde una base de datos.\n")
+    for f in er["fuentes"]:
+        w(f"### {f['tabla']}\n")
+        if not f["clave"]:
+            w(f"Fuente {f['motor']}: no está en el alcance del catálogo de Athena; su estructura real no se pudo comparar.\n")
+            continue
+        if not f["en_catalogo"]:
+            w(f"`{f['clave']}` no está en el catálogo de Athena (fuente aún no migrada o catálogo desactualizado): su estructura "
+              "real no se pudo comparar (ver sección 16).\n")
+            continue
+        cuenta = Counter(r[4].split(":")[0] if r[4].startswith("Cambia") else r[4].split(" en el paso")[0] for r in f["filas"])
+        w(f"`{f['clave']}`: {sum(1 for r in f['filas'] if r[1] != '—')} columnas en la base. Resultado: " +
+          ", ".join(f"{k} {v}" for k, v in cuenta.items()) + "." +
+          (" La consulta combina varios orígenes: la comparación es solo orientativa." if f["compuesto"] else "") + "\n")
+        w(tabla(["Columna en la base", "Tipo real", "Columna en el tablero", "Tipo en el tablero", "Resultado", "Posible dato personal"],
+                f["filas"]))
+
+    w("## 3.3 Contenido de las tablas embebidas\n")
+    emb = [(q, tabla_embebida(q["codigo"])) for q in a["consultas"]]
+    emb = [(q, e) for q, e in emb if e is not None]
+    if not emb:
+        w("No aplica: el modelo no tiene tablas escritas a mano en Power Query.\n")
+    for q, e in emb:
+        w(f"### {q['tabla']}\n")
+        if "error" in e:
+            w(f"El contenido está en `{q['ruta']}` pero {e['error']}; se revisa abriendo la tabla en Power BI Desktop.\n")
+            continue
+        dd = _modulo_diccionario()
+        pii = [c for c in e["columnas"] if dd and dd.PII_RE.search(c)]
+        n = len(e["filas"])
+        w(f"Evidencia: `{q['ruta']}` (literal en base64 de la sección 4). {n} filas, {len(e['columnas'])} columnas." +
+          (f" Posible dato personal (por el nombre): {', '.join(pii)}." if pii else "") +
+          (f" Se muestran las primeras {MAX_FILAS_EMBEBIDA}." if n > MAX_FILAS_EMBEBIDA else "") +
+          " Es parte de la lógica del tablero: el dueño valida que la lista esté completa y vigente.\n")
+        w(tabla(["#"] + e["columnas"], [[i] + list(r) + ["—"] * (len(e["columnas"]) - len(r))
+                                        for i, r in enumerate(e["filas"][:MAX_FILAS_EMBEBIDA], 1)], num=("#",)))
+
+    w("## 3.4 Tablas de fecha automáticas\n")
+    if not autos:
+        w("No aplica: el modelo no tiene tablas de fecha automáticas.\n")
+    else:
+        w("Las crea Power BI por cada columna de fecha cuando la inteligencia de tiempo automática está activa (5.4); no vienen de "
+          "una base. Cada una cubre los años completos entre la fecha mínima y la máxima de su columna de origen. Columnas e IDs en 6.2.\n")
+        arows = []
+        for t in autos:
+            p = (t["particiones"] or [{}])[0]
+            expr = re.sub(r"\s+", " ", p.get("source") or "").strip()
+            estados = Counter(a["col_rows"][(t["tabla"], c["nombre"])]["estado"] for c in t["columnas"])
+            arows.append([t["tabla"], rel_fecha.get(t["tabla"], "Plantilla (sin relación)"), f"`{expr}`" if expr else "—",
+                          len(t["columnas"]), ", ".join(f"{k} {v}" for k, v in estados.items())])
+        w(tabla(["Tabla", "Columna de fecha que la origina", "Rango (expresión DAX)", "Columnas", "Estado de uso de sus columnas"],
+                arows, num=("Columnas",)))
 
     # ---------------------------------------------------------------- 4
     w("# 4. Transformaciones (Power Query/M)\n")
@@ -553,7 +744,7 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
     w("# 14. Reglas de negocio\n")
     w("La implementación remite al objeto que la contiene; el código está en las secciones 4, 6.1 y 11. Los filtros sin condición "
       "guardada no son reglas (siguen inventariados en 11.1).\n")
-    w("[IA: completar «Interpretación funcional», «Certeza» y «Validación del dueño» («No requerida» si es Encontrado; «Pendiente de validación» si es Inferido, hasta que el dueño responda, R55); agregar reglas que solo se deduzcan del conjunto. Una columna calculada se interpreta desde su expresión en 6.1 (no desde su nombre) y respetando su «Estado de uso»; su significado de negocio es «Inferido» (R51).]\n")
+    w("[IA: completar «Interpretación funcional», «Certeza» y «Validación del dueño» («No requerida» si es Encontrado; «Pendiente de validación» si es Inferido, hasta que el dueño responda, R55); agregar reglas que solo se deduzcan del conjunto (R64): en especial, si los filtros de página juntos reparten el universo del tablero (una página por segmento) o si una tabla embebida de 3.3 define qué filas cuentan en cada segmento, registrarlo como regla de conjunto que cite los rule_id que la forman, con certeza «Inferido». Una columna calculada se interpreta desde su expresión en 6.1 (no desde su nombre) y respetando su «Estado de uso»; su significado de negocio es «Inferido» (R51).]\n")
     rr, n = [], 0
     for q in a["consultas"]:
         for st in q["pasos"]:
@@ -597,9 +788,9 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
     w("# 17. Limitaciones y control para DLC posteriores\n")
     w("## 17.1 Limitaciones\n")
     lim = ["Censo estructural: no se ejecutó el modelo ni se vieron datos; un binding correcto no garantiza el valor mostrado.",
-           "La fuente de datos (sección 3) no se consultó; el uso de columnas fuera del PBIP no es verificable.",
+           "La base de datos no se consultó: su estructura real sale del catálogo de Athena (3.2), que es una copia y puede estar desactualizada; el uso de columnas fuera del PBIP no es verificable.",
            "El efecto en ejecución de bookmarks y botones requiere validación visual en Power BI Desktop.",
-           "Literales de más de 300 caracteres en M (por ejemplo, tablas embebidas en base64) se omiten en la sección 4; están en el TMDL. Del contenido de esas tablas (por ejemplo, un mapeo de homologación) solo se documenta su efecto en el modelo.",
+           "Literales de más de 300 caracteres en M se omiten en el código de la sección 4; el contenido de las tablas embebidas se muestra en 3.3.",
            "El censo describe solo la versión analizada del PBIP; los cambios respecto a versiones anteriores están en «[BI] - cambios.md» (R52)."]
     w("\n".join(f"{i}. {x}" for i, x in enumerate(lim, 1)) + "\n")
     w("[IA: agregar solo limitaciones del proceso del censo (qué no se pudo revisar y por qué) o escribir «Sin limitaciones adicionales». Los problemas del tablero van en la sección 16, no aquí.]\n")
@@ -768,6 +959,28 @@ def hallazgos(inv, a, pname, vn, bn):
     for kind, host, name, ref in a["rota_dax"]:
         add("Hallazgo", "Modelo", f"La expresión DAX de {name} referencia {ref}, que no existe.", "Modelo", "—", name, "—", "TMDL (6.1 o 7)",
             "Visuales que usan el objeto", "Error de cálculo", "Alta", "Verificar en Power BI Desktop si el objeto calcula sin error.")
+    # R61: fuentes frente a su estructura real (sección 3.2); al final para no mover los IDs de las filas anteriores
+    for f in a.get("estructura_real", {}).get("fuentes", []):
+        if f["clave"] and not f["en_catalogo"]:
+            add("Vacío", "Fuentes", f"La tabla `{f['clave']}` (tabla del modelo «{f['tabla']}») no está en el catálogo de Athena: "
+                "su estructura real (columnas y tipos) no se pudo comparar.", "Modelo", "—", f["tabla"], "—", "Sección 3.2",
+                f"Columnas de {f['tabla']} (6.1)", "No se sabe si el tablero trae todas las columnas ni con su tipo real", "Media",
+                "Confirmar con el dueño si la fuente ya está migrada a Athena y con qué nombre.")
+        if f["cambios"]:
+            riesgo = any(c[4].startswith("texto") for c in f["cambios"])
+            add("Riesgo", "Fuentes", f"{len(f['cambios'])} columna(s) de `{f['clave']}` tienen en el tablero un tipo distinto al de la base: " +
+                "; ".join(f"{o} ({tr} en la base, {tm} en el tablero: {d})" for o, tr, tm, _, d in f["cambios"]) + ".",
+                "Modelo", "—", "; ".join(f"{c['column_id']} · {ref_txt(f['tabla'], c['nombre'])}" for _, _, _, c, _ in f["cambios"]),
+                "—", "Sección 3.2 y pasos de cambio de tipo (4)", "Visuales y medidas que usan esas columnas (6.1)",
+                ("Un valor con letras, guiones o ceros a la izquierda se pierde o hace fallar la actualización" if riesgo else
+                 "Se pierden decimales"), "Media",
+                "Confirmar con el dueño si esas columnas siempre traen valores compatibles con el tipo del tablero.")
+        if f["fuera"]:
+            add("Observación", "Fuentes", f"{len(f['fuera'])} columna(s) que el tablero carga de `{f['clave']}` no están en el catálogo de "
+                f"Athena: {', '.join(o for o, _ in f['fuera'])}.", "Modelo", "—",
+                "; ".join(f"{c['column_id']} · {ref_txt(f['tabla'], c['nombre'])}" for _, c in f["fuera"]), "—", "Sección 3.2",
+                "—", "Bajo: puede ser un catálogo desactualizado", "Baja",
+                "Confirmar con el dueño si esas columnas siguen existiendo en la base.")
     return rows
 
 
@@ -866,11 +1079,16 @@ def validate(md: str, pbip: Path | None):
         if n < len(SECCIONES) and not secs[n][0].lower().startswith(SECCIONES[n].lower()[:12]):
             warn.append(f"Sección {n} titulada «{secs[n][0]}»; se esperaba «{SECCIONES[n]}».")
     lines = md.splitlines()
+    en_datos = False  # 3.3 copia datos de tablas embebidas: ahí no se buscan conteos aproximados ni IDs truncados
     for i, line in enumerate(lines, 1):
+        if line.startswith("#"):
+            en_datos = line.startswith("## 3.3 ") or (en_datos and line.startswith("### "))
         for m in IA.finditer(line):
             err.append(f"Línea {i}: marcador pendiente {m.group(0)[:80]}")
         if "[Completar" in line:
             err.append(f"Línea {i}: marcador de plantilla «[Completar]».")
+        if en_datos:
+            continue
         m = APROX.search(line)
         if m and not line.startswith(("```", "    ")):
             err.append(f"Línea {i}: conteo aproximado «{m.group(0)}» (R17).")

@@ -1,4 +1,4 @@
-# Checklist del CENSO BI (v2.3.6)
+# Checklist del CENSO BI (v2.3.7)
 
 **[S]** = lo genera `censo.py borrador`. **[V]** = lo comprueba `censo.py validar`. Sin marca = lo revisa la IA o una persona. Un punto con [S] no debe rehacerse a mano.
 
@@ -16,6 +16,9 @@
 - [ ] **[S][V]** census_id, fecha y hora con zona horaria, tipo de CAT-08.
 - [ ] **[S][V]** IDs nativos completos (CAT-15), sin `…`.
 - [ ] **[S]** Código M completo una sola vez (sección 4) y expresiones DAX una sola vez (6.1 y 7).
+- [ ] **[S]** Todas las tablas del modelo en 3.1 con su origen, incluidas las tablas de fecha automáticas con su columna de origen (R63).
+- [ ] **[S]** Estructura real de cada fuente frente al catálogo de Athena (3.2, R61); si dice que no encontró el catálogo, se informa al usuario.
+- [ ] **[S]** Contenido de cada tabla embebida decodificado en 3.3 (R62).
 - [ ] **[S][V]** Una fila por columna de cada tabla, con resultado por clase y estado de uso; conciliada contra el PBIP.
 - [ ] **[S][V]** Una fila por medida, página, visual, filtro, interacción, bookmark y recurso; conciliadas contra el PBIP.
 - [ ] **[S]** Posición, tamaño y bindings de cada visual; resumen por clase que suma el total de la página.
@@ -33,6 +36,7 @@
 - [ ] Rol y granularidad de cada tabla de la 5.1.
 - [ ] Interpretación funcional de cada KPI (sección 10); los títulos que no coinciden con lo calculado están en la 17.
 - [ ] Interpretación y certeza de cada regla de negocio (14).
+- [ ] Reglas de conjunto revisadas (R64): si los filtros de página reparten el tablero en segmentos, o una tabla embebida decide qué filas cuentan en cada uno, hay una regla que cita sus rule_id.
 - [ ] Mapa de arquitectura de 5–12 líneas en la 15, sin repetir inventarios.
 - [ ] Vacíos y limitaciones propios agregados o declarados como «Sin … adicionales».
 - [ ] Filas H-A* y V-A* revisadas: certeza, prioridad e impacto ajustados; ningún asunto repetido en otra fila o sección.

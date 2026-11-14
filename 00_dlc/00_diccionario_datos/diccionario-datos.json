@@ -1,18 +1,18 @@
 {
-  "diccionario_id": "20261112T172206-diccionario",
-  "generado": "2026-11-12T17:22:06-05:00",
+  "diccionario_id": "20261113T193050-diccionario",
+  "generado": "2026-11-13T19:30:50-05:00",
   "version": "2.3",
   "ejecutor": "miguel.b@nebula.com.co",
   "censos": [
     {
       "bi": "GC - Flotillas",
-      "census_id": "20261105T124212-gc-flotillas",
-      "fecha": "2026-11-05T12:42:12-05:00",
+      "census_id": "20261113T192401-gc-flotillas",
+      "fecha": "2026-11-13T19:24:01-05:00",
       "estado": "Completado pendiente de validación",
       "consumible": true,
       "motivo": "",
       "archivo": "GC - Flotillas/GC - Flotillas - censo.md",
-      "hash": "04cab1bfe0d0e3a5",
+      "hash": "b914dd700ce03055",
       "vigente": true,
       "motivos_vigencia": []
     }
@@ -929,7 +929,7 @@
       "usos": [
         {
           "bi": "GC - Flotillas",
-          "census_id": "20261105T124212-gc-flotillas",
+          "census_id": "20261113T192401-gc-flotillas",
           "tabla_modelo": "Entregas Totales",
           "filtros_carga": [
             "([Cantidad] = 1)",

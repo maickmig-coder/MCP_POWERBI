@@ -4,11 +4,11 @@ name: censo-bi
 description: Ritual AI-DLC CENSO de tableros Power BI (PBIP). Úsalo siempre que se pida crear, actualizar, revisar, consultar, validar o iniciar la validación de un censo, ver su vigencia o sus pendientes, o registrar respuestas del dueño del tablero.
 ---
 
-# Steering — Ejecutar el CENSO BI (ritual AI-DLC v2.3.6)
+# Steering — Ejecutar el CENSO BI (ritual AI-DLC v2.3.7)
 
 Copiar este archivo a `MCP_POWERBI/.kiro/steering/censo-bi.md`. Se carga solo cuando el pedido trata de un censo (inclusión automática); también puede invocarse con `#censo-bi`.
 
-**Antes de cualquier acción** (crear, revisar, validar, consultar vigencia o pendientes): pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (paso 0, R57). Si el script responde que falta `--correo-revisor`, el paquete instalado está bien y faltó el correo; si el README del paquete no dice v2.3.6, el paquete está desactualizado: avisa al usuario.
+**Antes de cualquier acción** (crear, revisar, validar, consultar vigencia o pendientes): pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (paso 0, R57). Si el script responde que falta `--correo-revisor`, el paquete instalado está bien y faltó el correo; si el README del paquete no dice v2.3.7, el paquete está desactualizado: avisa al usuario.
 
 Objetivo: producir `[BI] - censo.md` con el menor consumo posible. El script hace el trabajo mecánico en segundos; tú solo interpretas.
 
@@ -36,9 +36,9 @@ Objetivo: producir `[BI] - censo.md` con el menor consumo posible. El script hac
    | Área, objetivo, pregunta central | Secciones 5.1, 8 y 10 |
    | Rol y granularidad de tablas | 5.1, 5.2 y la Matriz A de la tabla |
    | KPIs | 10 y, si hace falta, la fórmula de la medida en 7 |
-   | Reglas de negocio | 14, la expresión citada en 6.1 y la fila de esa columna en la Matriz A (estado de uso) |
-   | Dependencias | 3, 5.2, 7 (tabla) y 9.x (conciliación) |
-   | Hallazgos y vacíos | 16 y la sección que cite cada fila |
+   | Reglas de negocio | 14, la expresión citada en 6.1, la fila de esa columna en la Matriz A (estado de uso) y 3.3 (tablas embebidas). Revisa las reglas de conjunto (R64): si los filtros de página reparten el tablero en segmentos, agrega esa regla citando sus rule_id |
+   | Dependencias | 3.1, 5.2, 7 (tabla) y 9.x (conciliación) |
+   | Hallazgos y vacíos | 16, la sección que cite cada fila y 3.2 para las filas de categoría «Fuentes» |
    | Estado (encabezado y 18.2) | Resultado de `validar` |
 7. **Validación con el dueño (R55).** En la sección 14 marca «Validación del dueño»: `No requerida` si la regla es Encontrado; `Pendiente de validación` si es Inferido.
    - **Si el usuario es el dueño, o aceptó validar sin serlo (R58):** ejecuta `python scripts/censo.py guia-validacion --markdown "..." --correo-revisor "<correo>"` y conduce la conversación **punto por punto** como dice la sección «Cómo presentar la validación» (R59). Registra cada respuesta apenas la recibas.
@@ -46,7 +46,7 @@ Objetivo: producir `[BI] - censo.md` con el menor consumo posible. El script hac
    - Si la persona necesita pausar: lo respondido ya quedó escrito en el borrador; para retomar, vuelve a ejecutar `guia-validacion` sobre el mismo borrador (solo muestra lo que falta).
    - En una `Validación`, al terminar: `python scripts/censo.py comparar --borrador "..." --origen "Validación con el dueño"`.
 8. **Validar:** `python scripts/censo.py validar --pbip "..." --markdown "..." --correo-revisor "<correo>"`. Corrige **solo** las líneas que indique cada error.
-9. **Registrar:** `python scripts/censo.py registrar --pbip "..." --markdown "..." --alcance "..."`. Al terminar, el mismo comando actualiza el diccionario de datos (R60); no ejecutes «actualiza censos» aparte. Si muestra «AVISO (R60)», díselo al usuario.
+9. **Registrar:** `python scripts/censo.py registrar --pbip "..." --markdown "..." --alcance "..."`. Al terminar, el mismo comando actualiza el diccionario de datos (R60); no ejecutes «actualiza censos» aparte. Si muestra «AVISO (R60)», díselo al usuario. Si la sección 3.2 dice que no se encontró el catálogo de Athena, díselo también: la comparación con la estructura real no se hizo.
 10. **Vigencia:** `python scripts/censo.py vigencia --markdown "...\[BI] - censo.md" --versiones "..\..\01_bi\01_versiones" --correo-revisor "<correo>"`.
 11. **Cierre:** responde en 3–5 líneas: ruta del censo, estado, cambios respecto a la versión anterior (de `[BI] - cambios.md`), puntos pendientes con el dueño, si el diccionario de datos quedó actualizado (y sus avisos) y el resultado de `vigencia` (APTO / NO APTO para el DLC). No pegues el documento.
 

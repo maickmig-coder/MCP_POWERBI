@@ -35,7 +35,9 @@ para que Creación construya tableros nuevos y cambie a la conexión real al fin
 **Solo, al cerrar cada censo** (regla R60 del censo): `censo.py registrar` ejecuta `actualizar` con el correo de
 quien hizo el censo. «actualiza censos» queda para repetirlo si falló o si cambió el catálogo de Athena. El
 diccionario lee solo el censo vigente de cada tablero (`02_censo/<BI>/<BI> - censo.md`), nunca borradores ni
-censos archivados.
+censos archivados. De la lista de fuentes del censo (3.1) toma solo las que vienen de una base: las tablas calculadas
+y las de fecha automáticas las genera Power BI y no son conexiones. El censo, a su vez, usa el mismo catálogo de Athena
+para comparar cada fuente con su estructura real (R61 del censo v2.3.7).
 
 ### Si varios tableros usan la misma tabla
 

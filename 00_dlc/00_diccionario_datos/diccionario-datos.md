@@ -1,8 +1,8 @@
 # Diccionario de datos — Fuentes de los tableros
 
-> diccionario_id: 20261112T172206-diccionario · generado 2026-11-12T17:22:06-05:00 por miguel.b@nebula.com.co · versión 2.3
+> diccionario_id: 20261113T193050-diccionario · generado 2026-11-13T19:30:50-05:00 por miguel.b@nebula.com.co · versión 2.3
 >
-> Censos usados: GC - Flotillas (20261105T124212-gc-flotillas)
+> Censos usados: GC - Flotillas (20261113T192401-gc-flotillas)
 
 La estructura es la **real de la base**, antes de cualquier ajuste de un tablero: si la tabla está en el catálogo de Athena, columnas y tipos salen de ahí; si no (fuente aún no migrada), salen del censo y se marcan «no verificado en catálogo». No se registran datos ni contraseñas. Aquí aparecen las tablas que algún tablero censado usa.
 

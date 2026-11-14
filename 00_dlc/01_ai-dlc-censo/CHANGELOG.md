@@ -1,5 +1,18 @@
 # CHANGELOG — AI-DLC-CENSO
 
+## v2.3.7 — 2026-11-13
+
+Fuentes completas. En la auditoría del censo de GC - Flotillas faltaban la comparación con la estructura real de la base, el contenido de la tabla de homologación «Val nombres» y las tablas de fecha automáticas como fuentes; además se perdió una regla de conjunto (la división del tablero en tres vistas).
+
+- **Sección 3 en cuatro partes:** 3.1 todas las tablas del modelo con su origen, incluidas las de fecha automática con la columna de fecha que las origina (R63); 3.2 estructura real de cada fuente frente al catálogo de Athena, columna por columna: tipo real, tipo en el tablero, quitada, no cargada o fuera del catálogo, y posible dato personal (R61); 3.3 contenido decodificado de las tablas embebidas (R62); 3.4 rango y uso de las tablas de fecha automáticas (R63).
+- **Hallazgos automáticos de la categoría «Fuentes»** (al final de la lista, para no mover los IDs anteriores): columna que cambia de tipo respecto a la base (por ejemplo, `Nit` de texto a número), fuente que no está en el catálogo y columnas que el catálogo no tiene.
+- **R64, reglas de conjunto:** la instrucción de la sección 14 pide revisar si los filtros de página juntos reparten el tablero en segmentos.
+- El censo lee el catálogo con las funciones del diccionario de datos (`00_dlc/00_diccionario_datos/config.json`), así los dos usan la misma estructura real. El censo nunca consulta la base.
+- `validar` no busca conteos aproximados ni IDs truncados dentro de los datos copiados en 3.3.
+- **Letras dañadas al registrar (R60):** el diccionario, llamado por el censo, escribía con la página de códigos de Windows y salían «cat�logo» y similares en pantalla. Ahora escribe en UTF-8. Los archivos nunca estuvieron dañados.
+- Diccionario de datos: ignora las tablas calculadas y de fecha automática de la sección 3.1 (no son conexiones) y escribe siempre en UTF-8.
+- R19 precisada; reglas, ritual, criterios (categoría «Fuentes»), checklist, guía de Kiro y README al día; guías reinstaladas en `.kiro/steering/`.
+
 ## v2.3.6 — 2026-11-12
 
 Control de «censo del tablero final» tras la revisión del repositorio.
