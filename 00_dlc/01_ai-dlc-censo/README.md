@@ -1,4 +1,4 @@
-# AI-DLC-CENSO (v2.3.8)
+# AI-DLC-CENSO (v2.3.10)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
@@ -35,7 +35,7 @@ Cubre **todas las fuentes** (bases de datos comparadas columna por columna con s
 ├── CHANGELOG.md
 ├── ai-dlc/
 │   ├── ritual-censo-bi.md            Fases, estructura del resultado y criterios de clasificación
-│   ├── reglas-censo.md               Reglas R01–R65 (R03 retirada)
+│   ├── reglas-censo.md               Reglas R01–R67 (R03 retirada)
 │   ├── catalogos.md                  Valores permitidos (CAT-01 a CAT-15) e IDs nativos
 │   ├── checklist-censo.md            Qué genera el script, qué valida y qué revisa la IA
 │   └── criterios-puntos-revision.md  Cómo registrar hallazgos sin prescribir cambios

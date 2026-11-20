@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CENSO BI — ritual AI-DLC v2.3.8. Genera, valida y registra el censo de un tablero Power BI en PBIP.
+"""CENSO BI — ritual AI-DLC v2.3.10. Genera, valida y registra el censo de un tablero Power BI en PBIP.
 
 La única salida es un Markdown. El script hace todo el trabajo mecánico (inventarios, IDs, posiciones, bindings,
 dependencias, clasificación de uso, conciliación); la IA solo completa los marcadores [IA: ...].
@@ -39,10 +39,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from censo_analisis import TARJETAS, TIPO_LEGIBLE, analyze  # noqa: E402
-from censo_lectura import elide_long_literals, read_pbip  # noqa: E402
+from censo_lectura import dax_refs, elide_long_literals, read_pbip, sql_nativo, tablas_sql  # noqa: E402
 import censo_versiones as cv  # noqa: E402
 
-RITUAL = "2.3.8"
+RITUAL = "2.3.10"
 # DLC del diccionario de datos (hermano de este DLC en 00_dlc): se actualiza al registrar un censo (R60)
 DICCIONARIO_DIR = Path(__file__).resolve().parents[2] / "00_diccionario_datos"
 
@@ -169,6 +169,7 @@ def estructura_real(inv: dict, a: dict) -> dict:
         return res
     cat = dd.leer_catalogo(DICCIONARIO_DIR)
     res["n_catalogo"] = len(cat)
+    res["catalogo"] = cat
     res["estado"] = (f"Catálogo de Athena: {', '.join(p.name for p in rutas)} ({len(cat)} tablas), configurado en "
                      "`00_dlc/00_diccionario_datos/config.json`. Es una copia del catálogo; si está desactualizado, una "
                      "columna puede figurar como «No está en el catálogo» sin que falte en la base.")
@@ -178,8 +179,12 @@ def estructura_real(inv: dict, a: dict) -> dict:
         if not info["conector"]:
             continue  # embebida, literal o calculada en M: no viene de una base
         f = {"tabla": q["tabla"], "motor": info["motor"], "clave": None, "en_catalogo": False, "filas": [], "cambios": [],
-             "fuera": [], "compuesto": info["compuesto"]}
+             "fuera": [], "compuesto": info["compuesto"], "sql": None, "tablas_sql": [], "sin_catalogo": []}
         res["fuentes"].append(f)
+        sqls = sql_nativo(q["codigo"])
+        if sqls:  # consulta SQL nativa: se comparan las tablas que lee (FROM/JOIN) y las columnas que devuelve
+            _estructura_sql(f, q, sqls, cat, dd, tablas, a)
+            continue
         clave = dd.clave_catalogo(info) if info["motor"] == "Amazon Athena" else None
         f["clave"] = clave
         entrada = cat.get(clave) if clave else None
@@ -216,11 +221,98 @@ def estructura_real(inv: dict, a: dict) -> dict:
                 f["filas"].append([origen, tipo_real, ref_txt(q["tabla"], c["nombre"]), tipo_mod, resultado, pii])
             else:
                 f["filas"].append([nombre, tipo_real, "—", "—", quitadas.get(k, "No se carga"), pii])
+        creadas = creadas_en_power_query(q)
         for origen, c in modelo.values():  # columnas que el tablero carga y el catálogo no tiene
+            if c["nombre"] in creadas or origen in creadas:
+                f["filas"].append(["—", "—", ref_txt(q["tabla"], c["nombre"]), c["tipo_dato"] or "—",
+                                   creadas.get(c["nombre"]) or creadas[origen], "—"])
+                continue
             f["fuera"].append((origen, c))
             f["filas"].append([origen, "—", ref_txt(q["tabla"], c["nombre"]), c["tipo_dato"] or "—", "No está en el catálogo",
                                "Sí (por el nombre)" if dd.PII_RE.search(origen) else "—"])
     return res
+
+
+def creadas_en_power_query(q: dict) -> dict:
+    """Columnas que crea la propia consulta M (no vienen de la base): {nombre final: descripción}. Sigue los renombres."""
+    cod = q["codigo"]
+    creadas = {}
+    for m in re.finditer(r'Table\.DuplicateColumn\s*\(\s*[^,]+,\s*"((?:[^"]|"")*)"\s*,\s*"((?:[^"]|"")*)"', cod):
+        creadas[m.group(2)] = f"Se crea en Power Query: copia de «{m.group(1)}»"
+    for m in re.finditer(r'Table\.AddColumn\s*\(\s*[^,]+,\s*"((?:[^"]|"")*)"', cod):
+        creadas[m.group(1)] = "Se crea en Power Query: columna agregada"
+    for st in q["pasos"]:
+        for viejo, nuevo in st["renombres"]:
+            if viejo in creadas:
+                creadas[nuevo] = creadas[viejo]  # se conservan los dos nombres: el de origen y el final
+    return creadas
+
+
+def _estructura_sql(f: dict, q: dict, sqls: list, cat: dict, dd, tablas: dict, a: dict) -> None:
+    """R61 para una consulta SQL nativa: tablas que lee y, por cada columna que el tablero carga, en qué tabla leída
+    está y con qué tipo real. Una columna que no está en ninguna tabla leída se calcula o renombra dentro del SQL."""
+    f["sql"] = "\n\n".join(s for _, s in sqls)
+    f["tablas_sql"] = []
+    for s in sqls:
+        f["tablas_sql"] += [x for x in tablas_sql(s[1]) if x not in f["tablas_sql"]]
+    leidas = {x: cat.get(x) for x in f["tablas_sql"]}
+    f["sin_catalogo"] = [x for x, e in leidas.items() if not e]
+    f["en_catalogo"] = any(leidas.values())
+    f["clave"] = ", ".join(f["tablas_sql"]) or "consulta SQL"
+    por_col = defaultdict(list)  # clave de columna -> [(tabla leída, nombre, tipo real)]
+    for x, e in leidas.items():
+        for nombre, tipo in (e or {}).get("columnas", []):
+            por_col[dd.clave_col(nombre)].append((x, nombre, tipo))
+    t = tablas.get(q["tabla"], {"columnas": []})
+    creadas = creadas_en_power_query(q)
+    for c in t["columnas"]:
+        if c["calculada"]:
+            continue
+        origen = a["col_rows"][(q["tabla"], c["nombre"])]["origen"]
+        origen = origen if origen not in ("", "—") else c["nombre"]
+        pii = "Sí (por el nombre)" if dd.PII_RE.search(origen) else "—"
+        tipo_mod = c["tipo_dato"] or "—"
+        if c["nombre"] in creadas or origen in creadas:
+            f["filas"].append(["—", "—", "—", ref_txt(q["tabla"], c["nombre"]), tipo_mod, creadas.get(c["nombre"]) or creadas[origen], pii])
+            continue
+        hallada = por_col.get(dd.clave_col(origen), [])
+        if not hallada:
+            resultado = ("No está en las tablas leídas: se calcula o renombra en el SQL" if f["en_catalogo"] and not f["sin_catalogo"]
+                         else "No verificable: alguna tabla leída no está en el catálogo")
+            f["filas"].append(["—", origen, "—", ref_txt(q["tabla"], c["nombre"]), tipo_mod, resultado, pii])
+            continue
+        x, nombre, tipo_real = hallada[0]
+        fam_r, fam_m = dd.FAMILIA_M.get(dd.tipo_m_catalogo(tipo_real)), dd.FAMILIA_M.get(dd.tipo_m(tipo_mod))
+        if fam_r and fam_m and fam_r != fam_m:
+            resultado = f"Cambia de tipo: {fam_r} → {fam_m}"
+            f["cambios"].append((origen, tipo_real, tipo_mod, c, f"{fam_r} → {fam_m}"))
+        elif dd.tipo_m_catalogo(tipo_real) == "type number" and dd.tipo_m(tipo_mod) == "Int64.Type":
+            resultado = "Cambia de tipo: decimal → entero"
+            f["cambios"].append((origen, tipo_real, tipo_mod, c, "decimal → entero"))
+        else:
+            resultado = "Igual"
+        if len(hallada) > 1:
+            resultado += f" (también en {', '.join(h[0] for h in hallada[1:])})"
+        f["filas"].append([x, nombre, tipo_real, ref_txt(q["tabla"], c["nombre"]), tipo_mod, resultado, pii])
+
+
+def comparaciones_imposibles(sql: str) -> list[tuple[str, str]]:
+    """R67: comparaciones del SQL que no pueden filtrar como parecen, porque convierten el texto a minúsculas (o
+    mayúsculas) y lo comparan con un literal en el caso contrario. Ej.: lower(canal) like '%MG%' nunca se cumple.
+    Devuelve [(fragmento, efecto)] con efecto «nunca se cumple» o «siempre se cumple» (si la comparación es negada)."""
+    s = re.sub(r"--[^\n]*|/\*.*?\*/", " ", sql, flags=re.S)
+    out = []
+    patron = r"\b(lower|upper|lcase|ucase)\s*\(\s*([^()]*?)\s*\)\s*(=|<>|!=|not\s+like|like)\s*'((?:[^']|'')*)'"
+    for m in re.finditer(patron, s, flags=re.I):
+        func, op, lit = m.group(1).lower(), re.sub(r"\s+", " ", m.group(3).lower()), m.group(4)
+        letras = re.sub(r"[^A-Za-zÁÉÍÓÚÑáéíóúñ]", "", lit)
+        a_minusculas = func in ("lower", "lcase")
+        if letras and ((a_minusculas and letras != letras.lower()) or (not a_minusculas and letras != letras.upper())):
+            efecto = "siempre se cumple" if op in ("<>", "!=", "not like") else "nunca se cumple"
+            frag = re.sub(r"\s+", " ", m.group(0)).strip()
+            if (frag, efecto) not in out:
+                out.append((frag, efecto))
+    return out
 
 
 def tabla_embebida(codigo: str) -> dict | None:
@@ -332,12 +424,24 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
         arg = re.match(r"\s*[\w.#]+\s*\(\s*(\"[^\"]{0,60}\")", s0.get("codigo", "")) if s0 else None
         conn = f"{func}({arg.group(1)})" if arg and func != "—" else func
         if s0.get("op") == "Tabla embebida":
-            conn = "Tabla embebida (base64; contenido en 3.3)"
+            e = tabla_embebida(q["codigo"]) or {}
+            conn = ("Tabla embebida vacía (sin filas; 3.3)" if e.get("filas") == [] else "Tabla embebida (base64; contenido en 3.3)")
+        elif sql_nativo(q["codigo"]):
+            srv = re.search(r'\b([A-Za-z]\w*\.(?:Databases|Database|DataSource))\s*\(\s*("[^"]{0,60}")', q["codigo"])
+            conn = f"{srv.group(1)}({srv.group(2)})" if srv else conn
+            conn = f"{conn} · consulta SQL nativa (4.{i}; tablas que lee en 3.2)"
         rows.append([f"F{i:02d}", q["tabla"], q["particion"], q["modo"], s0.get("op", "—"), conn, " / ".join(nav) or "—"])
     for t in reales:
         for p in t["particiones"]:
             if p["tipo"].startswith("calculated"):
-                rows.append([f"F{len(rows) + 1:02d}", t["tabla"], p["nombre"], p["modo"], "Tabla calculada DAX", "—", "—"])
+                expr_t = p.get("source") or ""
+                leidas = {x for x, _ in dax_refs(expr_t) if x} | set(re.findall(r"'((?:[^']|'')+)'", expr_t))
+                sin_texto = re.sub(r'"(?:[^"]|"")*"', '""', expr_t)  # nombres de tabla sin comillas, fuera de textos
+                leidas |= {x["tabla"] for x in tablas if re.fullmatch(r"\w+", x["tabla"])
+                           and re.search(rf"(?<![\w'\[]){re.escape(x['tabla'])}(?![\w\]])", sin_texto)}
+                origen = sorted((leidas & {x["tabla"] for x in tablas}) - {t["tabla"]})
+                rows.append([f"F{len(rows) + 1:02d}", t["tabla"], p["nombre"], p["modo"], "Tabla calculada DAX", "Expresión DAX (6.1)",
+                             "Lee: " + ", ".join(origen) if origen else "—"])
     rel_fecha = {r["tabla_hacia"]: ref_txt(r["tabla_desde"], r["columna_desde"]) for r in inv.get("relaciones", [])}
     for t in autos:
         p = (t["particiones"] or [{}])[0]
@@ -355,8 +459,24 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
     w(er["estado"] + "\n")
     if not er["fuentes"]:
         w("No aplica: ninguna tabla del modelo se carga desde una base de datos.\n")
+    n_consulta = {q["tabla"]: i for i, q in enumerate(a["consultas"], 1)}
     for f in er["fuentes"]:
         w(f"### {f['tabla']}\n")
+        if f["sql"] is not None:
+            if not f["tablas_sql"]:
+                w(f"Consulta SQL nativa (texto completo en 4.{n_consulta.get(f['tabla'], '?')}): no se identificaron tablas con "
+                  "esquema después de FROM o JOIN; su estructura real no se pudo comparar.\n")
+                continue
+            def _desc(x):
+                e = er["catalogo"].get(x)
+                return f"`{x}` ({len(e['columnas'])} columnas en el catálogo)" if e else f"`{x}` (no está en el catálogo)"
+            cuenta = Counter(r[5].split(":")[0].split(" (")[0] for r in f["filas"])
+            w(f"Consulta SQL nativa (texto completo en 4.{n_consulta.get(f['tabla'], '?')}). Lee {len(f['tablas_sql'])} tabla(s): " +
+              "; ".join(_desc(x) for x in f["tablas_sql"]) + ". Cada columna que el tablero carga se busca en esas tablas. "
+              "Resultado: " + ", ".join(f"{k} {v}" for k, v in cuenta.items()) + ".\n")
+            w(tabla(["Tabla leída", "Columna en la base", "Tipo real", "Columna en el tablero", "Tipo en el tablero", "Resultado",
+                     "Posible dato personal"], f["filas"]))
+            continue
         if not f["clave"]:
             w(f"Fuente {f['motor']}: no está en el alcance del catálogo de Athena; su estructura real no se pudo comparar.\n")
             continue
@@ -364,7 +484,7 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
             w(f"`{f['clave']}` no está en el catálogo de Athena (fuente aún no migrada o catálogo desactualizado): su estructura "
               "real no se pudo comparar (ver sección 16).\n")
             continue
-        cuenta = Counter(r[4].split(":")[0] if r[4].startswith("Cambia") else r[4].split(" en el paso")[0] for r in f["filas"])
+        cuenta = Counter(r[4].split(":")[0].split(" en el paso")[0] for r in f["filas"])
         w(f"`{f['clave']}`: {sum(1 for r in f['filas'] if r[1] != '—')} columnas en la base. Resultado: " +
           ", ".join(f"{k} {v}" for k, v in cuenta.items()) + "." +
           (" La consulta combina varios orígenes: la comparación es solo orientativa." if f["compuesto"] else "") + "\n")
@@ -381,9 +501,14 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
         if "error" in e:
             w(f"El contenido está en `{q['ruta']}` pero {e['error']}; se revisa abriendo la tabla en Power BI Desktop.\n")
             continue
+        n = len(e["filas"])
+        if n == 0:  # tabla «Especificar datos» sin filas: en la práctica, un contenedor de medidas
+            nmed = next((len(x["medidas"]) for x in tablas if x["tabla"] == q["tabla"]), 0)
+            w(f"Evidencia: `{q['ruta']}`. Tabla vacía (0 filas): no tiene contenido que validar." +
+              (f" El modelo la usa para agrupar {nmed} medida(s) (sección 7)." if nmed else "") + "\n")
+            continue
         dd = _modulo_diccionario()
         pii = [c for c in e["columnas"] if dd and dd.PII_RE.search(c)]
-        n = len(e["filas"])
         w(f"Evidencia: `{q['ruta']}` (literal en base64 de la sección 4). {n} filas, {len(e['columnas'])} columnas." +
           (f" Posible dato personal (por el nombre): {', '.join(pii)}." if pii else "") +
           (f" Se muestran las primeras {MAX_FILAS_EMBEBIDA}." if n > MAX_FILAS_EMBEBIDA else "") +
@@ -414,7 +539,15 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
     for i, q in enumerate(a["consultas"], 1):
         w(f"## 4.{i} {q['tabla']} (partición `{q['particion']}`, {len(q['pasos'])} pasos)\n")
         w(f"Evidencia: `{q['ruta']}`.\n")
-        w(code("m", elide_long_literals(q["codigo"], q["ruta"])))
+        sqls = sql_nativo(q["codigo"])
+        codigo_m = q["codigo"]
+        for k, (lit, sql) in enumerate(sqls, 1):  # R19: el SQL se muestra una vez, legible, debajo del código M
+            ref = "«Consulta SQL»" if len(sqls) == 1 else f"«Consulta SQL {k}»"
+            codigo_m = codigo_m.replace(lit, f'"[[SQL de {len(sql)} caracteres: ver {ref} debajo]]"', 1)
+        w(code("m", elide_long_literals(codigo_m, q["ruta"])))
+        for k, (lit, sql) in enumerate(sqls, 1):
+            w(("Consulta SQL" if len(sqls) == 1 else f"Consulta SQL {k}") + " (texto completo de la consulta nativa):\n")
+            w(code("sql", sql.strip()))
         prow = []
         for st in q["pasos"]:
             if st["renombres"]:
@@ -482,6 +615,10 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
             rows.append([c["column_id"], c["nombre"], r["origen"] if not c["calculada"] else "—", c["tipo_dato"] or "—", clase,
                          "Oculta" if c["oculta"] else "Visible"] + [r["clases"][k] for k in cls] + [r["estado"], r["nota"]])
         w(tabla(["column_id", "Columna", "Nombre en origen", "Tipo", "Clase", "Visibilidad"] + cls + ["Estado de uso", "Nota"], rows))
+        for p in t["particiones"]:  # R66: la fórmula de una tabla calculada es su origen; se muestra completa, una vez
+            if p["tipo"].startswith("calculated") and (p.get("source") or "").strip():
+                w(f"Expresión de la tabla calculada {t['tabla']} (partición `{p['nombre']}`):\n")
+                w(code("dax", p["source"].strip()))
         calc = [c for c in t["columnas"] if c["calculada"]]
         if calc:
             w(f"Expresiones de columnas calculadas de {t['tabla']}:\n")
@@ -818,7 +955,8 @@ def render(inv: dict, a: dict, args, census_id: str, fecha: str) -> str:
         ["Segmentaciones", len(sl), len(sl), 0], ["Interacciones", len(it), len(it), 0], ["Bookmarks", len(bks), len(bks), 0],
         ["Recursos", len(rec), len(rec), 0]], num=("En PBIP", "En este documento", "Diferencia")))
     w("`censo.py validar` recalcula esta tabla desde el documento y el PBIP. El resultado de la validación queda en `historial-censos.md`.\n")
-    w("## 18.2 Estado final\n\n[IA: 1–3 frases que justifiquen el estado del encabezado según CAT-07.]\n")
+    w("## 18.2 Estado final\n\n[IA: 1–3 frases que justifiquen el estado del encabezado según CAT-07. Si quedan puntos pendientes, "
+      "decir que el tablero no es apto para el DLC de modificación ni para el de depuración hasta cerrar la validación (R56).]\n")
     return "\n".join(L)
 
 
@@ -940,8 +1078,8 @@ def hallazgos(inv, a, pname, vn, bn):
     if of and funcionan:
         add("Observación", "Presentación", (f"1 visual que funciona conserva reglas de formato que apuntan a entidades " if len(funcionan) == 1 else
          f"{len(funcionan)} visuales que funcionan conservan reglas de formato que apuntan a entidades ") +
-        f"inexistentes ({', '.join(ents)}). Otros {rotos} visuales con formato huérfano ya están rotos por sus datos y se cubren en los "
-            "hallazgos de referencias; todos figuran como «Formato huérfano» en los bindings de la sección 9.",
+        f"inexistentes ({', '.join(ents)})." + (f" Otros {rotos} visuales con formato huérfano ya están rotos por sus datos y se cubren "
+            "en los hallazgos de referencias." if rotos else "") + " Figuran como «Formato huérfano» en los bindings de la sección 9.",
             ", ".join(sorted({pname.get(p, p) for p, _ in funcionan})), ", ".join(sorted({p for p, _ in funcionan})),
             "; ".join(vn(v) for _, v in funcionan), "—",
             "Filas «Formato huérfano» en los bindings (sección 9)", "Ninguno: la regla no se aplica", "Bajo: no afecta los datos mostrados", "Baja",
@@ -1022,9 +1160,26 @@ def hallazgos(inv, a, pname, vn, bn):
     for kind, host, name, ref in a["rota_dax"]:
         add("Hallazgo", "Modelo", f"La expresión DAX de {name} referencia {ref}, que no existe.", "Modelo", "—", name, "—", "TMDL (6.1 o 7)",
             "Visuales que usan el objeto", "Error de cálculo", "Alta", "Verificar en Power BI Desktop si el objeto calcula sin error.")
+    # R67: condiciones del SQL que no filtran como parecen (minúsculas contra mayúsculas o al revés)
+    for i, q in enumerate(a["consultas"], 1):
+        malas = [x for _, sql in sql_nativo(q["codigo"]) for x in comparaciones_imposibles(sql)]
+        if malas:
+            add("Riesgo", "Fuentes", f"El SQL de «{q['tabla']}» tiene {len(malas)} condición(es) que no filtran como parecen: " +
+                "; ".join(f"`{frag}` {efecto}" for frag, efecto in malas) +
+                ". La función convierte el texto a minúsculas (o mayúsculas) y luego lo compara con un texto escrito en el caso "
+                "contrario.", "Modelo", "—", q["tabla"], "—", f"Consulta SQL de la sección 4.{i}",
+                f"Filas que carga {q['tabla']} y todo lo que la usa (6.1)",
+                "El tablero puede estar dejando fuera (o dentro) filas que la condición pretendía filtrar", "Alta",
+                "Confirmar con el dueño qué debía filtrar cada condición y si las filas que hoy carga el tablero son las esperadas.")
     # R61: fuentes frente a su estructura real (sección 3.2); al final para no mover los IDs de las filas anteriores
     for f in a.get("estructura_real", {}).get("fuentes", []):
-        if f["clave"] and not f["en_catalogo"]:
+        if f["sql"] is not None and f["sin_catalogo"]:
+            add("Vacío", "Fuentes", f"La consulta SQL de «{f['tabla']}» lee tablas que no están en el catálogo de Athena: "
+                + ", ".join(f"`{x}`" for x in f["sin_catalogo"]) + "; las columnas que vienen de ellas no se pudieron comparar con "
+                "su estructura real.", "Modelo", "—", f["tabla"], "—", "Sección 3.2 y SQL de la sección 4",
+                f"Columnas de {f['tabla']} (6.1)", "No se sabe si el tablero trae esas columnas con su tipo real", "Media",
+                "Confirmar con el dueño si esas tablas ya están migradas a Athena y con qué nombre.")
+        elif f["sql"] is None and f["clave"] and not f["en_catalogo"]:
             add("Vacío", "Fuentes", f"La tabla `{f['clave']}` (tabla del modelo «{f['tabla']}») no está en el catálogo de Athena: "
                 "su estructura real (columnas y tipos) no se pudo comparar.", "Modelo", "—", f["tabla"], "—", "Sección 3.2",
                 f"Columnas de {f['tabla']} (6.1)", "No se sabe si el tablero trae todas las columnas ni con su tipo real", "Media",
@@ -1143,14 +1298,17 @@ def validate(md: str, pbip: Path | None):
             warn.append(f"Sección {n} titulada «{secs[n][0]}»; se esperaba «{SECCIONES[n]}».")
     lines = md.splitlines()
     en_datos = False  # 3.3 copia datos de tablas embebidas: ahí no se buscan conteos aproximados ni IDs truncados
+    en_codigo = False  # tampoco dentro de bloques de código (M, DAX, SQL): son copia literal del PBIP
     for i, line in enumerate(lines, 1):
-        if line.startswith("#"):
+        if line.startswith("```"):
+            en_codigo = not en_codigo
+        if line.startswith("#") and not en_codigo:
             en_datos = line.startswith("## 3.3 ") or (en_datos and line.startswith("### "))
         for m in IA.finditer(line):
             err.append(f"Línea {i}: marcador pendiente {m.group(0)[:80]}")
         if "[Completar" in line:
             err.append(f"Línea {i}: marcador de plantilla «[Completar]».")
-        if en_datos:
+        if en_datos or en_codigo:
             continue
         m = APROX.search(line)
         if m and not line.startswith(("```", "    ")):
@@ -1191,6 +1349,12 @@ def validate(md: str, pbip: Path | None):
                         bad = [c for c in OBLIGATORIAS if c in vals and vals[c] not in ("0", "NA")]
                         if bad:
                             err.append(f"Sección 6: {r[1]} está «Sin uso interno identificado» con clases {bad} no revisadas o con referencias (R22).")
+    for hdr, rows in T.get(10, []):  # cada tarjeta lleva su interpretación (la IA no puede dejar ninguna en blanco)
+        if "Interpretación funcional" in hdr and "visual_id" in hdr:
+            k, kv, kt = hdr.index("Interpretación funcional"), hdr.index("visual_id"), hdr.index("Título") if "Título" in hdr else 0
+            for r in rows:
+                if k < len(r) and r[k].strip() in ("", "—", "-"):
+                    err.append(f"Sección 10: la tarjeta {r[kv]} · {r[kt]} no tiene «Interpretación funcional».")
     for hdr, rows in T.get(16, []):
         if "Punto de revisión" not in hdr:
             continue

@@ -1,4 +1,4 @@
-# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.8)
+# AI-DLC — Ritual estándar para el CENSO de BI (v2.3.10)
 
 > **Para agentes (Kiro u otros):** antes de cualquier acción sobre un censo —crear, revisar, validar, iniciar una validación, consultar vigencia o pendientes— pide el correo de quien lo solicita y no ejecutes nada hasta tenerlo (R57). Sigue `kiro/steering-censo-bi.md`: si quien inicia una validación no es el dueño, pregunta si acepta validar sin serlo (R58), y presenta los puntos uno por uno con `guia-validacion` (R59).
 
@@ -38,10 +38,10 @@ Numeración fija y continua. El script crea todas las secciones; se pueden agreg
 | — | Encabezado | census_id, fecha y hora, versión, huella del PBIP, tipo | Estado (CAT-07) |
 | 1 | Identificación | Datos técnicos del BI y de la ejecución | Área |
 | 2 | Objetivo y alcance | Alcance y fuentes inspeccionadas | Objetivo y pregunta central |
-| 3 | Fuentes de datos y conexiones | 3.1 todas las tablas con su origen (base, embebida, calculada, fecha automática), conector, navegación, modo y parámetros; 3.2 estructura real de cada base frente al catálogo de Athena (R61); 3.3 contenido de las tablas embebidas (R62); 3.4 tablas de fecha automáticas con su columna de origen y rango (R63) | — |
-| 4 | Transformaciones (Power Query/M) | Código M completo (una vez) y tabla de pasos | — |
+| 3 | Fuentes de datos y conexiones | 3.1 todas las tablas con su origen (base, embebida, calculada, fecha automática), conector, navegación, modo y parámetros; 3.2 estructura real de cada base frente al catálogo de Athena, también de las tablas que lee cada consulta SQL (R61); 3.3 contenido de las tablas embebidas (R62); 3.4 tablas de fecha automáticas con su columna de origen y rango (R63) | — |
+| 4 | Transformaciones (Power Query/M) | Código M completo (una vez) y tabla de pasos; el SQL de cada consulta nativa, completo y legible debajo del código (R19) | — |
 | 5 | Modelo de datos | Tablas, relaciones, jerarquías, propiedades y roles | Rol y granularidad de las tablas |
-| 6 | Columnas | Matriz A con resultado por clase y estado de uso; expresiones de columnas calculadas; tablas de fecha automáticas | — |
+| 6 | Columnas | Matriz A con resultado por clase y estado de uso; expresiones de tablas y columnas calculadas (R66); tablas de fecha automáticas | — |
 | 7 | Medidas | Medidas con referencias, uso y estado; expresiones completas (una vez) | — |
 | 8 | Páginas | Páginas existentes y páginas referenciadas que no existen | — |
 | 9 | Visuales | Por página: ficha con nombre, posición, tamaño, clase y formato huérfano; bindings con nombre del visual; conciliación | — |

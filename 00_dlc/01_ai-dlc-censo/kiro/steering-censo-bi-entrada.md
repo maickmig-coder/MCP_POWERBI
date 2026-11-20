@@ -2,7 +2,7 @@
 inclusion: always
 ---
 
-# Entrada al CENSO BI (ritual AI-DLC v2.3.8)
+# Entrada al CENSO BI (ritual AI-DLC v2.3.10)
 
 Aplica cuando el pedido menciona un censo o un tablero censado (crear, actualizar, revisar, validar, vigencia, pendientes, respuestas del dueño).
 

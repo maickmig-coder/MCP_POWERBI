@@ -45,7 +45,7 @@ Rutas, versiones y puerta del censo de los tres procesos: `00_dlc\02_ai_dlc_bi\0
 filtros, bookmarks, reglas de negocio, hallazgos y candidatos a depuración. Un tablero a la vez.
 
 **Antes de censar:** leer el `README.md` de esa carpeta; es el documento rector y define el ritual vigente
-(versión 2.3.8, con su script `censo.py`). Guías de Kiro instaladas en `.kiro\steering\`; si se cambia una guía en
+(versión 2.3.10, con su script `censo.py`). Guías de Kiro instaladas en `.kiro\steering\`; si se cambia una guía en
 `00_dlc\01_ai-dlc-censo\kiro\`, volver a copiarla allí.
 
 Reglas que nunca cambian:
@@ -72,7 +72,7 @@ y no se puede censar (R54): primero se guarda como versión `NN_<proceso>_<ID>`.
 
 ## 2. Diccionario de datos — `00_dlc\00_diccionario_datos`
 
-**Qué es (v2.3):** un inventario armado con **todos** los censos: conexiones (tipo y servidor), tablas y columnas
+**Qué es (v2.4.1):** un inventario armado con **todos** los censos: conexiones (tipo y servidor), tablas y columnas
 (tipo real, nombre en cada tablero, posible dato personal) y qué tableros usan cada tabla con sus filtros de carga.
 La estructura real (columnas y tipos antes de los ajustes de cada tablero) sale del catálogo de Athena:
 `diccionario-datos.md` en la raíz del proyecto, copia del repositorio `nbp033-ingenieria-inversa-tableros`

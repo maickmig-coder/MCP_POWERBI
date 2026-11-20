@@ -1,4 +1,4 @@
-# Criterios para hallazgos y puntos de revisión (v2.3.8)
+# Criterios para hallazgos y puntos de revisión (v2.3.10)
 
 > Reemplaza a `criterios-propuestas.md` (v1). El cambio de nombre refleja la decisión de que el CENSO **describe y señala**, pero no propone cambios: la modificación, creación y depuración son un DLC aparte que usa el CENSO como base.
 
@@ -29,7 +29,7 @@ Si no se puede responder “¿qué encontraste que te llevó a registrar esto?�
 |---|---|
 | Gobierno | Frecuencia de actualización, ambiente de publicación o propietario de una fuente no identificados. El dueño del tablero (R02) es el único responsable registrado. |
 | Datos | Fuente sin descripción, granularidad no identificada, transformación compleja sin documentar. |
-| Fuentes | Comparación con la estructura real (sección 3.2, R61): columna que cambia de tipo respecto a la base (por ejemplo texto → número), fuente que no está en el catálogo de Athena, columna cargada que el catálogo no tiene. |
+| Fuentes | Comparación con la estructura real (sección 3.2, R61): columna que cambia de tipo respecto a la base (por ejemplo texto → número), fuente o tabla leída por un SQL que no está en el catálogo de Athena, columna cargada que el catálogo no tiene; condición del SQL que no filtra como parece, por ejemplo `lower(canal) like '%MG%'` (R67). |
 | Modelo | Relación con lógica no clara, tabla de función desconocida, auto fecha/hora activo, medidas duplicadas o vacías. |
 | Métrica | Rótulo que no coincide con el cálculo, agregación implícita, conteo de texto usado como conteo distinto. |
 | Reporte | Visual sin propósito claro, slicers repetidos, página oculta sin finalidad. |

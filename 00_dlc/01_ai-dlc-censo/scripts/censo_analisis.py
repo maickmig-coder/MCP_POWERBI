@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 
-from censo_lectura import NO_USE_OPS, dax_refs, m_steps
+from censo_lectura import NO_USE_OPS, dax_refs, m_steps, sql_nativo
 
 DECORATIVOS = {"image", "shape", "basicShape", "textbox", "visualGroup", "pageNavigator", "bookmarkNavigator", "—"}
 BOTONES = {"actionButton"}
@@ -193,8 +193,8 @@ def analyze(inv: dict) -> dict:
             for st in steps:
                 for a, b in st["renombres"]:
                     alias_now[b] = alias_now.get(a, a)
-                if st["op"] == "Consulta nativa" or "Query=" in st["codigo"].replace(" ", ""):
-                    native_sql.append((t["tabla"], st["codigo"]))
+            for _, sql in sql_nativo(p["source"]):  # Value.NativeQuery, Odbc.Query y [Query="…"]
+                native_sql.append((t["tabla"], sql))
             for (tt, c), cc in cols.items():
                 if tt != t["tabla"] or cc["calculada"]:
                     continue
@@ -227,25 +227,30 @@ def analyze(inv: dict) -> dict:
             consumers[r].append((kind, host, name))
 
     # ---------------------------------------------------------------- clasificación de columnas
+    # Una tabla calculada se usa si se usa alguna de sus columnas o medidas; las columnas que su expresión lee
+    # (por ejemplo, las de una consulta que alimenta a `General`) quedan «En uso» de forma indirecta a través de ella (R66).
+    # Las tablas de fecha automáticas no cuentan: su calendario lee la columna de fecha, pero eso no es un uso del tablero.
+    tablas_usadas = {x[1] for x in consumed} - {t["tabla"] for t in tablas.values() if t["auto"]}
     col_rows = {}
     for (t, c), cc in cols.items():
         u = use[("col", t, c)]
         k = {"V": u["V"], "F": u["F"], "D": u["D"], "M": u["M"], "BK": u["BK"]}
         k["PQ"] = "NA" if cc["calculada"] or t not in tables_with_m else u["PQ"]
-        if native_sql:
+        if native_sql and not cc["calculada"] and any(tt == t for tt, _ in native_sql):
             src = origin_name.get((t, c), c)
-            k["SQL"] = sum(1 for _, sql in native_sql if src.lower() in sql.lower())
+            k["SQL"] = sum(1 for tt, sql in native_sql if tt == t and src.lower() in sql.lower())
         else:
             k["SQL"] = "NA"
         k["SEC"] = u["SEC"] if has_roles else "NA"
         nota = ""
         directo = u["V"] + u["F"] + u["BK"] > 0
-        via_dax = [x for x in consumers[("col", t, c)] if x in consumed and x[0] in ("measure", "col")]
+        via_dax = [x for x in consumers[("col", t, c)]
+                   if (x in consumed and x[0] in ("measure", "col")) or (x[0] == "table" and x[1] in tablas_usadas and x[1] != t)]
         tecnico = u["M"] > 0 or (isinstance(k["PQ"], int) and k["PQ"] > 0) or (isinstance(k["SEC"], int) and k["SEC"] > 0)
         if directo or via_dax:
             estado = "En uso"
             if not directo:
-                nota = "Uso indirecto vía " + ", ".join(sorted({x[2] for x in via_dax}))
+                nota = "Uso indirecto vía " + ", ".join(sorted({(f"tabla calculada {x[2]}" if x[0] == "table" else x[2]) for x in via_dax}))
         elif tecnico:
             estado = "Uso técnico"
         elif u["D"]:

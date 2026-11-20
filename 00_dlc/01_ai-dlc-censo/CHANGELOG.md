@@ -1,5 +1,30 @@
 # CHANGELOG — AI-DLC-CENSO
 
+## v2.3.10 — 2026-11-13
+
+Condiciones del SQL que no filtran como parecen. En el SQL de «Atom» (GC - Leads MG), `lower(canal) like '%MG%'` convierte el canal a minúsculas y lo compara con «MG» en mayúsculas: nunca se cumple, y en la práctica solo entran los canales con «+». La IA no lo detectó al leer el SQL.
+
+- **R67 (nueva):** `borrador` revisa el SQL de cada consulta nativa y registra una fila `H-A` (Riesgo, «Fuentes», prioridad Alta) cuando `lower(…)`/`upper(…)` se compara (`=`, `<>`, `like`, `not like`) con un literal en el caso contrario: «nunca se cumple» o, si la comparación es negada, «siempre se cumple». Cita el fragmento exacto; ignora los comentarios.
+- La guía de Kiro pide describir todas las condiciones del WHERE de cada consulta en las reglas de carga y citar la fila R67.
+- `validar` da error si una tarjeta de la sección 10 queda sin «Interpretación funcional» (en los censos de Leads MG la IA dejaba una con «—»).
+- La instrucción de 18.2 pide decir que el tablero no es apto para el DLC de modificación **ni** para el de depuración mientras queden puntos pendientes.
+- Diccionario de datos v2.4.1: las consultas SQL dicen qué tablas del catálogo leen y sus columnas toman el tipo real de esas tablas (o «calculada o renombrada en el SQL»), en vez de «Solo censo (no está en el catálogo)»; `estado` explica cuando el diccionario está desactualizado porque cambió su programa.
+- Reglas, criterios, checklist, README y guía de Kiro al día; guías reinstaladas.
+
+## v2.3.9 — 2026-11-13
+
+Fuentes SQL y tablas calculadas. En el censo de GC - Leads MG (dos consultas SQL nativas sobre Athena y cuatro tablas calculadas) faltaba el SQL, la comparación con Athena no se hacía y las columnas que alimentan la tabla `General` quedaban como «uso desconocido».
+
+- **R19 precisada — el SQL nunca se omite:** solo se omiten los literales codificados (base64). En el código M de la sección 4 el SQL se reemplaza por un aviso y se muestra completo y legible justo debajo, en un bloque «Consulta SQL».
+- **R61 — consultas SQL nativas:** 3.2 identifica las tablas que lee el SQL (FROM/JOIN) y busca cada columna del tablero en esas tablas del catálogo; un vacío `H-A` si alguna tabla leída no está en el catálogo. 3.1 muestra el servidor de la consulta. Las columnas creadas en Power Query (duplicadas o agregadas) se marcan «Se crea en Power Query», también en fuentes por navegación.
+- **R66 (nueva) — tablas calculadas:** su fórmula DAX se muestra en 6.1 y 3.1 dice qué tablas lee. Una columna que solo lee una tabla calculada en uso queda «En uso» («Uso indirecto vía tabla calculada …»); las tablas de fecha automáticas no cuentan como uso.
+- La columna «SQL» de la Matriz A cuenta las apariciones solo en el SQL de la propia tabla y reconoce `Value.NativeQuery`.
+- **R62:** una tabla embebida sin filas (contenedor de medidas) se declara vacía y no se pide validarla.
+- Texto del hallazgo de formato huérfano sin «otros 0 visuales»; `validar` no revisa conteos aproximados ni IDs truncados dentro de bloques de código.
+- **Diccionario de datos (v2.4):** el SQL de `Value.NativeQuery` es el segundo argumento (antes tomaba el nombre del servidor); la conexión real copia el origen tal como lo usa el tablero; cada consulta es una fuente propia («Consulta Atom c1cfb0»); ignora las columnas creadas en Power Query; avisa si un censo anterior omite el SQL.
+
+Efecto en censos existentes: el de GC - Flotillas no tiene SQL ni tablas calculadas; solo cambia el texto de su hallazgo de formato huérfano (H-A07). El de GC - Leads MG debe rehacerse para registrar sus fuentes SQL en el diccionario.
+
 ## v2.3.8 — 2026-11-13
 
 Títulos de tarjeta que prometen otra cosa, sin depender de la IA. En el censo de GC - Flotillas la tarjeta «Ticket promedio» de Empresas mostraba un conteo, pero el hallazgo automático solo decía «3 tarjetas con conteo implícito» con prioridad Media, y podía pasar desapercibida en la validación.

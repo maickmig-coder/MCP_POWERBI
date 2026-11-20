@@ -1,4 +1,4 @@
-# AI-DLC — Diccionario de datos (v2.3)
+# AI-DLC — Diccionario de datos (v2.4.1)
 
 Inventario, en un solo lugar, de **las conexiones, tablas y columnas que usan los tableros**. Se arma leyendo
 todos los censos. Además deja una "versión de práctica" de cada tabla (mismas columnas, sin datos ni contraseñas)
@@ -98,6 +98,26 @@ python 00_dlc/00_diccionario_datos/scripts/diccionario.py <comando> --censos 02_
 
 Solo lectura. No modifica censos ni tableros, no se conecta a bases de datos, no guarda contraseñas ni datos y no
 crea tablas. Solo conoce las tablas que algún tablero censado usa.
+
+## Cambios en v2.4.1 (2026-11-13)
+
+- Una consulta SQL ya no figura como «Solo censo (no está en el catálogo)»: dice qué tablas del catálogo lee
+  («Consulta SQL: columnas del censo; lee del catálogo …»). Cada columna toma el tipo real de la tabla leída donde
+  está, o se marca «calculada o renombrada en el SQL». El resumen cuenta aparte las consultas SQL que solo leen
+  tablas del catálogo.
+- `estado` dice cuándo el diccionario está desactualizado porque se actualizó su programa.
+
+## Cambios en v2.4 (2026-11-13)
+
+- **Consultas SQL nativas:** el SQL es el segundo argumento de `Value.NativeQuery` (antes se tomaba el nombre del
+  servidor y la conexión real quedaba inservible). Cada consulta es una fuente propia, con nombre legible
+  («Consulta Atom c1cfb0»); antes dos consultas distintas se mezclaban en una sola.
+- La conexión real copia el origen tal como lo usa el tablero (por ejemplo
+  `AmazonAthena.Databases("Athena_ODBC2", null, []){[Kind="Database"]}[Data]`) y su SQL completo.
+- Lee el SQL del bloque «Consulta SQL» del censo (ritual v2.3.9). Si un censo anterior omite el SQL, avisa y no registra
+  esa fuente: hay que volver a censar.
+- Ignora las columnas que crea la propia consulta M (duplicadas o agregadas) y las tablas calculadas y de fecha
+  automáticas: no existen en la base. Escribe siempre en UTF-8.
 
 ## Cambios en v2.3 (2026-11-12)
 

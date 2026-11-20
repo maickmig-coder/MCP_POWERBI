@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""AI-DLC Diccionario de datos (v2.3): inventario de conexiones, tablas y columnas que usan los tableros,
+"""AI-DLC Diccionario de datos (v2.4.1): inventario de conexiones, tablas y columnas que usan los tableros,
 armado a partir de todos los CENSOS, con la versión de práctica de cada tabla para Creación.
 
 Estructura real: si la tabla figura en el catálogo de Athena (exportado de AWS Glue; vive en otro repositorio y su
@@ -29,7 +29,7 @@ import unicodedata
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
-VERSION = "2.3"
+VERSION = "2.4.1"
 TZ = timezone(timedelta(hours=-5))
 EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 
@@ -197,6 +197,55 @@ def llamada_balanceada(texto: str, inicio: int) -> str:
     return texto[inicio + 1:]
 
 
+def argumentos(texto: str, inicio: int) -> list[str]:
+    """Argumentos de nivel superior de la llamada cuyo '(' está en `inicio` (respeta textos, paréntesis y llaves)."""
+    args, nivel, i, ini, en_cadena = [], 0, inicio, inicio + 1, False
+    while i < len(texto):
+        ch = texto[i]
+        if ch == '"':
+            if en_cadena and texto[i + 1:i + 2] == '"':
+                i += 2
+                continue
+            en_cadena = not en_cadena
+        elif not en_cadena:
+            if ch in "([{":
+                nivel += 1
+            elif ch in ")]}":
+                nivel -= 1
+                if nivel == 0:
+                    args.append(texto[ini:i])
+                    return args
+            elif ch == "," and nivel == 1:
+                args.append(texto[ini:i])
+                ini = i + 1
+        i += 1
+    return args
+
+
+def texto_m(literal: str) -> str:
+    """Contenido legible de un literal de texto M con comillas: "" → ", #(lf) → salto de línea…"""
+    s = literal[1:-1].replace('""', '"')
+    for k, v in (("#(cr)#(lf)", "\n"), ("#(lf)", "\n"), ("#(cr)", "\n"), ("#(tab)", "\t"), ("#(#)", "#")):
+        s = s.replace(k, v)
+    return s
+
+
+def creadas_en_m(codigo: str) -> set[str]:
+    """Columnas que crea la propia consulta M (duplicadas o agregadas), con sus nombres posteriores: no están en la base."""
+    creadas = {m.group(1).replace('""', '"') for m in
+               re.finditer(r'Table\.DuplicateColumn\s*\(\s*[^,]+,\s*"(?:[^"]|"")*"\s*,\s*"((?:[^"]|"")*)"', codigo)}
+    creadas |= {m.group(1).replace('""', '"') for m in re.finditer(r'Table\.AddColumn\s*\(\s*[^,]+,\s*"((?:[^"]|"")*)"', codigo)}
+    for viejo, nuevo in re.findall(r'\{\s*"((?:[^"]|"")*)"\s*,\s*"((?:[^"]|"")*)"\s*\}', codigo):
+        if viejo in creadas:
+            creadas.add(nuevo)
+    return creadas
+
+
+def literal_m(texto: str) -> str:
+    """Texto como literal M de una sola línea (inverso de texto_m)."""
+    return '"' + texto.replace('"', '""').replace("\r\n", "\n").replace("\n", "#(lf)").replace("\t", "#(tab)") + '"'
+
+
 def slug(texto: str) -> str:
     s = re.sub(r"[^0-9A-Za-z]+", "_", texto).strip("_")
     return s or "objeto"
@@ -301,8 +350,51 @@ def clave_catalogo(ob: dict) -> str | None:
     return f"{esquema}.{tabla}".lower() if esquema and tabla else None
 
 
+def tablas_sql(sql: str) -> list[str]:
+    """Tablas que lee un SQL (después de FROM o JOIN, con esquema), en minúsculas y sin repetir; omite subconsultas y
+    nombres definidos con WITH. Misma regla que el censo (R61)."""
+    s = re.sub(r"--[^\n]*|/\*.*?\*/", " ", sql or "", flags=re.S)
+    s = re.sub(r"'(?:[^']|'')*'", "''", s)
+    cte = {x.lower() for x in re.findall(r"(?:\bwith|,)\s*\"?(\w+)\"?\s+as\s*\(", s, flags=re.I)}
+    out = []
+    for m in re.finditer(r'\b(?:from|join)\s+((?:"?[\w$]+"?\s*\.\s*){0,2}"?[\w$]+"?)', s, flags=re.I):
+        partes = [p.strip().strip('"').lower() for p in m.group(1).split(".")]
+        nombre = ".".join(partes[-2:])
+        if len(partes) >= 2 and partes[-1] not in cte and nombre not in out:
+            out.append(nombre)
+    return out
+
+
+def aplicar_catalogo_sql(ob: dict, cat: dict) -> None:
+    """Consulta SQL nativa: sus columnas son las que devuelve el SQL (las dice el censo). Cada una se busca en las tablas
+    que lee el SQL; si está, toma su tipo real del catálogo; si no, se calcula o renombra dentro del SQL."""
+    leidas = tablas_sql(ob["sql"])
+    en, fuera = [x for x in leidas if x in cat], [x for x in leidas if x not in cat]
+    ob["tablas_sql"] = leidas
+    partes = ["Consulta SQL: columnas del censo"]
+    if en:
+        partes.append("lee del catálogo " + ", ".join(en))
+    if fuera:
+        partes.append("lee fuera del catálogo " + ", ".join(fuera))
+    ob["estructura"] = "; ".join(partes)
+    ob["sql_en_catalogo"] = bool(leidas) and not fuera
+    por_col = {}
+    for x in en:
+        for nombre, tipo in cat[x]["columnas"]:
+            por_col.setdefault(clave_col(nombre), (x, tipo))
+    for col in ob["columnas"].values():
+        hallada = por_col.get(clave_col(col["nombre_origen"]))
+        if hallada:
+            col["tabla_catalogo"], col["tipo_real"], col["en_catalogo"] = hallada[0], hallada[1], True
+        elif not fuera:
+            col["calculada_sql"] = True  # no existe en ninguna tabla leída: la produce el SQL
+
+
 def aplicar_catalogo(ob: dict, cat: dict, avisos: list[str]) -> None:
     """Reemplaza columnas y tipos por los del catálogo, en su orden, conservando lo que dicen los censos."""
+    if ob["acceso"] == "Consulta nativa":
+        aplicar_catalogo_sql(ob, cat)
+        return
     clave = clave_catalogo(ob)
     entrada = cat.get(clave) if clave else None
     if not entrada:
@@ -390,10 +482,11 @@ def analizar_m(codigo: str) -> dict:
             if len(cs) > 1:
                 info["sql"] = cs[1]
     nq = re.search(r"Value\.NativeQuery\s*\(", codigo)
-    if nq:
-        cs = cadenas_m(llamada_balanceada(codigo, nq.end() - 1))
-        if cs:
-            info["sql"] = cs[0]
+    if nq:  # Value.NativeQuery(<origen>, "<SQL>", …): el SQL es el SEGUNDO argumento; el origen se conserva tal cual
+        args = argumentos(codigo, nq.end() - 1)
+        if len(args) > 1 and re.fullmatch(r'\s*"(?:[^"]|"")*"\s*', args[1]):
+            info["sql"] = texto_m(args[1].strip())
+            info["origen_nativo"] = re.sub(r"\s+", " ", args[0]).strip()
     # navegación (se conserva el registro original para reproducirla exactamente)
     for m in re.finditer(r"\{\s*\[([^\]]*)\]\s*\}\s*\[\s*(Data|Content)\s*\]", codigo):
         campos = dict(re.findall(r'(\w+)\s*=\s*"((?:[^"]|"")*)"', m.group(1)))
@@ -426,7 +519,7 @@ def analizar_m(codigo: str) -> dict:
 def leer_censo(ruta: Path) -> dict:
     texto = ruta.read_text(encoding="utf-8-sig")
     c = {"archivo": str(ruta), "bi": None, "census_id": None, "fecha": None, "estado": None,
-         "consumible": True, "motivo": "", "fuentes": [], "m": {}, "matriz_a": {},
+         "consumible": True, "motivo": "", "fuentes": [], "m": {}, "sql": {}, "matriz_a": {},
          "hash": hashlib.sha256(texto.encode()).hexdigest()[:16]}
     for clave, patron in [("census_id", r"census_id:\s*(\S+)"), ("fecha", r"Fecha y hora de ejecución:\s*(\S+)"),
                           ("estado", r"Estado:\s*(.+)")]:
@@ -451,6 +544,9 @@ def leer_censo(ruta: Path) -> dict:
         bloque = re.search(r"```m\s*\n(.*?)```", cuerpo, re.S)
         if m and bloque:
             c["m"][(m.group(1).strip(), m.group(2).strip())] = bloque.group(1)
+            sqls = re.findall(r"```sql\s*\n(.*?)\n```", cuerpo, re.S)  # censo v2.3.9+: SQL legible debajo del código M
+            if sqls:
+                c["sql"][(m.group(1).strip(), m.group(2).strip())] = sqls
 
     for titulo, cuerpo in secciones(seccion(texto, "Columnas"), 3):
         m = re.match(r"(.+?)\s*\(\d+\s+columnas?\)", titulo)
@@ -484,6 +580,16 @@ def consolidar(censos: list[dict], cat: dict) -> dict:
             info = analizar_m(codigo)
             if not info["conector"]:
                 continue  # tabla sin base de datos (embebida, calculada): no es una conexión
+            if info["sql"] and info["sql"].startswith("[[literal de"):
+                avisos.append(f"{c['bi']}: el censo omite el SQL de «{tabla}» (ritual anterior a 2.3.9); volver a censar "
+                              "para registrar esa fuente")
+                continue
+            if info["sql"] and info["sql"].startswith("[[SQL de"):  # el censo muestra el SQL aparte, legible
+                sql_censo = c["sql"].get((tabla, part)) or next((v for (t, _), v in c["sql"].items() if t == tabla), None)
+                if not sql_censo:
+                    avisos.append(f"{c['bi']}: la consulta SQL de «{tabla}» no está en el censo; no se puede registrar")
+                    continue
+                info["sql"] = "\n\n".join(sql_censo)
             arg0 = info["argumentos"][0] if info["argumentos"] else "—"
             destino = re.sub(r"(?i)^\s*dsn\s*=\s*", "", arg0).split(";")[0].strip()
             conexion_id = f"{slug(info['motor']).lower()}:{destino}"
@@ -505,7 +611,9 @@ def consolidar(censos: list[dict], cat: dict) -> dict:
                     "objeto_id": objeto_id, "conexion_id": conexion_id, "motor": info["motor"],
                     "conector": info["conector"], "argumentos": info["argumentos"], "acceso": acceso,
                     "navegacion": info["navegacion"], "pasos_nav": info["pasos_nav"], "sql": info["sql"],
-                    "nombre": info["navegacion"][-1]["Name"] if info["navegacion"] else ruta_obj,
+                    "origen_nativo": info.get("origen_nativo"),
+                    "nombre": info["navegacion"][-1]["Name"] if info["navegacion"] else
+                    (f"Consulta {tabla} {ruta_obj.split(':', 1)[1][:6]}" if acceso == "Consulta nativa" else ruta_obj),
                     "columnas": {}, "usos": []}
                 cx["objetos"].append(objeto_id)
             ob["usos"].append({"bi": c["bi"], "census_id": c["census_id"], "tabla_modelo": tabla,
@@ -513,12 +621,13 @@ def consolidar(censos: list[dict], cat: dict) -> dict:
             if info["compuesto"]:
                 avisos.append(f"{c['bi']}: «{tabla}» combina varios orígenes; sus columnas no se atribuyen a {objeto_id}")
                 continue
+            creadas = creadas_en_m(codigo)
             for fila in c["matriz_a"].get(tabla, []):
                 if limpiar(fila.get("Clase", "")).lower() != "origen":
                     continue
                 origen = limpiar(fila.get("Nombre en origen", ""))
-                if not origen or origen == "—":
-                    continue
+                if not origen or origen == "—" or origen in creadas:
+                    continue  # sin origen, o creada por la propia consulta M (no existe en la base)
                 col = ob["columnas"].setdefault(origen, nueva_columna(origen))
                 t = limpiar(fila.get("Tipo", "")).lower() or "—"
                 if c["bi"] not in col["tipos"].setdefault(t, []):
@@ -558,11 +667,13 @@ def consolidar(censos: list[dict], cat: dict) -> dict:
 def m_real(ob: dict) -> str:
     args = ", ".join('"' + a.replace('"', '""') + '"' for a in ob["argumentos"])
     if ob["acceso"] == "Consulta nativa":
-        sql = (ob["sql"] or "").replace('"', '""')
+        sql = literal_m(ob["sql"] or "")
         if ob["conector"] == "Odbc.Query":
-            return f'let\n    Origen = Odbc.Query({args}, "{sql}")\nin\n    Origen'
-        return (f'let\n    Servidor = {ob["conector"]}({args}),\n'
-                f'    Origen = Value.NativeQuery(Servidor, "{sql}", null, [EnableFolding = true])\nin\n    Origen')
+            return f'let\n    Origen = Odbc.Query({args}, {sql})\nin\n    Origen'
+        # el origen se copia tal como lo usa el tablero (p. ej. AmazonAthena.Databases("…", null, []){[Kind="Database"]}[Data])
+        servidor = ob.get("origen_nativo") or f'{ob["conector"]}({args})'
+        return (f'let\n    Servidor = {servidor},\n'
+                f'    Origen = Value.NativeQuery(Servidor, {sql}, null, [EnableFolding = true])\nin\n    Origen')
     extra = ", null, []" if ob["conector"] == "AmazonAthena.Databases" else ""
     lineas, anterior = [f'    Origen = {ob["conector"]}({args}{extra})'], "Origen"
     for i, n in enumerate(ob["pasos_nav"], 1):
@@ -586,6 +697,8 @@ def m_simulacion(ob: dict) -> str:
 def tipo_texto(col: dict) -> str:
     if col["tipo_real"]:
         return col["tipo_real"]
+    if col.get("calculada_sql"):
+        return f"Calculada o renombrada en el SQL (en el tablero: {col['tipo'] or 'desconocido'})"
     if col["en_catalogo"] is False:
         base = "⚠ No está en el catálogo"
     else:
@@ -608,8 +721,9 @@ def generar_md(d: dict, censos: list[dict], ejecutor: str) -> str:
                                         for c in usados) or "ninguno todavía") + "\n")
     w("La estructura es la **real de la base**, antes de cualquier ajuste de un tablero: si la tabla está en el "
       "catálogo de Athena, columnas y tipos salen de ahí; si no (fuente aún no migrada), salen del censo y se marcan "
-      "«no verificado en catálogo». No se registran datos ni contraseñas. Aquí aparecen las tablas que algún "
-      "tablero censado usa.\n")
+      "«no verificado en catálogo». En una consulta SQL, las columnas son las que devuelve el SQL (según el censo); "
+      "cada una toma su tipo real de la tabla del catálogo que lee el SQL, o se marca «calculada o renombrada en el SQL». "
+      "No se registran datos ni contraseñas. Aquí aparecen las tablas que algún tablero censado usa.\n")
     if d.get("libres"):
         w(f"**Para tableros nuevos:** el catálogo de Athena tiene además **{d['libres']} tablas que ningún tablero usa "
           "todavía**. No se listan aquí, pero se encuentran con «busca fuente …» y se puede preparar su versión de "
@@ -716,8 +830,9 @@ def diagnostico(raiz: Path, salida: Path) -> dict:
         v = vigencia_censo(p, raiz)
         if v is not None and clave in previa and previa[clave] is not None and previa[clave] != v["vigente"]:
             dg["vigencia_cambio"].append(clave)
+    dg["version_cambio"] = (data.get("version"), VERSION) if data.get("version") != VERSION else None
     cambio = (dg["nuevos"] or dg["modificados"] or dg["eliminados"] or dg["catalogo_cambio"]
-              or dg["vigencia_cambio"] or data.get("version") != VERSION)
+              or dg["vigencia_cambio"] or dg["version_cambio"])
     dg["estado"] = "DESACTUALIZADO" if cambio else "AL_DIA"
     return dg
 
@@ -739,6 +854,9 @@ def imprimir_diagnostico(dg: dict) -> None:
         print(f"AVISO: no se encuentra el catálogo de Athena en {p} (revisar config.json).")
     for r in dg.get("vigencia_cambio", []):
         print(f"Cambió la vigencia del censo {r} (se guardó una versión nueva del tablero o se volvió a censar).")
+    if dg.get("version_cambio"):
+        antes, ahora = dg["version_cambio"]
+        print(f"El programa del diccionario se actualizó (v{antes} → v{ahora}): hay que regenerarlo.")
 
 
 CODIGO_ESTADO = {"AL_DIA": 0, "DESACTUALIZADO": 10, "SIN_DICCIONARIO": 11}
@@ -864,8 +982,9 @@ def cmd_actualizar(a) -> int:
     print(f"Censos usados: {sum(c['consumible'] for c in censos)} · conexiones: {len(d['conexiones'])} · "
           f"tablas: {len(d['objetos'])} · columnas: {sum(len(o['columnas']) for o in d['objetos'].values())}")
     en_cat = sum(1 for o in d["objetos"].values() if o["estructura"].startswith("Catálogo"))
-    print(f"Estructura real desde el catálogo: {en_cat} de {len(d['objetos'])} tabla(s) "
-          f"(catálogo con {len(cat)} tablas)")
+    sql_cat = sum(1 for o in d["objetos"].values() if o.get("sql_en_catalogo"))
+    print(f"Estructura real desde el catálogo: {en_cat} tabla(s) directas y {sql_cat} consulta(s) SQL que solo leen tablas "
+          f"del catálogo, de {len(d['objetos'])} fuente(s) (catálogo con {len(cat)} tablas)")
     for av in d["avisos"]:
         print(f"AVISO: {av}")
     return 0

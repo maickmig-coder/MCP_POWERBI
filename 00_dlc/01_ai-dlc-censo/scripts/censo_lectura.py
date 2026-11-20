@@ -438,10 +438,76 @@ def _m_classify(expr: str) -> dict:
             "nuevas": nuevas, "navegacion": nav}
 
 
+def _texto_m(literal: str) -> str:
+    """Contenido legible de un literal de texto M (sin comillas): "" → ", #(lf) → salto de línea, etc."""
+    s = literal[1:-1].replace('""', '"')
+    for k, v in (("#(cr)#(lf)", "\n"), ("#(lf)", "\n"), ("#(cr)", "\n"), ("#(tab)", "\t"), ("#(#)", "#")):
+        s = s.replace(k, v)
+    return s
+
+
+def _argumentos(code: str, abre: int) -> list[str]:
+    """Argumentos de nivel superior de la llamada cuyo '(' está en `abre` (respeta textos, paréntesis y llaves)."""
+    args, nivel, i, ini, en_texto = [], 0, abre, abre + 1, False
+    while i < len(code):
+        ch = code[i]
+        if ch == '"':
+            if en_texto and code[i + 1:i + 2] == '"':
+                i += 2
+                continue
+            en_texto = not en_texto
+        elif not en_texto:
+            if ch in "([{":
+                nivel += 1
+            elif ch in ")]}":
+                nivel -= 1
+                if nivel == 0:
+                    args.append(code[ini:i])
+                    return args
+            elif ch == "," and nivel == 1:
+                args.append(code[ini:i])
+                ini = i + 1
+        i += 1
+    return args
+
+
+def sql_nativo(code: str) -> list[tuple[str, str]]:
+    """[(literal M tal como está en el código, SQL legible)] de las consultas nativas de una consulta M:
+    Value.NativeQuery(origen, "SQL", …), Odbc.Query(dsn, "SQL") y la opción [Query="SQL"] de los conectores."""
+    out = []
+    for m in re.finditer(r"\b(Value\.NativeQuery|Odbc\.Query)\s*\(", code):
+        args = _argumentos(code, m.end() - 1)
+        if len(args) > 1 and re.fullmatch(r'\s*"(?:[^"]|"")*"\s*', args[1]):
+            lit = args[1].strip()
+            out.append((lit, _texto_m(lit)))
+    for m in re.finditer(r'\bQuery\s*=\s*("(?:[^"]|"")*")', code):
+        out.append((m.group(1), _texto_m(m.group(1))))
+    return out
+
+
+def tablas_sql(sql: str) -> list[str]:
+    """Tablas que lee un SQL (después de FROM o JOIN), sin repetir y en orden; omite las subconsultas y los nombres
+    definidos en el mismo SQL con WITH. Devuelve «esquema.tabla» en minúsculas (sin el catálogo si viene con tres partes)."""
+    s = re.sub(r"--[^\n]*|/\*.*?\*/", " ", sql, flags=re.S)
+    s = re.sub(r"'(?:[^']|'')*'", "''", s)
+    cte = {x.lower() for x in re.findall(r"(?:\bwith|,)\s*\"?(\w+)\"?\s+as\s*\(", s, flags=re.I)}
+    out = []
+    for m in re.finditer(r'\b(?:from|join)\s+((?:"?[\w$]+"?\s*\.\s*){0,2}"?[\w$]+"?)', s, flags=re.I):
+        partes = [p.strip().strip('"').lower() for p in m.group(1).split(".")]
+        nombre = ".".join(partes[-2:])
+        if len(partes) < 2 or partes[-1] in cte or nombre in out:  # sin esquema: nombre de WITH, UNNEST u otra función
+            continue
+        out.append(nombre)
+    return out
+
+
 def elide_long_literals(code: str, ruta: str) -> str:
+    """Omite solo los literales largos codificados (base64 de tablas embebidas, R19). Un texto legible, como el SQL de
+    una consulta nativa, nunca se omite: es la lógica de la fuente."""
     def repl(m):
         s = m.group(0)
-        return f'"[[literal de {len(s) - 2} caracteres omitido; ver {ruta}]]"' if len(s) > LONG_LITERAL else s
+        codificado = re.fullmatch(r'"[A-Za-z0-9+/=_\-]*"', s) is not None
+        return f'"[[literal de {len(s) - 2} caracteres omitido; ver {ruta}]]"' if len(s) > LONG_LITERAL and codificado else s
     return re.sub(r'"(?:[^"]|"")*"', repl, code)
 
 

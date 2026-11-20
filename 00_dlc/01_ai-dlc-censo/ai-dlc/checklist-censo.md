@@ -1,4 +1,4 @@
-# Checklist del CENSO BI (v2.3.8)
+# Checklist del CENSO BI (v2.3.10)
 
 **[S]** = lo genera `censo.py borrador`. **[V]** = lo comprueba `censo.py validar`. Sin marca = lo revisa la IA o una persona. Un punto con [S] no debe rehacerse a mano.
 
@@ -18,7 +18,10 @@
 - [ ] **[S]** Código M completo una sola vez (sección 4) y expresiones DAX una sola vez (6.1 y 7).
 - [ ] **[S]** Todas las tablas del modelo en 3.1 con su origen, incluidas las tablas de fecha automáticas con su columna de origen (R63).
 - [ ] **[S]** Estructura real de cada fuente frente al catálogo de Athena (3.2, R61); si dice que no encontró el catálogo, se informa al usuario.
-- [ ] **[S]** Contenido de cada tabla embebida decodificado en 3.3 (R62).
+- [ ] **[S]** Contenido de cada tabla embebida decodificado en 3.3 (R62); las vacías se declaran vacías.
+- [ ] **[S]** SQL de cada consulta nativa completo y legible en la sección 4, y sus tablas comparadas con el catálogo en 3.2 (R19, R61).
+- [ ] **[S]** Condiciones del SQL que convierten a minúsculas (o mayúsculas) y comparan con el caso contrario registradas como riesgo de prioridad Alta (R67); la regla de carga de la 14 que las describe las cita.
+- [ ] **[S]** Fórmula de cada tabla calculada en 6.1; las columnas que solo lee una tabla calculada en uso quedan «En uso» (R66).
 - [ ] **[S][V]** Una fila por columna de cada tabla, con resultado por clase y estado de uso; conciliada contra el PBIP.
 - [ ] **[S][V]** Una fila por medida, página, visual, filtro, interacción, bookmark y recurso; conciliadas contra el PBIP.
 - [ ] **[S]** Posición, tamaño y bindings de cada visual; resumen por clase que suma el total de la página.
@@ -35,7 +38,7 @@
 - [ ] Estado del encabezado elegido según CAT-07 y justificado en 18.2.
 - [ ] Área, objetivo y pregunta central con certeza `Encontrado`, `Inferido` o `Desconocido`.
 - [ ] Rol y granularidad de cada tabla de la 5.1.
-- [ ] Interpretación funcional de cada KPI (sección 10); los títulos que no coinciden con lo calculado están en la 17.
+- [ ] **[V]** Interpretación funcional de **cada** KPI (sección 10), sin ninguna en «—»; los títulos que no coinciden con lo calculado están en la 16.
 - [ ] Interpretación y certeza de cada regla de negocio (14).
 - [ ] Reglas de conjunto revisadas (R64): si los filtros de página reparten el tablero en segmentos, o una tabla embebida decide qué filas cuentan en cada uno, hay una regla que cita sus rule_id.
 - [ ] Mapa de arquitectura de 5–12 líneas en la 15, sin repetir inventarios.

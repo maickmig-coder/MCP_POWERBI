@@ -1,4 +1,4 @@
-# Disparadores del diccionario de datos (v2.3)
+# Disparadores del diccionario de datos (v2.4.1)
 
 Frases que dice la persona y lo que hace el agente (Kiro o Claude). Cada disparador ejecuta
 `scripts/diccionario.py`, así el resultado no depende de la interpretación de la IA.

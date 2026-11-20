@@ -1,7 +1,7 @@
 {
-  "diccionario_id": "20261113T213344-diccionario",
-  "generado": "2026-11-13T21:33:44-05:00",
-  "version": "2.3",
+  "diccionario_id": "20261120T144231-diccionario",
+  "generado": "2026-11-20T14:42:31-05:00",
+  "version": "2.4.1",
   "ejecutor": "miguel.b@nebula.com.co",
   "censos": [
     {
@@ -13,6 +13,18 @@
       "motivo": "",
       "archivo": "GC - Flotillas/GC - Flotillas - censo.md",
       "hash": "c7db700609490607",
+      "vigente": true,
+      "motivos_vigencia": []
+    },
+    {
+      "bi": "GC - Leads MG",
+      "census_id": "20261120T143932-gc-leads-mg",
+      "fecha": "2026-11-20T14:39:32-05:00",
+      "estado": "Completado pendiente de validación",
+      "consumible": true,
+      "motivo": "",
+      "archivo": "GC - Leads MG/GC - Leads MG - censo.md",
+      "hash": "e6bb875143ab337d",
       "vigente": true,
       "motivos_vigencia": []
     }
@@ -27,10 +39,13 @@
       ],
       "destino": "Athena_ODBC2",
       "bi": [
-        "GC - Flotillas"
+        "GC - Flotillas",
+        "GC - Leads MG"
       ],
       "objetos": [
-        "amazon_athena:Athena_ODBC2/AwsDataCatalog/bi_materialized_data/entregas_totales"
+        "amazon_athena:Athena_ODBC2/AwsDataCatalog/bi_materialized_data/entregas_totales",
+        "amazon_athena:Athena_ODBC2/consulta:c1cfb0c4c1",
+        "amazon_athena:Athena_ODBC2/consulta:7251fe3e02"
       ]
     }
   ],
@@ -76,6 +91,7 @@
         }
       ],
       "sql": null,
+      "origen_nativo": null,
       "nombre": "entregas_totales",
       "columnas": {
         "fechadecorte": {
@@ -946,6 +962,1516 @@
       "consulta_src": "Src_entregas_totales",
       "m_real": "let\n    Origen = AmazonAthena.Databases(\"Athena_ODBC2\", null, []),\n    Nav1_AwsDataCatalog = Origen{[Name=\"AwsDataCatalog\",Kind=\"Database\"]}[Data],\n    Nav2_bi_materialized_data = Nav1_AwsDataCatalog{[Name=\"bi_materialized_data\",Kind=\"Schema\"]}[Data],\n    Nav3_entregas_totales = Nav2_bi_materialized_data{[Name=\"entregas_totales\",Kind=\"Table\"]}[Data]\nin\n    Nav3_entregas_totales",
       "m_simulacion": "// Versión de práctica: estructura real del origen (catálogo de Athena o, si no está, censos); 0 filas. No contiene datos.\nlet\n    Fuente = #table(\n        type table [\n            #\"fechadecorte\" = type datetime,\n            #\"idempresas\" = Int64.Type,\n            #\"año\" = Int64.Type,\n            #\"codigoempresa\" = Int64.Type,\n            #\"empresa\" = type text,\n            #\"codigocentro\" = Int64.Type,\n            #\"centro\" = type text,\n            #\"codigoseccion\" = Int64.Type,\n            #\"seccion\" = type text,\n            #\"codigomarca\" = Int64.Type,\n            #\"marca\" = type text,\n            #\"codigogama\" = Int64.Type,\n            #\"gama\" = type text,\n            #\"codigomodelo\" = type text,\n            #\"añomodelo\" = type text,\n            #\"modelo\" = type text,\n            #\"cedulavendedor\" = type text,\n            #\"nombrevendedor\" = type text,\n            #\"nit\" = type text,\n            #\"nombretercero\" = type text,\n            #\"cantidad\" = Int64.Type,\n            #\"valor\" = type number,\n            #\"tipo\" = type text,\n            #\"fechaentregacliente\" = type datetime,\n            #\"fechafactura\" = type datetime,\n            #\"fechamod\" = type datetime,\n            #\"vin\" = type text,\n            #\"entrega\" = type text,\n            #\"placa\" = type text,\n            #\"fechamatriculacion\" = type datetime,\n            #\"combustible\" = type text,\n            #\"procedencia\" = type text,\n            #\"procedenciadetalle\" = type text,\n            #\"tipooportunidad\" = type text,\n            #\"correo\" = type text,\n            #\"telefono\" = type text,\n            #\"codunidadnegocio\" = Int64.Type,\n            #\"nombreunidadnegocio\" = type text,\n            #\"tipocliente\" = type text,\n            #\"nombrevendedorhomologado\" = type text,\n            #\"clase\" = type text,\n            #\"color\" = type text,\n            #\"esultimamodificacion\" = Int64.Type,\n            #\"emailvendedor\" = type text,\n            #\"tipoventa_vista\" = type text,\n            #\"rowhash\" = type text,\n            #\"extractionid\" = Int64.Type\n        ],\n        {}\n    )\nin\n    Fuente"
+    },
+    {
+      "objeto_id": "amazon_athena:Athena_ODBC2/consulta:c1cfb0c4c1",
+      "conexion_id": "amazon_athena:Athena_ODBC2",
+      "motor": "Amazon Athena",
+      "conector": "AmazonAthena.Databases",
+      "argumentos": [
+        "Athena_ODBC2"
+      ],
+      "acceso": "Consulta nativa",
+      "navegacion": [],
+      "pasos_nav": [
+        {
+          "registro": "Kind=\"Database\"",
+          "campo": "Data",
+          "nombre": ""
+        }
+      ],
+      "sql": "select distinct\nlead_id\n,campaing_name\n,medium_value\n,category_name\n,brand_name\n,adviser_name\n,adviser_email\n,client_name\n,client_phone\n,client_email\n,created_at\n,updated_at\n,lead_created_at\n,management_time\n,nombre_origen\n,grupo\n,atencion\n,primer_usuario\n,primer_grupo\n,tipificacion\n,atendido\n,ultima_actualizacion\n,fecha_asignacion\n,asignado\n,canal\n,fh_primer_mensaje_agente\n,fh_asignacion_primera\nfrom\n(select\n lead_id\n,upper(nombre_campania) as campaing_name\n,case when trim(split_part(canal, '-', 1))='WA' then 'Whatsapp'  \n      when trim(split_part(canal, '-', 1))='IG' then 'Redes Sociales'\n      when trim(split_part(canal, '-', 1))='FB' then 'Redes Sociales'\n      end as medium_value\n,case when lower(customtipodenegocio)='taller' then 'Posventa' when trim(customtipodenegocio) = '' then 'Sin definir' else customtipodenegocio end as category_name\n,case when canal2 <> '' then 'MG' else null end as brand_name\n,b.agente as adviser_name\n,b.email_agente as adviser_email\n,nombre_cliente as client_name\n,telefono as client_phone\n,correo as client_email\n,b.fh_asignacion as created_at\n,b.ultima_actualizacion2 as updated_at\n,fecha_inicio_conversacion as lead_created_at\n,b.tiempo_de_atencion as management_time\n,nombre_origen\n,b.grupo\n,b.atencion\n,primer_usuario\n,primer_grupo\n,tipificacion\n,atendido\n,ultima_actualizacion\n,fecha_asignacion\n,asignado\n,canal\n,b.fh_primer_mensaje_agente\n,b.fh_asignacion_primera\nfrom atom_leads.leads\n\n-- Canal MG\nleft join\n(select distinct\ncanal as canal2\nfrom atom_leads.leads\nwhere (upper(nombre_campania) like '%MG%' or upper(grupo) like '%MG%') and (lower(canal) like '%MG%' or lower(canal) like '%+%')\n) m\non canal2 = canal\n\n--Ultima Gestion\nleft join\n(select distinct\n*\nfrom\n(select distinct\n LAST_VALUE(grupo)                  OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as grupo\n,LAST_VALUE(agente)                 OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as agente\n,LAST_VALUE(email_agente)           OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as email_agente\n,LAST_VALUE(fh_asignacion)          OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_asignacion\n,LAST_VALUE(fh_asignacion)          OVER (PARTITION BY lead_id ORDER BY fh_asignacion desc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_asignacion_primera\n,LAST_VALUE(channel_name)           OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_name\n,LAST_VALUE(tiempo_de_atencion)     OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as tiempo_de_atencion\n,LAST_VALUE(ultima_actualizacion)   OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as ultima_actualizacion2\n,LAST_VALUE(atencion)               OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as atencion\n,LAST_VALUE(categoria_atencion)     OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as categoria_atencion\n,LAST_VALUE(fh_primer_mensaje_agente)     OVER (PARTITION BY lead_id ORDER BY fh_primer_mensaje_agente desc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_primer_mensaje_agente\n,lead_id as lead_id2\nfrom atom_leads.nebula_tiempos_de_agentes)a)b\non lead_id2 = lead_id\n)a\nwhere not brand_name is null",
+      "origen_nativo": "AmazonAthena.Databases(\"Athena_ODBC2\", null, []){[Kind=\"Database\"]}[Data]",
+      "nombre": "Consulta Atom c1cfb0",
+      "columnas": {
+        "lead_id": {
+          "nombre_origen": "lead_id",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "lead_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "campaing_name": {
+          "nombre_origen": "campaing_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "campaing_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "medium_value": {
+          "nombre_origen": "medium_value",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "medium_value"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "category_name": {
+          "nombre_origen": "category_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "category_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "brand_name": {
+          "nombre_origen": "brand_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "brand_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "adviser_name": {
+          "nombre_origen": "adviser_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "adviser_email": {
+          "nombre_origen": "adviser_email",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_email"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "client_name": {
+          "nombre_origen": "client_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "client_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "client_phone": {
+          "nombre_origen": "client_phone",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "client_phone"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "client_email": {
+          "nombre_origen": "client_email",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "client_email"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "created_at": {
+          "nombre_origen": "created_at",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "created_at"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "datetime",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "updated_at": {
+          "nombre_origen": "updated_at",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "updated_at"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "datetime",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "lead_created_at": {
+          "nombre_origen": "lead_created_at",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "lead_created_at"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "datetime",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "management_time": {
+          "nombre_origen": "management_time",
+          "tipos": {
+            "double": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "management_time"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "double",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type number",
+          "cambiado_en": []
+        },
+        "nombre_origen": {
+          "nombre_origen": "nombre_origen",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "nombre_origen"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "grupo": {
+          "nombre_origen": "grupo",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "grupo"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "primer_usuario": {
+          "nombre_origen": "primer_usuario",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "primer_usuario"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "primer_grupo": {
+          "nombre_origen": "primer_grupo",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "primer_grupo"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "tipificacion": {
+          "nombre_origen": "tipificacion",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "tipificacion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "atencion": {
+          "nombre_origen": "atencion",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "atencion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.nebula_tiempos_de_agentes",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "atendido": {
+          "nombre_origen": "atendido",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "atendido"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "ultima_actualizacion": {
+          "nombre_origen": "ultima_actualizacion",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "ultima_actualizacion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "fecha_asignacion": {
+          "nombre_origen": "fecha_asignacion",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "fecha_asignacion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "asignado": {
+          "nombre_origen": "asignado",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "asignado"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "canal": {
+          "nombre_origen": "canal",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "canal"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "fh_primer_mensaje_agente": {
+          "nombre_origen": "fh_primer_mensaje_agente",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "fh_primer_mensaje_agente"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "atom_leads.leads",
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "fh_asignacion_primera": {
+          "nombre_origen": "fh_asignacion_primera",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "fh_asignacion_primera"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "string",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type text",
+          "cambiado_en": []
+        }
+      },
+      "usos": [
+        {
+          "bi": "GC - Leads MG",
+          "census_id": "20261120T143932-gc-leads-mg",
+          "tabla_modelo": "Atom",
+          "filtros_carga": [],
+          "columnas_quitadas": []
+        }
+      ],
+      "tablas_sql": [
+        "atom_leads.leads",
+        "atom_leads.nebula_tiempos_de_agentes"
+      ],
+      "estructura": "Consulta SQL: columnas del censo; lee del catálogo atom_leads.leads, atom_leads.nebula_tiempos_de_agentes",
+      "sql_en_catalogo": true,
+      "consulta_sim": "Sim_Consulta_Atom_c1cfb0",
+      "consulta_real": "Real_Consulta_Atom_c1cfb0",
+      "consulta_src": "Src_Consulta_Atom_c1cfb0",
+      "m_real": "let\n    Servidor = AmazonAthena.Databases(\"Athena_ODBC2\", null, []){[Kind=\"Database\"]}[Data],\n    Origen = Value.NativeQuery(Servidor, \"select distinct#(lf)lead_id#(lf),campaing_name#(lf),medium_value#(lf),category_name#(lf),brand_name#(lf),adviser_name#(lf),adviser_email#(lf),client_name#(lf),client_phone#(lf),client_email#(lf),created_at#(lf),updated_at#(lf),lead_created_at#(lf),management_time#(lf),nombre_origen#(lf),grupo#(lf),atencion#(lf),primer_usuario#(lf),primer_grupo#(lf),tipificacion#(lf),atendido#(lf),ultima_actualizacion#(lf),fecha_asignacion#(lf),asignado#(lf),canal#(lf),fh_primer_mensaje_agente#(lf),fh_asignacion_primera#(lf)from#(lf)(select#(lf) lead_id#(lf),upper(nombre_campania) as campaing_name#(lf),case when trim(split_part(canal, '-', 1))='WA' then 'Whatsapp'  #(lf)      when trim(split_part(canal, '-', 1))='IG' then 'Redes Sociales'#(lf)      when trim(split_part(canal, '-', 1))='FB' then 'Redes Sociales'#(lf)      end as medium_value#(lf),case when lower(customtipodenegocio)='taller' then 'Posventa' when trim(customtipodenegocio) = '' then 'Sin definir' else customtipodenegocio end as category_name#(lf),case when canal2 <> '' then 'MG' else null end as brand_name#(lf),b.agente as adviser_name#(lf),b.email_agente as adviser_email#(lf),nombre_cliente as client_name#(lf),telefono as client_phone#(lf),correo as client_email#(lf),b.fh_asignacion as created_at#(lf),b.ultima_actualizacion2 as updated_at#(lf),fecha_inicio_conversacion as lead_created_at#(lf),b.tiempo_de_atencion as management_time#(lf),nombre_origen#(lf),b.grupo#(lf),b.atencion#(lf),primer_usuario#(lf),primer_grupo#(lf),tipificacion#(lf),atendido#(lf),ultima_actualizacion#(lf),fecha_asignacion#(lf),asignado#(lf),canal#(lf),b.fh_primer_mensaje_agente#(lf),b.fh_asignacion_primera#(lf)from atom_leads.leads#(lf)#(lf)-- Canal MG#(lf)left join#(lf)(select distinct#(lf)canal as canal2#(lf)from atom_leads.leads#(lf)where (upper(nombre_campania) like '%MG%' or upper(grupo) like '%MG%') and (lower(canal) like '%MG%' or lower(canal) like '%+%')#(lf)) m#(lf)on canal2 = canal#(lf)#(lf)--Ultima Gestion#(lf)left join#(lf)(select distinct#(lf)*#(lf)from#(lf)(select distinct#(lf) LAST_VALUE(grupo)                  OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as grupo#(lf),LAST_VALUE(agente)                 OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as agente#(lf),LAST_VALUE(email_agente)           OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as email_agente#(lf),LAST_VALUE(fh_asignacion)          OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_asignacion#(lf),LAST_VALUE(fh_asignacion)          OVER (PARTITION BY lead_id ORDER BY fh_asignacion desc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_asignacion_primera#(lf),LAST_VALUE(channel_name)           OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_name#(lf),LAST_VALUE(tiempo_de_atencion)     OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as tiempo_de_atencion#(lf),LAST_VALUE(ultima_actualizacion)   OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as ultima_actualizacion2#(lf),LAST_VALUE(atencion)               OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as atencion#(lf),LAST_VALUE(categoria_atencion)     OVER (PARTITION BY lead_id ORDER BY fh_asignacion asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as categoria_atencion#(lf),LAST_VALUE(fh_primer_mensaje_agente)     OVER (PARTITION BY lead_id ORDER BY fh_primer_mensaje_agente desc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as fh_primer_mensaje_agente#(lf),lead_id as lead_id2#(lf)from atom_leads.nebula_tiempos_de_agentes)a)b#(lf)on lead_id2 = lead_id#(lf))a#(lf)where not brand_name is null\", null, [EnableFolding = true])\nin\n    Origen",
+      "m_simulacion": "// Versión de práctica: estructura real del origen (catálogo de Athena o, si no está, censos); 0 filas. No contiene datos.\nlet\n    Fuente = #table(\n        type table [\n            #\"lead_id\" = type text,\n            #\"campaing_name\" = type text,\n            #\"medium_value\" = type text,\n            #\"category_name\" = type text,\n            #\"brand_name\" = type text,\n            #\"adviser_name\" = type text,\n            #\"adviser_email\" = type text,\n            #\"client_name\" = type text,\n            #\"client_phone\" = type text,\n            #\"client_email\" = type text,\n            #\"created_at\" = type datetime,\n            #\"updated_at\" = type datetime,\n            #\"lead_created_at\" = type datetime,\n            #\"management_time\" = type number,\n            #\"nombre_origen\" = type text,\n            #\"grupo\" = type text,\n            #\"primer_usuario\" = type text,\n            #\"primer_grupo\" = type text,\n            #\"tipificacion\" = type text,\n            #\"atencion\" = type text,\n            #\"atendido\" = type text,\n            #\"ultima_actualizacion\" = type datetime,\n            #\"fecha_asignacion\" = type datetime,\n            #\"asignado\" = type text,\n            #\"canal\" = type text,\n            #\"fh_primer_mensaje_agente\" = type datetime,\n            #\"fh_asignacion_primera\" = type text\n        ],\n        {}\n    )\nin\n    Fuente"
+    },
+    {
+      "objeto_id": "amazon_athena:Athena_ODBC2/consulta:7251fe3e02",
+      "conexion_id": "amazon_athena:Athena_ODBC2",
+      "motor": "Amazon Athena",
+      "conector": "AmazonAthena.Databases",
+      "argumentos": [
+        "Athena_ODBC2"
+      ],
+      "acceso": "Consulta nativa",
+      "navegacion": [],
+      "pasos_nav": [
+        {
+          "registro": "Kind=\"Database\"",
+          "campo": "Data",
+          "nombre": ""
+        }
+      ],
+      "sql": "select distinct\n*\nfrom\n(select distinct\n LAST_VALUE(id)                        OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as id\n,LAST_VALUE(clasification_id)          OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as clasification_id\n,LAST_VALUE(clasification_name)        OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as clasification_name\n,LAST_VALUE(action_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as action_id\n,LAST_VALUE(action_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as action_name\n,LAST_VALUE(status_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as status_id\n,LAST_VALUE(status_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as status_name\n,LAST_VALUE(campaing_id)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as campaing_id\n,LAST_VALUE(campaing_name)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as campaing_name\n,LAST_VALUE(channel_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_id\n,LAST_VALUE(channel_value)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_value\n,LAST_VALUE(medium_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as medium_id\n,LAST_VALUE(medium_value)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as medium_value\n,LAST_VALUE(category_id)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as category_id\n,LAST_VALUE(category_name)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as category_name\n,LAST_VALUE(country_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as country_name\n,LAST_VALUE(company_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as company_id\n,LAST_VALUE(company_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as company_name\n,LAST_VALUE(brand_id)                  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as brand_id\n,LAST_VALUE(brand_name)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as brand_name\n,LAST_VALUE(wholesaler)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as wholesaler\n,LAST_VALUE(adviser_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_id\n,LAST_VALUE(adviser_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_name\n,LAST_VALUE(adviser_email)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_email\n,LAST_VALUE(adviser_document_type)     OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_document_type\n,LAST_VALUE(adviser_document_number)   OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_document_number\n,LAST_VALUE(concessionaire_id)         OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as concessionaire_id\n,LAST_VALUE(concessionaire_names)      OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as concessionaire_names\n,LAST_VALUE(client_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_name\n,LAST_VALUE(client_phone)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_phone\n,LAST_VALUE(client_email)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_email\n,LAST_VALUE(client_document_type_name) OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_document_type_name\n,LAST_VALUE(client_document_number)    OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_document_number\n,LAST_VALUE(model_id)                  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_id\n,LAST_VALUE(model_name)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_name\n,LAST_VALUE(model_year)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_year\n,LAST_VALUE(license_plate)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as license_plate\n,LAST_VALUE(created_at)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as created_at\n,LAST_VALUE(updated_at)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as updated_at\n,LAST_VALUE(lead_created_at)           OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as lead_created_at\n,LAST_VALUE(management_time)           OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as management_time\n,LAST_VALUE(adviser_business_type_id)  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_business_type_id\n,LAST_VALUE(adviser_business_type)     OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_business_type\n,lead_id\nfrom tatooine_prod_core.materialized_leads_tracking)a\n\nleft join\n(SELECT\n    lead_id as lead_id2,\n    MIN(lead_created_at) AS fecha_llegada,\n    MIN(CASE WHEN status_id <> 1 THEN created_at END) AS fecha_primera_gestion,\n    date_diff(\n        'second',\n        MIN(lead_created_at),\n        MIN(CASE WHEN status_id <> 1 THEN created_at END)\n    ) AS segundos_hasta_gestion\nFROM tatooine_prod_core.materialized_leads_tracking\nGROUP BY lead_id)k\non lead_id2 = lead_id\n\nwhere upper(brand_name) like '%MG%'",
+      "origen_nativo": "AmazonAthena.Databases(\"Athena_ODBC2\", null, []){[Kind=\"Database\"]}[Data]",
+      "nombre": "Consulta Orbi leads 7251fe",
+      "columnas": {
+        "id": {
+          "nombre_origen": "id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "clasification_id": {
+          "nombre_origen": "clasification_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "clasification_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "clasification_name": {
+          "nombre_origen": "clasification_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "clasification_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "action_id": {
+          "nombre_origen": "action_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "action_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "action_name": {
+          "nombre_origen": "action_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "action_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "status_id": {
+          "nombre_origen": "status_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "status_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "status_name": {
+          "nombre_origen": "status_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "status_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "campaing_id": {
+          "nombre_origen": "campaing_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "campaing_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "campaing_name": {
+          "nombre_origen": "campaing_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "campaing_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "channel_id": {
+          "nombre_origen": "channel_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "channel_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "channel_value": {
+          "nombre_origen": "channel_value",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "channel_value"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "medium_id": {
+          "nombre_origen": "medium_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "medium_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "medium_value": {
+          "nombre_origen": "medium_value",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "medium_value"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "category_id": {
+          "nombre_origen": "category_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "category_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "category_name": {
+          "nombre_origen": "category_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "category_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "country_name": {
+          "nombre_origen": "country_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "country_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "company_id": {
+          "nombre_origen": "company_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "company_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "company_name": {
+          "nombre_origen": "company_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "company_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "brand_id": {
+          "nombre_origen": "brand_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "brand_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "brand_name": {
+          "nombre_origen": "brand_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "brand_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "wholesaler": {
+          "nombre_origen": "wholesaler",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "wholesaler"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "smallint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "adviser_id": {
+          "nombre_origen": "adviser_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "adviser_name": {
+          "nombre_origen": "adviser_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "adviser_email": {
+          "nombre_origen": "adviser_email",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_email"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "adviser_document_type": {
+          "nombre_origen": "adviser_document_type",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_document_type"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "adviser_document_number": {
+          "nombre_origen": "adviser_document_number",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_document_number"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "concessionaire_id": {
+          "nombre_origen": "concessionaire_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "concessionaire_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "concessionaire_names": {
+          "nombre_origen": "concessionaire_names",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "concessionaire_names"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "client_name": {
+          "nombre_origen": "client_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "client_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "client_phone": {
+          "nombre_origen": "client_phone",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "client_phone"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "client_email": {
+          "nombre_origen": "client_email",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "client_email"
+          },
+          "quitada_en": [],
+          "pii": true,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "client_document_type_name": {
+          "nombre_origen": "client_document_type_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "client_document_type_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "client_document_number": {
+          "nombre_origen": "client_document_number",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "client_document_number"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "model_id": {
+          "nombre_origen": "model_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "model_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "model_name": {
+          "nombre_origen": "model_name",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "model_name"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "model_year": {
+          "nombre_origen": "model_year",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "model_year"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "license_plate": {
+          "nombre_origen": "license_plate",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "license_plate"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "created_at": {
+          "nombre_origen": "created_at",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "created_at"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "updated_at": {
+          "nombre_origen": "updated_at",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "updated_at"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "lead_created_at": {
+          "nombre_origen": "lead_created_at",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "lead_created_at"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "timestamp",
+          "en_catalogo": true,
+          "tipo": "datetime",
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "management_time": {
+          "nombre_origen": "management_time",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "management_time"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "int",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "adviser_business_type_id": {
+          "nombre_origen": "adviser_business_type_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_business_type_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "adviser_business_type": {
+          "nombre_origen": "adviser_business_type",
+          "tipos": {
+            "string": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "adviser_business_type"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "string",
+          "en_catalogo": true,
+          "tipo": "string",
+          "tipo_m": "type text",
+          "cambiado_en": []
+        },
+        "lead_id": {
+          "nombre_origen": "lead_id",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "lead_id"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "tabla_catalogo": "tatooine_prod_core.materialized_leads_tracking",
+          "tipo_real": "bigint",
+          "en_catalogo": true,
+          "tipo": "int64",
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "lead_id2": {
+          "nombre_origen": "lead_id2",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "lead_id2"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "int64",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        },
+        "fecha_llegada": {
+          "nombre_origen": "fecha_llegada",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "fecha_llegada"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "datetime",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "fecha_primera_gestion": {
+          "nombre_origen": "fecha_primera_gestion",
+          "tipos": {
+            "datetime": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "fecha_primera_gestion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "datetime",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "type datetime",
+          "cambiado_en": []
+        },
+        "segundos_hasta_gestion": {
+          "nombre_origen": "segundos_hasta_gestion",
+          "tipos": {
+            "int64": [
+              "GC - Leads MG"
+            ]
+          },
+          "nombres_modelo": {
+            "GC - Leads MG": "segundos_hasta_gestion"
+          },
+          "quitada_en": [],
+          "pii": false,
+          "calculada_sql": true,
+          "tipo": "int64",
+          "tipo_real": null,
+          "en_catalogo": null,
+          "tipo_m": "Int64.Type",
+          "cambiado_en": []
+        }
+      },
+      "usos": [
+        {
+          "bi": "GC - Leads MG",
+          "census_id": "20261120T143932-gc-leads-mg",
+          "tabla_modelo": "Orbi leads",
+          "filtros_carga": [],
+          "columnas_quitadas": []
+        }
+      ],
+      "tablas_sql": [
+        "tatooine_prod_core.materialized_leads_tracking"
+      ],
+      "estructura": "Consulta SQL: columnas del censo; lee del catálogo tatooine_prod_core.materialized_leads_tracking",
+      "sql_en_catalogo": true,
+      "consulta_sim": "Sim_Consulta_Orbi_leads_7251fe",
+      "consulta_real": "Real_Consulta_Orbi_leads_7251fe",
+      "consulta_src": "Src_Consulta_Orbi_leads_7251fe",
+      "m_real": "let\n    Servidor = AmazonAthena.Databases(\"Athena_ODBC2\", null, []){[Kind=\"Database\"]}[Data],\n    Origen = Value.NativeQuery(Servidor, \"select distinct#(lf)*#(lf)from#(lf)(select distinct#(lf) LAST_VALUE(id)                        OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as id#(lf),LAST_VALUE(clasification_id)          OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as clasification_id#(lf),LAST_VALUE(clasification_name)        OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as clasification_name#(lf),LAST_VALUE(action_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as action_id#(lf),LAST_VALUE(action_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as action_name#(lf),LAST_VALUE(status_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as status_id#(lf),LAST_VALUE(status_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as status_name#(lf),LAST_VALUE(campaing_id)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as campaing_id#(lf),LAST_VALUE(campaing_name)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as campaing_name#(lf),LAST_VALUE(channel_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_id#(lf),LAST_VALUE(channel_value)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as channel_value#(lf),LAST_VALUE(medium_id)                 OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as medium_id#(lf),LAST_VALUE(medium_value)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as medium_value#(lf),LAST_VALUE(category_id)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as category_id#(lf),LAST_VALUE(category_name)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as category_name#(lf),LAST_VALUE(country_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as country_name#(lf),LAST_VALUE(company_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as company_id#(lf),LAST_VALUE(company_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as company_name#(lf),LAST_VALUE(brand_id)                  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as brand_id#(lf),LAST_VALUE(brand_name)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as brand_name#(lf),LAST_VALUE(wholesaler)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as wholesaler#(lf),LAST_VALUE(adviser_id)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_id#(lf),LAST_VALUE(adviser_name)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_name#(lf),LAST_VALUE(adviser_email)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_email#(lf),LAST_VALUE(adviser_document_type)     OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_document_type#(lf),LAST_VALUE(adviser_document_number)   OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_document_number#(lf),LAST_VALUE(concessionaire_id)         OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as concessionaire_id#(lf),LAST_VALUE(concessionaire_names)      OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as concessionaire_names#(lf),LAST_VALUE(client_name)               OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_name#(lf),LAST_VALUE(client_phone)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_phone#(lf),LAST_VALUE(client_email)              OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_email#(lf),LAST_VALUE(client_document_type_name) OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_document_type_name#(lf),LAST_VALUE(client_document_number)    OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as client_document_number#(lf),LAST_VALUE(model_id)                  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_id#(lf),LAST_VALUE(model_name)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_name#(lf),LAST_VALUE(model_year)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as model_year#(lf),LAST_VALUE(license_plate)             OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as license_plate#(lf),LAST_VALUE(created_at)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as created_at#(lf),LAST_VALUE(updated_at)                OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as updated_at#(lf),LAST_VALUE(lead_created_at)           OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as lead_created_at#(lf),LAST_VALUE(management_time)           OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as management_time#(lf),LAST_VALUE(adviser_business_type_id)  OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_business_type_id#(lf),LAST_VALUE(adviser_business_type)     OVER (PARTITION BY lead_id ORDER BY created_at asc rows BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) as adviser_business_type#(lf),lead_id#(lf)from tatooine_prod_core.materialized_leads_tracking)a#(lf)#(lf)left join#(lf)(SELECT#(lf)    lead_id as lead_id2,#(lf)    MIN(lead_created_at) AS fecha_llegada,#(lf)    MIN(CASE WHEN status_id <> 1 THEN created_at END) AS fecha_primera_gestion,#(lf)    date_diff(#(lf)        'second',#(lf)        MIN(lead_created_at),#(lf)        MIN(CASE WHEN status_id <> 1 THEN created_at END)#(lf)    ) AS segundos_hasta_gestion#(lf)FROM tatooine_prod_core.materialized_leads_tracking#(lf)GROUP BY lead_id)k#(lf)on lead_id2 = lead_id#(lf)#(lf)where upper(brand_name) like '%MG%'\", null, [EnableFolding = true])\nin\n    Origen",
+      "m_simulacion": "// Versión de práctica: estructura real del origen (catálogo de Athena o, si no está, censos); 0 filas. No contiene datos.\nlet\n    Fuente = #table(\n        type table [\n            #\"id\" = Int64.Type,\n            #\"clasification_id\" = Int64.Type,\n            #\"clasification_name\" = type text,\n            #\"action_id\" = Int64.Type,\n            #\"action_name\" = type text,\n            #\"status_id\" = Int64.Type,\n            #\"status_name\" = type text,\n            #\"campaing_id\" = Int64.Type,\n            #\"campaing_name\" = type text,\n            #\"channel_id\" = Int64.Type,\n            #\"channel_value\" = type text,\n            #\"medium_id\" = Int64.Type,\n            #\"medium_value\" = type text,\n            #\"category_id\" = Int64.Type,\n            #\"category_name\" = type text,\n            #\"country_name\" = type text,\n            #\"company_id\" = Int64.Type,\n            #\"company_name\" = type text,\n            #\"brand_id\" = Int64.Type,\n            #\"brand_name\" = type text,\n            #\"wholesaler\" = Int64.Type,\n            #\"adviser_id\" = Int64.Type,\n            #\"adviser_name\" = type text,\n            #\"adviser_email\" = type text,\n            #\"adviser_document_type\" = type text,\n            #\"adviser_document_number\" = type text,\n            #\"concessionaire_id\" = Int64.Type,\n            #\"concessionaire_names\" = type text,\n            #\"client_name\" = type text,\n            #\"client_phone\" = type text,\n            #\"client_email\" = type text,\n            #\"client_document_type_name\" = type text,\n            #\"client_document_number\" = type text,\n            #\"model_id\" = Int64.Type,\n            #\"model_name\" = type text,\n            #\"model_year\" = type text,\n            #\"license_plate\" = type text,\n            #\"created_at\" = type datetime,\n            #\"updated_at\" = type datetime,\n            #\"lead_created_at\" = type datetime,\n            #\"management_time\" = Int64.Type,\n            #\"adviser_business_type_id\" = Int64.Type,\n            #\"adviser_business_type\" = type text,\n            #\"lead_id\" = Int64.Type,\n            #\"lead_id2\" = Int64.Type,\n            #\"fecha_llegada\" = type datetime,\n            #\"fecha_primera_gestion\" = type datetime,\n            #\"segundos_hasta_gestion\" = Int64.Type\n        ],\n        {}\n    )\nin\n    Fuente"
     }
   ],
   "avisos": [],
